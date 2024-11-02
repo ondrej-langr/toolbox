@@ -1,10 +1,10 @@
 import fs from 'fs-extra';
 import os from 'node:os';
-import path from 'path';
+import path from 'node:path';
 import * as prettier from 'prettier';
-import { z } from 'zod';
+import type { z } from 'zod';
 
-import { JsonPartial } from './schemas/jsonSchema.js';
+import type { JsonPartial } from './schemas/jsonSchema.js';
 import { log } from './utils/log.js';
 
 /**
@@ -40,7 +40,9 @@ export class FileSystem {
 
     const test = (folderName: string): string | undefined => {
       const filepath = path.join(folderName, filename);
-      const absoluteFilepath = path.isAbsolute(filepath) ? filepath : path.join('/', filepath);
+      const absoluteFilepath = path.isAbsolute(filepath)
+        ? filepath
+        : path.join('/', filepath);
       const exists = this.existsSync(absoluteFilepath);
 
       if (!exists) {
@@ -51,8 +53,8 @@ export class FileSystem {
     };
 
     const cwdAsArray = (options.cwd ?? process.cwd()).split(path.sep);
-    let i = cwdAsArray.length;
-    while (i--) {
+    let index = cwdAsArray.length;
+    while (index--) {
       const filePath = test(cwdAsArray.join(path.sep));
 
       if (filePath) {
@@ -108,37 +110,44 @@ export class FileSystem {
   }
 
   static async writeTempFile(fileName: string, value: string) {
-    const tempDirectory = path.resolve(await fs.realpath(os.tmpdir()));
+    const temporaryDirectory = path.resolve(await fs.realpath(os.tmpdir()));
 
     // TODO: add check for fileName that it does not include path instead of filename
-    const tempFilepath = path.join(tempDirectory, fileName);
+    const temporaryFilepath = path.join(temporaryDirectory, fileName);
     await fs.outputFile(fileName, value);
 
-    return { filepath: tempFilepath };
+    return { filepath: temporaryFilepath };
   }
 
   /**
   Commits all batched updates for selected files
   */
   static commit(paths: string[]): Promise<void>;
+
   /**
   Commits updates to one selected file
   */
   static commit(path: string): Promise<void>;
+
   /**
   Commits all batched updates
   */
   static commit(): Promise<void>;
-  static async commit(pathOrPaths?: string | string[]) {
-    log.debug('Commiting files from memory');
-    const keys = [...(Array.isArray(pathOrPaths) ? pathOrPaths : pathOrPaths ? [pathOrPaths] : this.cache.keys())].sort(
-      (a, b) => {
-        const depthA = a.split(path.sep).length;
-        const depthB = b.split(path.sep).length;
 
-        return depthA > depthB ? 1 : depthA === depthB ? 0 : -1;
-      },
-    );
+  static async commit(pathOrPaths?: string[] | string) {
+    log.debug('Commiting files from memory');
+    const keys = [
+      ...(Array.isArray(pathOrPaths)
+        ? pathOrPaths
+        : pathOrPaths
+          ? [pathOrPaths]
+          : this.cache.keys()),
+    ].sort((a, b) => {
+      const depthA = a.split(path.sep).length;
+      const depthB = b.split(path.sep).length;
+
+      return depthA > depthB ? 1 : depthA === depthB ? 0 : -1;
+    });
 
     let resolvedPrettierConfig: prettier.Options | null = null;
 
@@ -148,11 +157,16 @@ export class FileSystem {
       const prettierConfigFile = FileSystem.findFile(prettierFilename, {
         cwd: path.dirname(deepestFilePath),
       });
-      const prettierFileContents = prettierConfigFile ? await FileSystem.readFile(prettierConfigFile) : null;
+      const prettierFileContents = prettierConfigFile
+        ? await FileSystem.readFile(prettierConfigFile)
+        : null;
 
       if (prettierFileContents) {
-        const { filepath: prettierTempFilepath } = await this.writeTempFile(prettierFilename, prettierFileContents);
-        resolvedPrettierConfig = await prettier.resolveConfig(prettierTempFilepath);
+        const { filepath: prettierTemporaryFilepath } = await this.writeTempFile(
+          prettierFilename,
+          prettierFileContents,
+        );
+        resolvedPrettierConfig = await prettier.resolveConfig(prettierTemporaryFilepath);
       }
     }
 
@@ -176,7 +190,7 @@ export class FileSystem {
                 ...resolvedPrettierConfig,
                 filepath: key,
               });
-            } catch (error) {
+            } catch {
               log.debug(`Failed to format ${key}`);
             }
           }

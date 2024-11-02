@@ -1,15 +1,20 @@
-import path from 'path';
-import { z } from 'zod';
+/* eslint-disable @typescript-eslint/no-explicit-any -- ok for this cases */
+import path from 'node:path';
+import type { z } from 'zod';
 
 import { FileSystem } from '../FileSystem.js';
-import { Project } from '../Project.js';
+import type { Project } from '../Project.js';
 
 type ProjectMetaValueSchema = z.ZodObject<{
   config:
     | z.ZodDiscriminatedUnion<string, any>
-    | z.ZodObject<{ [x: string]: z.ZodType<z.Scalars> | z.ZodObject<{ [x: string]: z.ZodType<z.Scalars> }> }>
+    | z.ZodIntersection<any, any>
     | z.ZodNull
-    | z.ZodIntersection<any, any>;
+    | z.ZodObject<{
+        [x: string]:
+          | z.ZodObject<{ [x: string]: z.ZodType<z.Scalars> }>
+          | z.ZodType<z.Scalars>;
+      }>;
 }>;
 
 function createSnapshotPath(root: string) {
@@ -22,7 +27,10 @@ async function loadSnapshot(root: string) {
   return FileSystem.readFile(snapshotPath);
 }
 
-export function defineProjectMeta<S extends ProjectMetaValueSchema, V extends z.output<S> = z.output<S>>(schema: S) {
+export function defineProjectMeta<
+  S extends ProjectMetaValueSchema,
+  V extends z.output<S> = z.output<S>,
+>(schema: S) {
   return {
     writeForProject(project: Project, metadata: V) {
       const snapshotPath = createSnapshotPath(project.getRoot());
@@ -30,13 +38,14 @@ export function defineProjectMeta<S extends ProjectMetaValueSchema, V extends z.
       FileSystem.writeJson(snapshotPath, metadata);
     },
     async getForProject(project: Project, initialState?: V) {
-      const { writeForProject } = this;
+      // eslint-disable-next-line unicorn/no-this-assignment, @typescript-eslint/no-this-alias
+      const that = this;
       const rawMetadata = await loadSnapshot(project.getRoot());
       const metadata = schema.parse(rawMetadata ? JSON.parse(rawMetadata) : initialState);
 
       return {
         save() {
-          writeForProject(project, metadata as V);
+          that.writeForProject(project, metadata as V);
 
           return this;
         },
@@ -47,6 +56,7 @@ export function defineProjectMeta<S extends ProjectMetaValueSchema, V extends z.
           return this;
         },
         getConfig(): NonNullable<V['config']> {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- type is inherited from parameters
           return metadata.config;
         },
       };

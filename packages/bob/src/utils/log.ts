@@ -1,5 +1,6 @@
-import { getProgramOptions } from '~/program.js';
-import { Json } from '~/schemas/jsonSchema.js';
+import type { Json } from '~/schemas/jsonSchema.js';
+
+import { getProgramOptions } from './getProgramOptions.js';
 
 const runWhenDebugEnabled =
   <T extends (...params: any[]) => any>(action: T) =>
@@ -14,7 +15,7 @@ const runWhenDebugEnabled =
 export const log = {
   debug: runWhenDebugEnabled((message: string, meta?: Json) =>
     console.log(
-      `\x1b[0m\x1b[34m[DEBUG]: ${message}${meta ? ` ${JSON.stringify(meta, null, 2)}` : ''}`,
+      `\u001B[0m\u001B[34m[DEBUG]: ${message}${meta ? ` ${JSON.stringify(meta, null, 2)}` : ''}`,
     ),
   ),
 };

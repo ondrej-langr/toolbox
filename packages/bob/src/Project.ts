@@ -1,9 +1,10 @@
-import path from 'path';
+import path from 'node:path';
 
+import { PACKAGE_JSON, PNPM_WORKSPACE_YAML } from './constants/base.js';
 import { FileSystem } from './FileSystem.js';
+import type { PackageJson } from './schemas/packageJsonSchema.js';
+import { packageJsonSchema } from './schemas/packageJsonSchema.js';
 import type { Workspace } from './Workspace.js';
-import { PACKAGE_JSON, PNPM_WORKSPACE_YAML } from './constants.js';
-import { PackageJson, packageJsonSchema } from './schemas/packageJsonSchema.js';
 
 const recursiveFindNonWorkspacePackageJson = (startAt: string): string | null => {
   const closest = FileSystem.findFile(PACKAGE_JSON, {
@@ -15,7 +16,9 @@ const recursiveFindNonWorkspacePackageJson = (startAt: string): string | null =>
   }
 
   const closestDirname = path.dirname(closest);
-  const isWorkspace = FileSystem.existsSync(path.join(closestDirname, PNPM_WORKSPACE_YAML));
+  const isWorkspace = FileSystem.existsSync(
+    path.join(closestDirname, PNPM_WORKSPACE_YAML),
+  );
 
   if (isWorkspace) {
     return recursiveFindNonWorkspacePackageJson(path.dirname(closestDirname));
@@ -43,7 +46,11 @@ export class Project {
    */
   private packageJsonContents: PackageJson;
 
-  constructor(packageRoot: string, packageJsonContents: PackageJson, workspace: Workspace | null = null) {
+  constructor(
+    packageRoot: string,
+    packageJsonContents: PackageJson,
+    workspace: Workspace | null = null,
+  ) {
     this.root = packageRoot;
     this.packageJsonContents = packageJsonContents;
     this.workspace = workspace;
@@ -60,7 +67,9 @@ export class Project {
     });
 
     if (!packageJsonContent) {
-      throw new Error(`Not a valid Node.js package, missing ${PACKAGE_JSON} at ${packageJsonPath}`);
+      throw new Error(
+        `Not a valid Node.js package, missing ${PACKAGE_JSON} at ${packageJsonPath}`,
+      );
     }
 
     return new Project(at, packageJsonContent, workspace);

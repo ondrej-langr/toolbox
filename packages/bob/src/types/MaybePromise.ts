@@ -1,1 +1,1 @@
-export type MaybePromise<T extends any> = T | Promise<T>;
+export type MaybePromise<T extends any> = Promise<T> | T;

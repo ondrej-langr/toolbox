@@ -3,9 +3,9 @@ import path from 'node:path';
 import yaml from 'yaml';
 import { z } from 'zod';
 
+import { PACKAGE_JSON, PNPM_WORKSPACE_YAML } from './constants/base.js';
 import { FileSystem } from './FileSystem.js';
 import { Project } from './Project.js';
-import { PACKAGE_JSON, PNPM_WORKSPACE_YAML } from './constants.js';
 
 const workspaceYamlSchema = z.object({
   packages: z
@@ -21,7 +21,9 @@ export class Workspace extends Project {
     super(fromProject.getRoot(), fromProject.getPackageInfo());
 
     if (!FileSystem.existsSync(path.join(this.getRoot(), PNPM_WORKSPACE_YAML))) {
-      throw new Error(`Not a valid workspace. Missing ${PNPM_WORKSPACE_YAML} at ${this.getRoot()}`);
+      throw new Error(
+        `Not a valid workspace. Missing ${PNPM_WORKSPACE_YAML} at ${this.getRoot()}`,
+      );
     }
   }
 
@@ -38,7 +40,9 @@ export class Workspace extends Project {
   /**
    * Gets nearest possible workspace for provided path (walks recursively up until it hits user root - uses {@link https://github.com/antonk52/lilconfig | lilconfig})
    */
-  static override async loadNearest(startFrom: string): Promise<InstanceType<typeof this> | null> {
+  static override async loadNearest(
+    startFrom: string,
+  ): Promise<InstanceType<typeof this> | null> {
     let projectPath: string | undefined;
     const nearestWorkspaceYaml = FileSystem.findFile(PNPM_WORKSPACE_YAML, {
       cwd: startFrom,
@@ -58,7 +62,9 @@ export class Workspace extends Project {
     const workspacesYamlContent = await FileSystem.readFile(workspaceFilepath);
 
     if (!workspacesYamlContent) {
-      throw new Error(`YAML workspace file at "${workspaceFilepath}" is either empty or does not exist`);
+      throw new Error(
+        `YAML workspace file at "${workspaceFilepath}" is either empty or does not exist`,
+      );
     }
 
     const { packages } = workspaceYamlSchema.parse(yaml.parse(workspacesYamlContent));
@@ -75,10 +81,16 @@ export class Workspace extends Project {
     // TODO: This wont work when workspace is created and lives in memory
     return await Promise.all(
       packages.map((matcher) =>
-        glob(path.join(matcher, matcher.endsWith('*') ? PACKAGE_JSON : path.join('*', PACKAGE_JSON)), {
-          cwd: this.getRoot(),
-          absolute: true,
-        }),
+        glob(
+          path.join(
+            matcher,
+            matcher.endsWith('*') ? PACKAGE_JSON : path.join('*', PACKAGE_JSON),
+          ),
+          {
+            cwd: this.getRoot(),
+            absolute: true,
+          },
+        ),
       ),
     ).then((results) => results.flat().map(path.dirname));
   }

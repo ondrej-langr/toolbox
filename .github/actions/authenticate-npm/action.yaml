@@ -5,4 +5,5 @@ runs:
   using: composite
   steps:
     - name: Setup .npmrc
+      shell: bash
       run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> "$HOME/.npmrc"

@@ -12,12 +12,14 @@ const tasks = z.record(
     interactive: z.boolean().optional(),
     persistent: z.boolean().optional(),
     inputs: z.array(z.string()).optional(),
-    outputLogs: z.enum(['full', 'hash-only', 'new-only', 'errors-only', 'none']),
+    outputLogs: z
+      .enum(['full', 'hash-only', 'new-only', 'errors-only', 'none'])
+      .optional(),
   }),
 );
 
 const rootSchema = z.object({
-  tasks: tasks,
+  tasks,
   globalDependencies: z.array(z.string()).optional(),
   globalEnv: z.array(z.string()).optional(),
   globalPassThroughEnv: z.array(z.string()).optional(),

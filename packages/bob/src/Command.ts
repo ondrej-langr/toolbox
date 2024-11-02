@@ -1,42 +1,58 @@
-import inquirer, { Answers as InquirerQuestionAnswers, DistinctQuestion } from 'inquirer';
-import path from 'path';
+import type { DistinctQuestion, Answers as InquirerQuestionAnswers } from 'inquirer';
+import inquirer from 'inquirer';
+import path from 'node:path';
 
-import { LayerConstructorOptions, TemplateLayer } from './TemplateLayer.js';
-import { getProgramOptions, program } from './program.js';
-import { MaybeArray } from './types/MaybeArray.js';
-import { MaybePromise } from './types/MaybePromise.js';
+import { program } from './constants/program.js';
+import type { Json } from './schemas/jsonSchema.js';
+import type { LayerConstructorOptions } from './TemplateLayer.js';
+import { TemplateLayer } from './TemplateLayer.js';
+import type { MaybeArray } from './types/MaybeArray.js';
+import type { MaybePromise } from './types/MaybePromise.js';
 import { getCallerFilename } from './utils/getCallerFilename.js';
+import { getProgramOptions } from './utils/getProgramOptions.js';
 import { log } from './utils/log.js';
 
-export type CommandOptions<
+export interface CommandOptions<
   QuestionAnswers extends InquirerQuestionAnswers,
   Question = DistinctQuestion<QuestionAnswers> & { name: keyof QuestionAnswers },
-> = {
+> {
   templatesRoot?: string | undefined;
 
   /**
    * {@link https://github.com/SBoudrias/Inquirer.js Inquirer.js} questions as array, each array item could be function which will return question or null
    */
-  questions: ((this: Command<QuestionAnswers>) => MaybePromise<Array<Question>>) | Array<Question>;
+  questions:
+    | Array<Question>
+    | ((this: Command<QuestionAnswers>) => MaybePromise<Array<Question>>);
 
   /**
    * Runs before current layer is executed
    */
-  handler?: ((this: Command<QuestionAnswers>) => MaybePromise<void | MaybeArray<Command<any>>>) | undefined;
-};
+  handler?: // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  | ((this: Command<QuestionAnswers>) => MaybePromise<MaybeArray<Command<any>> | void>)
+    | undefined;
+}
 
 export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
   readonly options: CommandOptions<QuestionAnswers>;
+
   readonly name: string;
+
   readonly description: string;
+
   private answers: QuestionAnswers | undefined;
+
   private templateLayers: Array<{
     templatePathRelative: string;
     renderTo: string;
     readonly layer: TemplateLayer;
   }> = [];
 
-  constructor(name: string, description: string, options: CommandOptions<QuestionAnswers>) {
+  constructor(
+    name: string,
+    description: string,
+    options: CommandOptions<QuestionAnswers>,
+  ) {
     this.name = name;
     this.description = description;
     this.options = options;
@@ -62,7 +78,10 @@ export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
       ? this.options.questions
       : await Promise.resolve(this.options.questions.apply(this));
 
-    this.answers = await inquirer.prompt<QuestionAnswers>(resolvedQuestions, initialAnswers);
+    this.answers = await inquirer.prompt<QuestionAnswers>(
+      resolvedQuestions,
+      initialAnswers,
+    );
 
     return this;
   }
@@ -76,7 +95,9 @@ export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
     }
 
     if (!this.options.templatesRoot) {
-      throw new Error('Cannot register template when no templatesRoot option has been provided');
+      throw new Error(
+        'Cannot register template when no templatesRoot option has been provided',
+      );
     }
 
     const { renderTo, ...layerOptions } = options;
@@ -85,7 +106,10 @@ export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
       templatePathRelative: relativeTemplatesPath,
       renderTo,
       layer: new TemplateLayer(
-        path.join(this.options.templatesRoot, relativeTemplatesPath === '/' ? '' : relativeTemplatesPath),
+        path.join(
+          this.options.templatesRoot,
+          relativeTemplatesPath === '/' ? '' : relativeTemplatesPath,
+        ),
         layerOptions,
       ),
     });
@@ -95,6 +119,7 @@ export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
 
   async renderTemplateLayers() {
     for (const { layer, renderTo } of this.templateLayers) {
+      // eslint-disable-next-line no-await-in-loop -- intended
       await layer.renderTemplates(renderTo, this.answers);
     }
   }
@@ -104,7 +129,7 @@ export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
 
     log.debug('Running command', {
       name: this.name,
-      options,
+      options: options as unknown as Json,
     });
 
     await this.askQuestions();
@@ -122,7 +147,9 @@ export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
   }
 
   static define<QuestionAnswers extends InquirerQuestionAnswers>(
-    options: Omit<CommandOptions<QuestionAnswers>, 'templatesRoot'> & { description: string },
+    options: Omit<CommandOptions<QuestionAnswers>, 'templatesRoot'> & {
+      description: string;
+    },
   ) {
     const filepath = getCallerFilename();
     const { description, ...commandOptions } = options;
@@ -130,12 +157,18 @@ export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
     const commandRoot = path.dirname(filepath);
     let commandName = path.basename(commandRoot);
 
-    if (filename != 'command.js' && filename !== 'command.ts') {
-      throw new Error(`File where Command.define is called must be named command.ts. Got ${filename}`);
+    if (filename !== 'command.js' && filename !== 'command.ts') {
+      throw new Error(
+        `File where Command.define is called must be named command.ts. Got ${filename}`,
+      );
     }
 
     if (commandName.includes('$')) {
       commandName = commandName.replaceAll('$', path.basename(commandName));
+    }
+
+    if (commandName.includes(';')) {
+      commandName = commandName.replaceAll(':', path.basename(commandName));
     }
 
     const command = new Command(commandName, description, {

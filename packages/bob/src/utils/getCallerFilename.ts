@@ -4,11 +4,11 @@ import url from 'node:url';
  * Gets caller filename of function that this function is used in
  */
 export function getCallerFilename() {
-  const err = new Error();
+  const error = new Error();
 
   Error.prepareStackTrace = (_, stack) => stack;
 
-  const stack = err.stack as unknown as NodeJS.CallSite[];
+  const stack = error.stack as unknown as NodeJS.CallSite[];
 
   Error.prepareStackTrace = undefined;
 
@@ -18,5 +18,7 @@ export function getCallerFilename() {
     throw new Error('Cannot get caller filename of called function from callstack');
   }
 
-  return callerFilename.startsWith('file://') ? url.fileURLToPath(callerFilename) : callerFilename;
+  return callerFilename.startsWith('file://')
+    ? url.fileURLToPath(callerFilename)
+    : callerFilename;
 }

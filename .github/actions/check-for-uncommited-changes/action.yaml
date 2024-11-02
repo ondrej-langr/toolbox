@@ -8,11 +8,14 @@ runs:
       shell: bash
       run: |
         git config core.filemode false;
-        $output=git status --porcelain;
+        output=$(git status --porcelain);
         git config --unset core.filemode;
-        echo $output;
+        echo "$output";
 
-        if [ -z "$var" ];
+        if [ -z "$output" ]
+        then
+          echo "Its empty, good to go!";
+        else
           echo "::error::Git repository isn't clean, check that previous task didn't leave any uncommited changes.";
           git diff;
           exit 1;

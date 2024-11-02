@@ -1,1 +1,1 @@
-export type MaybeArray<T extends any> = T | Array<T>;
+export type MaybeArray<T> = Array<T> | T;

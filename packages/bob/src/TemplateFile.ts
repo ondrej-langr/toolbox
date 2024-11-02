@@ -15,13 +15,13 @@ export type YamlTemplateHandler = TemplateHandler<Json, JsonPartial>;
 export type TSTemplateHandler = TemplateHandler<ts.SourceFile, ts.SourceFile>;
 export type JSTemplateHandler = TemplateHandler<ts.SourceFile, ts.SourceFile>;
 
-export type TemplateHandlerTypeToHandler = {
+export interface TemplateHandlerTypeToHandler {
   json: JsonTemplateHandler;
   text: TextTemplateHandler;
   yaml: YamlTemplateHandler;
   ts: TSTemplateHandler;
   js: JSTemplateHandler;
-};
+}
 
 const fileParser: {
   [key in keyof TemplateHandlerTypeToHandler]: {
@@ -43,6 +43,7 @@ const fileParser: {
   },
   yaml: {
     serialize: (value) => yaml.stringify(value),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     deserialize: (value) => (value ? yaml.parse(value) : value),
   },
   ts: {
@@ -64,6 +65,7 @@ export class TemplateFile<
   H extends TemplateHandlerTypeToHandler[K],
 > {
   private handler: H;
+
   private readonly type: K;
 
   constructor(type: K, handler: H) {

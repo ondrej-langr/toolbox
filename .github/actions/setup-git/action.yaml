@@ -7,5 +7,5 @@ runs:
     - name: Setup Git User
       shell: bash
       run: |
-        git config --global user.email "hi@ondrejlangr.cz"
-        git config --global user.name "Ondřej Langr"
+        git config --global user.email "info@apitree.cz"
+        git config --global user.name "Apitree s.r.o."

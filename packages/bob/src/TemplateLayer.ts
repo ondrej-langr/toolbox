@@ -1,15 +1,17 @@
-import nodeFs from 'fs';
 import { glob } from 'glob';
-import { Answers as InquirerQuestionAnswers } from 'inquirer';
-import path from 'path';
+import type { Answers as InquirerQuestionAnswers } from 'inquirer';
+import nodeFs from 'node:fs';
+import path from 'node:path';
 
 import { TemplateFile } from './TemplateFile.js';
-import { MaybePromise } from './types/MaybePromise.js';
+import type { MaybePromise } from './types/MaybePromise.js';
 import { createEjsTemplateFile } from './utils/createEjsTemplateFile.js';
 
 const allowedTemplateExtensions = ['ejs', 'templ.ts', 'templ.js'];
 
-export type LayerConstructorOptions<QuestionAnswers extends InquirerQuestionAnswers> = {
+export interface LayerConstructorOptions<
+  QuestionAnswers extends InquirerQuestionAnswers,
+> {
   /**
    * Runs before current layer is executed
    */
@@ -23,28 +25,38 @@ export type LayerConstructorOptions<QuestionAnswers extends InquirerQuestionAnsw
    * Runs before each file that is being created
    * You can return object that is passed into each file as values that can be accessed inside templates
    */
-  onBeforeFileRender?: (this: TemplateLayer<QuestionAnswers>) => MaybePromise<Record<string, any> | void>;
+  onBeforeFileRender?: (
+    this: TemplateLayer<QuestionAnswers>,
+  ) => MaybePromise<Record<string, any> | void>;
 
   /**
    * Runs after each file that has been created
    */
   onAfterFileRender?: (this: TemplateLayer<QuestionAnswers>) => MaybePromise<void>;
-};
+}
 
 // TODO: this should be dumb rendering engine - find all templates and render them all. Everything other should control command
-export class TemplateLayer<QuestionAnswers extends InquirerQuestionAnswers = InquirerQuestionAnswers> {
+export class TemplateLayer<
+  QuestionAnswers extends InquirerQuestionAnswers = InquirerQuestionAnswers,
+> {
   private readonly options: LayerConstructorOptions<QuestionAnswers> | undefined;
+
   private readonly dirname: string;
 
   constructor(dirname: string, options?: LayerConstructorOptions<QuestionAnswers>) {
     this.options = options;
     this.dirname = dirname;
   }
+
   /**
    * Resolves paths to templates
    */
-  private async resolveTemplates(): Promise<{ files: string[]; templatesRoot: string }[]> {
-    const globsAsPromises: Promise<Awaited<ReturnType<typeof this.resolveTemplates>>[number]>[] = [];
+  private async resolveTemplates(): Promise<
+    { files: string[]; templatesRoot: string }[]
+  > {
+    const globsAsPromises: Promise<
+      Awaited<ReturnType<typeof this.resolveTemplates>>[number]
+    >[] = [];
 
     // TODO: validate this in constructor perhaps? Templates should be always present
     if (nodeFs.existsSync(this.dirname) === false) {
@@ -53,7 +65,9 @@ export class TemplateLayer<QuestionAnswers extends InquirerQuestionAnswers = Inq
 
     globsAsPromises.push(
       glob(
-        allowedTemplateExtensions.map((templateExtension) => path.join(this.dirname, '**', `*.${templateExtension}`)),
+        allowedTemplateExtensions.map((templateExtension) =>
+          path.join(this.dirname, '**', `*.${templateExtension}`),
+        ),
         {
           dot: true,
           ignore: {
@@ -82,23 +96,32 @@ export class TemplateLayer<QuestionAnswers extends InquirerQuestionAnswers = Inq
         // Realpath of to-be-created file
         const writeTemplateTo = templateFileLocation
           .replace(templatesRoot, to)
-          .replace(new RegExp(`\\.(${allowedTemplateExtensions.map((v) => v.replaceAll('.', '\\.')).join('|')})`), '');
+          .replace(
+            new RegExp(
+              `\\.(${allowedTemplateExtensions.map((v) => v.replaceAll('.', String.raw`\.`)).join('|')})`,
+            ),
+            '',
+          );
 
         createdFilesAsPromises.push(
           Promise.resolve()
-            .then(() => Promise.resolve(this.options?.onBeforeFileRender?.apply(this)))
+            .then(() => this.options?.onBeforeFileRender?.apply(this))
             .then(async () => {
-              const template: TemplateFile<any, any> = await (templateFileLocation.endsWith('.ejs')
-                ? createEjsTemplateFile(templateFileLocation)
-                : import(templateFileLocation).then((module) => {
-                    if ('default' in module === false || module.default instanceof TemplateFile === false) {
-                      throw new Error(
-                        `Template file at ${templateFileLocation} is incorrect. Please export return type from TemplateFile.define as default export from that file.`,
-                      );
-                    }
+              const template: TemplateFile<any, any> =
+                await (templateFileLocation.endsWith('.ejs')
+                  ? createEjsTemplateFile(templateFileLocation)
+                  : import(templateFileLocation).then((module) => {
+                      if (
+                        'default' in module === false ||
+                        module.default instanceof TemplateFile === false
+                      ) {
+                        throw new Error(
+                          `Template file at ${templateFileLocation} is incorrect. Please export return type from TemplateFile.define as default export from that file.`,
+                        );
+                      }
 
-                    return module.default;
-                  }));
+                      return module.default;
+                    }));
 
               await template.writeTo(writeTemplateTo);
             })

@@ -1,0 +1,39 @@
+name: 'Publish Packages Stable'
+description: 'Does stable publish of packages, tags and pushes updated files'
+
+runs:
+  using: composite
+  steps:
+    - name: Version Packages
+      shell: bash
+      run: npx changeset version
+
+    - name: Publish packages
+      shell: bash
+      run: npx changeset publish --no-git-tag
+
+    - name: Commit Changes
+      shell: bash
+      run: |
+        git add -A;
+        git reset -- .npmrc;
+        git status;
+        git commit -m"Release [ci skip]";
+
+    - name: Synchronize & commit lockfile
+      shell: bash
+      run: |
+        pnpm install --frozen-lockfile=false;
+        git add pnpm-lock.yaml;
+        git add package.json;
+        git add */package.json;
+        git add */CHANGELOG.md;
+        git commit --amend --no-edit;
+
+    - name: Add Git tags
+      shell: bash
+      run: npx changeset tag
+
+    - name: Push Changes
+      shell: bash
+      run: git push --follow-tags

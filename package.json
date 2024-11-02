@@ -1,0 +1,34 @@
+{
+  "name": "ondrejlangr-toolbox",
+  "version": "0.0.0",
+  "description": "Toolbox with tools and wrenches made by Ondřej Langr",
+  "license": "ISC",
+  "author": {
+    "name": "Ondřej Langr",
+    "email": "hi@ondrejlangr.cz"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "turbo run build",
+    "deps:check": "pnpm dlx taze major -r",
+    "release:prerelease": "changeset publish --tag next --no-git-tag",
+    "release:stable": "changeset publish",
+    "test": "turbo run test",
+    "version:prerelease": "changeset version --snapshot next --snapshot-prerelease-template \"{tag}-{commit}\"",
+    "version:stable": "changeset version"
+  },
+  "dependencies": {
+    "@apitree.cz/prettier-config": "^0.2.3",
+    "@changesets/changelog-github": "^0.5.0",
+    "@changesets/cli": "^2.27.5",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "prettier": "^3.3.2",
+    "prettier-plugin-packagejson": "^2.5.0",
+    "turbo": "^2.0.4"
+  },
+  "packageManager": "pnpm@9.4.0",
+  "engines": {
+    "node": ">=20.9.0",
+    "pnpm": ">=8.15.0"
+  }
+}

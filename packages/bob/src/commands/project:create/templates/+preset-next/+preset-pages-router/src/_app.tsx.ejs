@@ -1,0 +1,15 @@
+import { Layout } from './components/Layout'
+ 
+type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> 
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout
+}
+
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  return (
+    <Layout>
+      <Component {...pageProps} />
+    </Layout>
+  )
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json.schemastore.org/swcrc",
+  "module": {
+    "type": "es6"
+  },
+  "jsc": {
+    "target": "es2020",
+    "baseUrl": "./src",
+    "parser": {
+      "syntax": "typescript",
+      "dynamicImport": true
+    },
+    "paths": {
+        "~/*": ["./*"]
+    }
+  }
+}

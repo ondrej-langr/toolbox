@@ -1,0 +1,8 @@
+name: 'Authenticate NPM'
+description: 'Creates .npmrc with token'
+
+runs:
+  using: composite
+  steps:
+    - name: Setup .npmrc
+      run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> "$HOME/.npmrc"

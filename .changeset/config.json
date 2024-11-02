@@ -1,0 +1,17 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@2.3.1/schema.json",
+  "updateInternalDependencies": "patch",
+  "access": "restricted",
+  "baseBranch": "main",
+  "commit": false,
+  "changelog": [
+    "@changesets/changelog-github",
+    { "repo": "ondrej-langr/bob" }
+  ],
+  "fixed": [],
+  "linked": [],
+  "ignore": [],
+  "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
+    "onlyUpdatePeerDependentsWhenOutOfRange": true
+  }
+}

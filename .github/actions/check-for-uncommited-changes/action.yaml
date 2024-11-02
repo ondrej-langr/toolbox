@@ -1,0 +1,19 @@
+name: 'Install Dependencies'
+description: 'Install project dependencies'
+
+runs:
+  using: composite
+  steps:
+    - name: Install dependencies
+      shell: bash
+      run: |
+        git config core.filemode false;
+        $output=git status --porcelain;
+        git config --unset core.filemode;
+        echo $output;
+
+        if [ -z "$var" ];
+          echo "::error::Git repository isn't clean, check that previous task didn't leave any uncommited changes.";
+          git diff;
+          exit 1;
+        fi

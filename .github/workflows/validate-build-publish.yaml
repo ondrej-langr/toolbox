@@ -1,0 +1,114 @@
+name: Validate, Build and Publish
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.changeset/**'
+      - 'packages/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+env:
+  CACHE_KEY: ${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}
+  CACHE_PATH: ./*
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install
+
+      - name: pnpm lint
+        shell: bash
+        run: pnpm lint
+
+      - name: pnpm test
+        shell: bash
+        run: pnpm test
+
+      - name: pnpm format
+        shell: bash
+        run: pnpm format
+
+      - name: Check for uncommited changes
+        uses: ./.github/actions/check-for-uncommited-changes
+
+      - uses: actions/upload-artifact@master
+        with:
+          name: cached-workspace
+          path: ${{ GITHUB_WORKSPACE }}
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+
+      # Downloads cached artifact to current working directory
+      - uses: actions/download-artifact@master
+        with:
+          name: cached-workspace
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install
+
+      - name: Build packages
+        shell: bash
+        run: pnpm build
+
+      - uses: actions/upload-artifact@master
+        with:
+          name: cached-workspace
+          path: ${{ GITHUB_WORKSPACE }}
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git
+        uses: ./.github/actions/setup-git
+
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+
+      - name: Authenticate NPM
+        uses: ./.github/actions/authenticate-npm
+
+      # Downloads cached artifact to current working directory
+      - uses: actions/download-artifact@master
+        with:
+          name: cached-workspace
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install
+
+      - name: Publish Unstable
+        if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
+        uses: ./.github/actions/publish-unstable
+
+      - name: Publish Stable
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: ./.github/actions/publish-stable

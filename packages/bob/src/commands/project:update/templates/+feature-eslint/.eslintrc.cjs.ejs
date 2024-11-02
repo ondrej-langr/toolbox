@@ -1,0 +1,23 @@
+module.exports = {
+    extends: ['@apitree.cz'],
+    parserOptions: {
+        project: 'tsconfig.json',
+        tsconfigRootDir: __dirname,
+    },
+    root: true,
+    overrides: [
+        {
+            files: [
+                '**/*.e2e.ts',
+                '**/*.e2e.tsx',
+                '**/*.test.ts',
+                '**/*.test.tsx',
+                'playwright.config.ts',
+            ], // Or *.test.js
+            rules: {
+                'import/no-extraneous-dependencies': 'off',
+                'unicorn/prevent-abbreviations': 'off',
+            },
+        },
+    ],
+};

@@ -1,0 +1,21 @@
+name: 'Setup Node.js'
+description: 'Sets up Node.js'
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+        registry-url: 'https://registry.npmjs.org'
+        cache: 'pnpm'
+
+    - name: Enable Corepack
+      run: corepack enable
+
+    - name: Cache
+      uses: actions/cache@v4
+      with:
+        key: ${{ env.CACHE_KEY }}
+        path: ${{ env.CACHE_PATH }}

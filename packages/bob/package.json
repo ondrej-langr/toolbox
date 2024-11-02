@@ -1,0 +1,57 @@
+{
+  "name": "@ondrejlangr/bob",
+  "version": "0.0.0",
+  "description": "Simpler CLI applications with focus on code generation",
+  "license": "ISC",
+  "author": {
+    "name": "Ondřej Langr",
+    "email": "hi@ondrejlangr.cz"
+  },
+  "maintainers": [
+    {
+      "name": "Ondřej Langr",
+      "email": "hi@ondrejlangr.cz"
+    }
+  ],
+  "type": "module",
+  "bin": "./.bin/run-bob.js",
+  "scripts": {
+    "prebuild": "rm -rf dist .temp",
+    "build": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths",
+    "start": "pnpm run prebuild && pnpm run build && node .bin/run-bob.js --cwd=\"./.temp\"",
+    "test": "pnpm --filter=\"@ondrejlangr/bob\" run \"/^test:.*/\"",
+    "test:types": "tsc --noEmit --project tsconfig.typecheck.json",
+    "test:unit": "vitest --config ./vitest.config.ts"
+  },
+  "dependencies": {
+    "commander": "^11.1.0",
+    "cosmiconfig": "^9.0.0",
+    "deepmerge": "^4.3.1",
+    "execa": "^8.0.1",
+    "find-config": "^1.0.0",
+    "fs-extra": "^11.2.0",
+    "glob": "^10.4.2",
+    "inquirer": "^9.2.23",
+    "lodash": "^4.17.21",
+    "prettier": "^3.3.2",
+    "yaml": "^2.4.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@swc/cli": "^0.3.12",
+    "@swc/core": "^1.6.4",
+    "@types/find-config": "^1.0.4",
+    "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^9.0.7",
+    "@types/lodash": "^4.17.5",
+    "@types/node": "^20.14.7",
+    "typescript": "5.5.2",
+    "vite": "^5.3.1",
+    "vite-tsconfig-paths": "^5.0.1",
+    "vitest": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=20.9.0",
+    "pnpm": ">=8.15.0"
+  }
+}

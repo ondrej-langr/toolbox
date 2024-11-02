@@ -11,6 +11,7 @@
   "scripts": {
     "build": "turbo run build",
     "deps:check": "pnpm dlx taze major -r",
+    "lint": "turbo run lint",
     "release:prerelease": "changeset publish --tag next --no-git-tag",
     "release:stable": "changeset publish",
     "test": "turbo run test",

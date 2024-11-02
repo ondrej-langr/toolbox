@@ -48,7 +48,7 @@ jobs:
       - uses: actions/upload-artifact@master
         with:
           name: cached-workspace
-          path: ${{ GITHUB_WORKSPACE }}
+          path: ${{ github.workspace }}
 
   build:
     name: Build
@@ -77,7 +77,7 @@ jobs:
       - uses: actions/upload-artifact@master
         with:
           name: cached-workspace
-          path: ${{ GITHUB_WORKSPACE }}
+          path: ${{ github.workspace }}
 
   release:
     name: Release

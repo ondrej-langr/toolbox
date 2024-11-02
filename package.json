@@ -16,7 +16,7 @@
     "release:prerelease": "changeset publish --tag next --no-git-tag",
     "release:stable": "changeset publish",
     "test": "turbo run test",
-    "version:prerelease": "changeset version --snapshot next --snapshot-prerelease-template \"{tag}-{commit}\"",
+    "version:prerelease": "changeset version --snapshot unstable --snapshot-prerelease-template \"{tag}-{commit}\"",
     "version:stable": "changeset version"
   },
   "dependencies": {

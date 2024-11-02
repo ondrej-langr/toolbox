@@ -6,8 +6,8 @@ runs:
   steps:
     - name: Version Packages - Unstable
       shell: bash
-      run: npx changeset version --snapshot unstable --snapshot-prerelease-template "{tag}-{commit}"
+      run: pnpm run version:prerelease
 
     - name: Publish packages - Unstable
       shell: bash
-      run: npx changeset publish --tag unstable --no-git-tag
+      run: pnpm run release:prerelease

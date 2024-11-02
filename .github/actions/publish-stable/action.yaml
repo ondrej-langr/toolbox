@@ -6,11 +6,11 @@ runs:
   steps:
     - name: Version Packages
       shell: bash
-      run: npx changeset version
+      run: pnpm run version:stable
 
     - name: Publish packages
       shell: bash
-      run: npx changeset publish --no-git-tag
+      run: pnpm run release:stable
 
     - name: Commit Changes
       shell: bash

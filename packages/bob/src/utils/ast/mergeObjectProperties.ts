@@ -45,7 +45,7 @@ export function mergeObjectProperties(
       propertyAssignments.set(node.name.getText(), node);
     }
 
-    existing.
+    // existing.
   }
 
   return [...resultItems, ...propertyAssignments.values()];

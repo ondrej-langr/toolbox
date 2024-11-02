@@ -9,11 +9,6 @@ import type { Json } from './schemas/jsonSchema.js';
 import type { ProgramOptions } from './types/ProgramOptions.js';
 import { log } from './utils/log.js';
 
-declare global {
-  // eslint-disable-next-line vars-on-top, no-var
-  var cachedProgramOptions: ProgramOptions;
-}
-
 global.cachedProgramOptions = program.opts<ProgramOptions>();
 if (global.cachedProgramOptions.debug) {
   log.debug('Registered program options', global.cachedProgramOptions as unknown as Json);

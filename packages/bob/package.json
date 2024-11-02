@@ -19,9 +19,9 @@
     "prebuild": "rm -rf dist .temp",
     "build": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths",
     "start": "pnpm run prebuild && pnpm run build && node .bin/run-bob.js --cwd=\"./.temp\"",
-    "test": "pnpm --filter=\"@ondrejlangr/bob\" run \"/^test:.*/\"",
-    "test:types": "tsc --noEmit --project tsconfig.typecheck.json",
-    "test:unit": "vitest --config ./vitest.config.ts"
+    "test": "pnpm test:unit && pnpm test:types",
+    "test:types": "tsc --noEmit",
+    "test:unit": "vitest --watch false"
   },
   "dependencies": {
     "commander": "^11.1.0",

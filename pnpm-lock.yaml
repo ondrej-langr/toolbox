@@ -11,6 +11,9 @@ importers:
       '@apitree.cz/prettier-config':
         specifier: ^0.2.3
         version: 0.2.3(prettier@3.3.2)
+      '@apitree.cz/ts-config':
+        specifier: ^0.2.3
+        version: 0.2.3(typescript@5.5.2)
       '@changesets/changelog-github':
         specifier: ^0.5.0
         version: 0.5.0
@@ -109,6 +112,11 @@ packages:
     resolution: {integrity: sha512-77hDR1gu+/9+CB4z1gssu+KkuVDViGkG0I9sg2uICaBAqtoqwknxDM46IwhYHwC6AYLu3F2hJOelpfX6j3Y+xQ==}
     peerDependencies:
       prettier: ^3.2.5
+
+  '@apitree.cz/ts-config@0.2.3':
+    resolution: {integrity: sha512-KVjuPX+IG9i8/FB+Jf6+cRDBMlllMosvK14JcqjOlFf2gER/QJlHOzt+0i6GqfemEwg9eZ60BOSwqKtvfmYByA==}
+    peerDependencies:
+      typescript: ^5.5.2
 
   '@babel/code-frame@7.23.4':
     resolution: {integrity: sha512-r1IONyb6Ia+jYR2vvIDhdWdlTGhqbBoFqLTQidzZ4kepUFH15ejXvFHxCVbtl7BOXIudsIubf4E81xeA3h3IXA==}
@@ -2519,6 +2527,10 @@ snapshots:
     dependencies:
       prettier: 3.3.2
       prettier-plugin-packagejson: 2.5.0(prettier@3.3.2)
+
+  '@apitree.cz/ts-config@0.2.3(typescript@5.5.2)':
+    dependencies:
+      typescript: 5.5.2
 
   '@babel/code-frame@7.23.4':
     dependencies:

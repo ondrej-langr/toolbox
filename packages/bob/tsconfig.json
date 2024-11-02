@@ -1,21 +1,13 @@
 {
-  "extends": "../../default.tsconfig.json",
+  "extends": "@apitree.cz/ts-config/library",
   "compilerOptions": {
-    "module": "Node16",
-    "moduleResolution": "Node16",
-    "target": "ES2020",
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "baseUrl": "./src",
-    "sourceMap": true,
-    "composite": true,
-    "declaration": true,
-    "strictNullChecks": true,
-    "emitDeclarationOnly": true,
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
     "paths": {
-      "~/*": ["*"]
+      "~/*": ["./src/*"]
     }
   },
-  "include": ["src"],
-  "exclude": ["dist", "node_modules"]
+  "include": [".eslintrc.cjs", "src/**/*", "tests/**/*", "vitest.config.ts"],
+  "exclude": ["dist", "node_modules"],
+  "references": []
 }

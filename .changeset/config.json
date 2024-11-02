@@ -4,10 +4,7 @@
   "access": "restricted",
   "baseBranch": "main",
   "commit": false,
-  "changelog": [
-    "@changesets/changelog-github",
-    { "repo": "ondrej-langr/bob" }
-  ],
+  "changelog": ["@changesets/changelog-github", { "repo": "ondrej-langr/bob" }],
   "fixed": [],
   "linked": [],
   "ignore": [],

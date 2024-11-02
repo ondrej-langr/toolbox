@@ -10,6 +10,7 @@
 ## Installation
 
 Installation works like in any other package installation
+
 - globally:
   ```bash
   pnpm i -g @ondrejlangr/bob

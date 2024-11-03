@@ -20,16 +20,16 @@
     "version:stable": "changeset version"
   },
   "dependencies": {
-    "@apitree.cz/prettier-config": "^0.2.3",
+    "@apitree.cz/prettier-config": "^0.2.5",
     "@apitree.cz/ts-config": "^0.2.3",
     "@changesets/changelog-github": "^0.5.0",
-    "@changesets/cli": "^2.27.5",
+    "@changesets/cli": "^2.27.9",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
-    "prettier": "^3.3.2",
-    "prettier-plugin-packagejson": "^2.5.0",
-    "turbo": "^2.0.4"
+    "prettier": "^3.3.3",
+    "prettier-plugin-packagejson": "^2.5.3",
+    "turbo": "^2.2.3"
   },
-  "packageManager": "pnpm@9.4.0",
+  "packageManager": "pnpm@9.12.3",
   "engines": {
     "node": ">=20.9.0",
     "pnpm": ">=8.15.0"

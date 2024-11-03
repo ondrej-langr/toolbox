@@ -1,7 +1,7 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@2.3.1/schema.json",
   "updateInternalDependencies": "patch",
-  "access": "restricted",
+  "access": "public",
   "baseBranch": "main",
   "commit": false,
   "changelog": ["@changesets/changelog-github", { "repo": "ondrej-langr/bob" }],

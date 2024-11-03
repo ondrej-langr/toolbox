@@ -121,7 +121,11 @@ jobs:
       - name: Publish Unstable
         if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
         uses: ./.github/actions/publish-unstable
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish Stable
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: ./.github/actions/publish-stable
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}

@@ -1,12 +1,21 @@
 name: 'Publish Packages Unstable'
 description: 'Does unstable publish of packages'
 
+on:
+  workflow_call:
+    inputs:
+      githubToken:
+        required: true
+        type: string
+
 runs:
   using: composite
   steps:
     - name: Version Packages - Unstable
       shell: bash
       run: pnpm run version:prerelease
+      env:
+        GITHUB_TOKEN: ${{ inputs.githubToken }}
 
     - name: Publish packages - Unstable
       shell: bash

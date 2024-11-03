@@ -1,12 +1,21 @@
 name: 'Publish Packages Stable'
 description: 'Does stable publish of packages, tags and pushes updated files'
 
+on:
+  workflow_call:
+    inputs:
+      githubToken:
+        required: true
+        type: string
+
 runs:
   using: composite
   steps:
     - name: Version Packages
       shell: bash
       run: pnpm run version:stable
+      env:
+        GITHUB_TOKEN: ${{ inputs.githubToken }}
 
     - name: Publish packages
       shell: bash
@@ -18,7 +27,7 @@ runs:
         git add -A;
         git reset -- .npmrc;
         git status;
-        git commit -m"Release [ci skip]";
+        git commit -m "Release [ci skip]";
 
     - name: Synchronize & commit lockfile
       shell: bash

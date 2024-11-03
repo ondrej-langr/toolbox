@@ -108,7 +108,7 @@ jobs:
       - name: Authenticate NPM
         uses: ./.github/actions/authenticate-npm
         with:
-          token: ${{ secrets.NPM_TOKEN }}
+          npmToken: ${{ secrets.NPM_TOKEN }}
 
       # Downloads cached artifact to current working directory
       - uses: actions/download-artifact@master

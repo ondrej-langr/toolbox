@@ -1,12 +1,10 @@
 name: 'Publish Packages Stable'
 description: 'Does stable publish of packages, tags and pushes updated files'
 
-on:
-  workflow_call:
-    inputs:
-      githubToken:
-        required: true
-        type: string
+inputs:
+  githubToken:
+    required: true
+    description: 'Github access token for changeset'
 
 runs:
   using: composite

@@ -1,12 +1,10 @@
 name: 'Publish Packages Unstable'
 description: 'Does unstable publish of packages'
 
-on:
-  workflow_call:
-    inputs:
-      githubToken:
-        required: true
-        type: string
+inputs:
+  githubToken:
+    required: true
+    description: 'Github access token for changeset'
 
 runs:
   using: composite

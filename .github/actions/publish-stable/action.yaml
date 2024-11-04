@@ -49,4 +49,4 @@ runs:
 
     - name: Push Changes
       shell: bash
-      run: git push --follow-tags
+      run: git push --follow-tags --force

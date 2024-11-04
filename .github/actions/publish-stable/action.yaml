@@ -5,6 +5,9 @@ inputs:
   githubToken:
     required: true
     description: 'Github access token for changeset'
+  npmToken:
+    required: true
+    description: 'NPM token for authorizing npmrc. Used for private packages and releasing'
 
 runs:
   using: composite
@@ -18,6 +21,9 @@ runs:
     - name: Publish packages
       shell: bash
       run: pnpm run release:stable
+      env:
+        GITHUB_TOKEN: ${{ inputs.githubToken }}
+        NPM_TOKEN: ${{ inputs.npmToken }}
 
     - name: Commit Changes
       shell: bash

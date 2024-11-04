@@ -123,9 +123,11 @@ jobs:
         uses: ./.github/actions/publish-unstable
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+          npmToken: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish Stable
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: ./.github/actions/publish-stable
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+          npmToken: ${{ secrets.NPM_TOKEN }}

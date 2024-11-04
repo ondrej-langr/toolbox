@@ -1,6 +1,6 @@
 {
   "name": "@ondrej-langr/bob",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Simpler CLI applications with focus on code generation",
   "license": "ISC",
   "author": {

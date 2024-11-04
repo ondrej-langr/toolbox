@@ -1,5 +1,5 @@
 ---
-'@ondrejlangr/bob': minor
+'@ondrej-langr/bob': minor
 ---
 
 Creates package 🎉

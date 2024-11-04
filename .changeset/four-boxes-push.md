@@ -1,5 +1,5 @@
 ---
-'@ondrejlangr/bob': minor
+'@ondrej-langr/bob': minor
 ---
 
 Introduces workspace:create, workspace:update, project:create and project:update commands

@@ -3,7 +3,7 @@
 > [!IMPORTANT]
 > This documentation is work in progress and may miss some things
 
-Welcome to the contribution guide to @ondrejlangr/bob!
+Welcome to the contribution guide to @ondrej-langr/bob!
 
 ## What it uses
 
@@ -43,7 +43,7 @@ This project is build upon some rules that every developer of this project must 
   - Class that loads currently defined Node.js projects into memory
   - Exposes methods to mutate or inspect such projects
 - [run.ts](../src/run.ts)
-  - Main entry file that is executed first where the `@ondrejlangr/bob` is called
+  - Main entry file that is executed first where the `@ondrej-langr/bob` is called
 - [TemplateFile.ts](../src/TemplateFile.ts)
   - Defines template rendering for a file
   - Can be used to define templates programaticaly (See [About types of templates](#about-types-of-templates) for more info)
@@ -167,7 +167,7 @@ Templates can be described by two types:
     - **Text** - reads file as is which allows for highest flexibility
     - **YAML** - parses yaml file contents into POJO
     - **Typescript/Javascript** - parses file contents into AST
-    - **<insert-language-name>** - @ondrejlangr/bob can practically parse and manage virtually any language as long as it can be reasonably parsed with tools like AST
+    - **<insert-language-name>** - @ondrej-langr/bob can practically parse and manage virtually any language as long as it can be reasonably parsed with tools like AST
 
 Its up to user which template serves the purpose the best.
 

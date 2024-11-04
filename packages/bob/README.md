@@ -1,6 +1,6 @@
-# @ondrejlangr/bob
+# @ondrej-langr/bob
 
-@ondrejlangr/bob is a project that allows for simpler CLI applications with focus on code generation.
+@ondrej-langr/bob is a project that allows for simpler CLI applications with focus on code generation.
 
 ## Supported engines
 
@@ -13,16 +13,16 @@ Installation works like in any other package installation
 
 - globally:
   ```bash
-  pnpm i -g @ondrejlangr/bob
+  pnpm i -g @ondrej-langr/bob
   ```
 - in existing project or workspace:
   ```bash
-  pnpm i @ondrejlangr/bob
+  pnpm i @ondrej-langr/bob
   ```
 
 ## Usage
 
-- any command - `npx @ondrejlangr/bob <command>`
+- any command - `npx @ondrej-langr/bob <command>`
 
 ## Commands
 

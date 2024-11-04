@@ -14,8 +14,8 @@ runs:
       shell: bash
       run: corepack enable pnpm
 
-    - name: Cache
-      uses: actions/cache@v4
-      with:
-        key: ${{ env.CACHE_KEY }}
-        path: ${{ env.CACHE_PATH }}
+    # - name: Cache
+    #   uses: actions/cache@v4
+    #   with:
+    #     key: ${{ env.CACHE_KEY }}
+    #     path: ${{ env.CACHE_PATH }}

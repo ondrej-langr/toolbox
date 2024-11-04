@@ -11,5 +11,8 @@ runs:
   steps:
     - name: Setup .npmrc
       shell: bash
+      env:
+        NPM_TOKEN: ${{ inputs.npmToken }}
       run: |
-        echo "//registry.npmjs.org/:_authToken=${{ inputs.token }}" >> "$HOME/.npmrc"
+        touch .npmrc
+        echo //registry.npmjs.org/:_authToken=$NPM_TOKEN >> .npmrc

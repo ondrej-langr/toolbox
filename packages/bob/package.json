@@ -15,6 +15,11 @@
   ],
   "type": "module",
   "bin": "./.bin/run-bob.js",
+  "files": [
+    "src",
+    "dist",
+    ".bin"
+  ],
   "scripts": {
     "prebuild": "rm -rf dist .temp",
     "build": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths",

@@ -1,5 +1,6 @@
 import { FileSystem } from '~/FileSystem.js';
-import { TemplateFile } from '~/TemplateFile.js';
+
+import { TemplateFile } from '../TemplateFile.js';
 
 const ENCODING: BufferEncoding = 'utf8';
 

@@ -1,11 +1,11 @@
 import ts from 'typescript';
 import yaml from 'yaml';
+import { FileSystem } from '~/FileSystem.js';
+import { Json, JsonPartial } from '~/schemas/jsonSchema.js';
 
-import { FileSystem } from './FileSystem.js';
-import { getAstFromString } from './internals/utils/getAstFromString.js';
-import { getStringFromAstNode } from './internals/utils/getStringFromAstNode.js';
-import { Json, JsonPartial } from './schemas/jsonSchema.js';
 import { MaybePromise } from './types/MaybePromise.js';
+import { getAstFromString } from './utils/getAstFromString.js';
+import { getStringFromAstNode } from './utils/getStringFromAstNode.js';
 
 export type TemplateHandler<I, O = I> = (incomming?: I) => MaybePromise<O>;
 
@@ -85,13 +85,6 @@ export class TemplateFile<
     );
 
     return await fileParser[this.type].serialize(result as any);
-  }
-
-  static define<
-    K extends keyof TemplateHandlerTypeToHandler,
-    H extends TemplateHandlerTypeToHandler[K],
-  >(type: K, handler: H) {
-    return new TemplateFile(type, handler);
   }
 
   async writeTo(resultLocation: string) {

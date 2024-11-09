@@ -3,12 +3,11 @@ import inquirer from 'inquirer';
 import path from 'node:path';
 
 import type { Json } from '../schemas/jsonSchema.js';
-import type { LayerConstructorOptions } from '../TemplateLayer.js';
-import { TemplateLayer } from '../TemplateLayer.js';
-import type { MaybeArray } from '../types/MaybeArray.js';
-import type { MaybePromise } from '../types/MaybePromise.js';
 
 import { logger } from './logger.js';
+import { LayerConstructorOptions, TemplateLayer } from './TemplateLayer.js';
+import { MaybeArray } from './types/MaybeArray.js';
+import { MaybePromise } from './types/MaybePromise.js';
 import { getProgramOptions } from './utils/getProgramOptions.js';
 
 export interface CommandOptions<

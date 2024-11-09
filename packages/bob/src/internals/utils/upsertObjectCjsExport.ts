@@ -1,7 +1,6 @@
-import ts, { Statement } from 'typescript';
+import ts from 'typescript';
 
 import { getAstFromString } from './getAstFromString.js';
-import { getStringFromAstNode } from './getStringFromAstNode.js';
 
 const isIdentifierWithContent = (node: ts.Node, text: ts.__String | string) =>
   ts.isIdentifier(node) && node.escapedText === text;

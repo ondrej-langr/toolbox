@@ -3,8 +3,8 @@ import path from 'node:path';
 
 import { Command, CommandOptions } from './internals/Command.js';
 import { logger } from './internals/logger.js';
+import { program } from './internals/program.js';
 import { getCallerFilename } from './internals/utils/getCallerFilename.js';
-import { program } from './program.js';
 
 export function defineCommand<QuestionAnswers extends InquirerQuestionAnswers>(
   options: Omit<CommandOptions<QuestionAnswers>, 'templatesRoot'> & {

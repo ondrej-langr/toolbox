@@ -1,6 +1,5 @@
 import type { z } from 'zod';
-
-import type { packageJsonSchema } from '../schemas/packageJsonSchema.js';
+import { packageJsonSchema } from '~/schemas/packageJsonSchema.js';
 
 import { getProgramVersion } from './getProgramVersion.js';
 

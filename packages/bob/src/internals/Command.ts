@@ -7,8 +7,9 @@ import type { LayerConstructorOptions } from '../TemplateLayer.js';
 import { TemplateLayer } from '../TemplateLayer.js';
 import type { MaybeArray } from '../types/MaybeArray.js';
 import type { MaybePromise } from '../types/MaybePromise.js';
-import { getProgramOptions } from '../utils/getProgramOptions.js';
-import { log } from '../utils/log.js';
+
+import { logger } from './logger.js';
+import { getProgramOptions } from './utils/getProgramOptions.js';
 
 export interface CommandOptions<
   QuestionAnswers extends InquirerQuestionAnswers,
@@ -125,7 +126,7 @@ export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
   async execute() {
     const options = getProgramOptions();
 
-    log.debug('Running command', {
+    logger.debug('Running command', {
       name: this.name,
       options: options as unknown as Json,
     });

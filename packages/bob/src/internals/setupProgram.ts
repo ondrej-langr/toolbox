@@ -1,7 +1,8 @@
 import { Command } from 'commander';
 import path from 'node:path';
-import { PACKAGE_RUNTIME_ROOT } from '~/constants/base.js';
 import { Project } from '~/Project.js';
+
+import { PACKAGE_RUNTIME_ROOT } from './constants.js';
 
 export async function setupProgram() {
   const program = new Command();

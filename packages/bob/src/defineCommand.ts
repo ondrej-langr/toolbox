@@ -1,10 +1,10 @@
 import type { Answers as InquirerQuestionAnswers } from 'inquirer';
 import path from 'node:path';
-import { Command, CommandOptions } from '~/internals/Command';
 
-import { logger } from './internals/logger';
-import { getCallerFilename } from './internals/utils/getCallerFilename';
-import { program } from './program';
+import { Command, CommandOptions } from './internals/Command.js';
+import { logger } from './internals/logger.js';
+import { getCallerFilename } from './internals/utils/getCallerFilename.js';
+import { program } from './program.js';
 
 export function defineCommand<QuestionAnswers extends InquirerQuestionAnswers>(
   options: Omit<CommandOptions<QuestionAnswers>, 'templatesRoot'> & {

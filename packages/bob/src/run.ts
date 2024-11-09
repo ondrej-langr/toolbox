@@ -4,13 +4,17 @@ import path from 'node:path';
 
 import { FileSystem } from './FileSystem.js';
 import { PACKAGE_RUNTIME_ROOT } from './internals/constants.js';
+import { logger } from './internals/logger.js';
 import { program } from './program.js';
 import type { Json } from './schemas/jsonSchema.js';
 import type { ProgramOptions } from './types/ProgramOptions.js';
 
 global.cachedProgramOptions = program.opts<ProgramOptions>();
 if (global.cachedProgramOptions.debug) {
-  log.debug('Registered program options', global.cachedProgramOptions as unknown as Json);
+  logger.debug(
+    'Registered program options',
+    global.cachedProgramOptions as unknown as Json,
+  );
 }
 
 // In the future we would like to find current project/workspace and register

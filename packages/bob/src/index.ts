@@ -1,3 +1,3 @@
-export * from './defineConfig';
-export * from './definePlugin';
-export * from './defineCommand';
+export * from './defineConfig.js';
+export * from './definePlugin.js';
+export * from './defineCommand.js';

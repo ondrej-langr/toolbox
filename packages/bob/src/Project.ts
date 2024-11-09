@@ -1,7 +1,7 @@
 import path from 'node:path';
 
-import { PACKAGE_JSON, PNPM_WORKSPACE_YAML } from './constants/base.js';
 import { FileSystem } from './FileSystem.js';
+import { PACKAGE_JSON, PNPM_WORKSPACE_YAML } from './internals/constants.js';
 import type { PackageJson } from './schemas/packageJsonSchema.js';
 import { packageJsonSchema } from './schemas/packageJsonSchema.js';
 import type { Workspace } from './Workspace.js';

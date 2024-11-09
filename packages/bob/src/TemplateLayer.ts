@@ -3,9 +3,9 @@ import type { Answers as InquirerQuestionAnswers } from 'inquirer';
 import nodeFs from 'node:fs';
 import path from 'node:path';
 
+import { createEjsTemplateFile } from './internals/utils/createEjsTemplateFile.js';
 import { TemplateFile } from './TemplateFile.js';
 import type { MaybePromise } from './types/MaybePromise.js';
-import { createEjsTemplateFile } from './utils/createEjsTemplateFile.js';
 
 const allowedTemplateExtensions = ['ejs', 'templ.ts', 'templ.js'];
 

@@ -2,12 +2,11 @@
 import { glob } from 'glob';
 import path from 'node:path';
 
-import { PACKAGE_RUNTIME_ROOT } from './constants/base.js';
-import { program } from './constants/program.js';
 import { FileSystem } from './FileSystem.js';
+import { PACKAGE_RUNTIME_ROOT } from './internals/constants.js';
+import { program } from './program.js';
 import type { Json } from './schemas/jsonSchema.js';
 import type { ProgramOptions } from './types/ProgramOptions.js';
-import { log } from './utils/log.js';
 
 global.cachedProgramOptions = program.opts<ProgramOptions>();
 if (global.cachedProgramOptions.debug) {

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { defineProjectMeta } from '~/utils/defineProjectMeta.js';
+import { defineProjectMeta } from '~/internals/utils/defineProjectMeta';
 
 export const workspaceMetadataConfigFeatures = ['eslint', 'prettier', 'testing'] as const;
 

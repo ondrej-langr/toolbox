@@ -4,8 +4,8 @@ import path from 'node:path';
 import * as prettier from 'prettier';
 import type { z } from 'zod';
 
+import { logger } from './internals/logger.js';
 import type { JsonPartial } from './schemas/jsonSchema.js';
-import { log } from './utils/log.js';
 
 /**
 Wrapper around fs-extra that batches update of files until they are committed
@@ -96,12 +96,12 @@ export class FileSystem {
 
   static existsSync(absoluteFilePath: string) {
     const exists = this.cache.has(absoluteFilePath) || fs.existsSync(absoluteFilePath);
-    log.debug(`Checking if file ${absoluteFilePath} exists: ${exists ? '✅' : '❌'}`);
+    logger.debug(`Checking if file ${absoluteFilePath} exists: ${exists ? '✅' : '❌'}`);
     return exists;
   }
 
   static writeFile(absoluteFilePath: string, value: string) {
-    log.debug(`Registering text file for write ${absoluteFilePath}`);
+    logger.debug(`Registering text file for write ${absoluteFilePath}`);
     this.cache.set(absoluteFilePath, value);
   }
 
@@ -135,7 +135,7 @@ export class FileSystem {
   static commit(): Promise<void>;
 
   static async commit(pathOrPaths?: string[] | string) {
-    log.debug('Commiting files from memory');
+    logger.debug('Commiting files from memory');
     const keys = [
       ...(Array.isArray(pathOrPaths)
         ? pathOrPaths
@@ -184,18 +184,18 @@ export class FileSystem {
 
           // Ignore initial prettierignore that does not need to be formatted
           if (path.basename(key) !== '.prettierignore') {
-            log.debug(`Formatting file ${key}`);
+            logger.debug(`Formatting file ${key}`);
             try {
               formattedValue = await prettier.format(value, {
                 ...resolvedPrettierConfig,
                 filepath: key,
               });
             } catch {
-              log.debug(`Failed to format ${key}`);
+              logger.debug(`Failed to format ${key}`);
             }
           }
 
-          log.debug(`Writing file ${key}`);
+          logger.debug(`Writing file ${key}`);
           await fs.outputFile(key, formattedValue, { encoding: 'utf8' });
 
           this.cache.delete(key);

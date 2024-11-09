@@ -2,15 +2,13 @@ import type { DistinctQuestion, Answers as InquirerQuestionAnswers } from 'inqui
 import inquirer from 'inquirer';
 import path from 'node:path';
 
-import { program } from './constants/program.js';
-import type { Json } from './schemas/jsonSchema.js';
-import type { LayerConstructorOptions } from './TemplateLayer.js';
-import { TemplateLayer } from './TemplateLayer.js';
-import type { MaybeArray } from './types/MaybeArray.js';
-import type { MaybePromise } from './types/MaybePromise.js';
-import { getCallerFilename } from './utils/getCallerFilename.js';
-import { getProgramOptions } from './utils/getProgramOptions.js';
-import { log } from './utils/log.js';
+import type { Json } from '../schemas/jsonSchema.js';
+import type { LayerConstructorOptions } from '../TemplateLayer.js';
+import { TemplateLayer } from '../TemplateLayer.js';
+import type { MaybeArray } from '../types/MaybeArray.js';
+import type { MaybePromise } from '../types/MaybePromise.js';
+import { getProgramOptions } from '../utils/getProgramOptions.js';
+import { log } from '../utils/log.js';
 
 export interface CommandOptions<
   QuestionAnswers extends InquirerQuestionAnswers,
@@ -144,47 +142,5 @@ export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
 
   toString() {
     return this.name;
-  }
-
-  static define<QuestionAnswers extends InquirerQuestionAnswers>(
-    options: Omit<CommandOptions<QuestionAnswers>, 'templatesRoot'> & {
-      description: string;
-    },
-  ) {
-    const filepath = getCallerFilename();
-    const { description, ...commandOptions } = options;
-    const filename = path.basename(filepath);
-    const commandRoot = path.dirname(filepath);
-    let commandName = path.basename(commandRoot);
-
-    if (filename !== 'command.js' && filename !== 'command.ts') {
-      throw new Error(
-        `File where Command.define is called must be named command.ts. Got ${filename}`,
-      );
-    }
-
-    if (commandName.includes('$')) {
-      commandName = commandName.replaceAll('$', path.basename(commandName));
-    }
-
-    if (commandName.includes(';')) {
-      commandName = commandName.replaceAll(':', path.basename(commandName));
-    }
-
-    const command = new Command(commandName, description, {
-      ...commandOptions,
-      templatesRoot: path.join(commandRoot, 'templates'),
-    });
-
-    log.debug(`Defined command ${commandName}`);
-
-    program
-      .command(command.name)
-      .description(command.description)
-      .action(async () => {
-        await command.execute();
-      });
-
-    return command;
   }
 }

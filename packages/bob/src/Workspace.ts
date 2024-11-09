@@ -3,8 +3,8 @@ import path from 'node:path';
 import yaml from 'yaml';
 import { z } from 'zod';
 
-import { PACKAGE_JSON, PNPM_WORKSPACE_YAML } from './constants/base.js';
 import { FileSystem } from './FileSystem.js';
+import { PACKAGE_JSON, PNPM_WORKSPACE_YAML } from './internals/constants.js';
 import { Project } from './Project.js';
 
 const workspaceYamlSchema = z.object({

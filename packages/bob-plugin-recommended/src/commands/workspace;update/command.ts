@@ -1,12 +1,11 @@
 import path from 'node:path';
+import { defineCommand } from '~/defineCommand.js';
 import { FileSystem } from '~/FileSystem.js';
 import { workspaceMetadata } from '~/metadata-types/workspaceMetadata.js';
-import { getProgramOptions } from '~/utils/getProgramOptions.js';
 
-import { Command } from '../../Command.js';
 import { Workspace } from '../../Workspace.js';
 
-export default Command.define({
+export default defineCommand({
   description: 'Update workspace',
   questions: [],
   async handler() {

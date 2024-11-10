@@ -9,10 +9,12 @@ import { Workspace } from '~/Workspace.js';
 
 import { Command } from './Command.js';
 import { Config, ConfigOptions } from './Config.js';
-import { PACKAGE_RUNTIME_ROOT } from './constants.js';
+import { BOB_FOLDER_NAME, PACKAGE_RUNTIME_ROOT } from './constants.js';
 import { Plugin } from './Plugin.js';
 
 const require = createRequire(import.meta.filename);
+
+const COMMANDS_FILE_MATCH = 'commands/*/command.js';
 
 export class Program {
   private commanderProgram: CommanderCommand;
@@ -92,40 +94,52 @@ export class Program {
   private async getCommands() {
     if (typeof this.commands === 'undefined') {
       const plugins = await this.getPlugins();
+      const project = await this.getProject();
 
-      const commandsAsPromises: Promise<Command<any>[]>[] = [];
-      for (const [pluginPackageName] of plugins) {
-        const pluginPackageSrcPathname = path.basename(
-          require.resolve(pluginPackageName),
-        );
+      const commandsPathnames = await glob(
+        [
+          // Find commands in plugins
+          ...[...plugins.entries()].map(([pluginPackageName]) => {
+            const pluginPackageSrcRoot = path.basename(
+              require.resolve(pluginPackageName),
+            );
 
-        const commandsMatch = path.join(
-          pluginPackageSrcPathname,
-          'commands',
-          '*',
-          'command.js',
-        );
-        commandsAsPromises.push(
-          glob(commandsMatch).then(async (commandsPathnames) =>
-            Promise.all(
-              commandsPathnames.map(async (commandPathname): Promise<Command<any>> => {
-                const command = await import(commandPathname);
-                const defaultExport =
-                  command && ('default' in command ? command.default : command);
-                const hasValidExport = defaultExport && defaultExport instanceof Command;
+            return path.join(pluginPackageSrcRoot, COMMANDS_FILE_MATCH);
+          }),
+          // Find commands in current project where command has been executed
+          path.join(project.getRoot(), BOB_FOLDER_NAME, COMMANDS_FILE_MATCH),
+          // Find commands in workspace if its there
+          ...(project instanceof Workspace || !project.workspace
+            ? []
+            : [
+                path.join(
+                  project.workspace.getRoot(),
+                  BOB_FOLDER_NAME,
+                  COMMANDS_FILE_MATCH,
+                ),
+              ]),
+        ],
+        {
+          absolute: true,
+        },
+      );
 
-                if (!hasValidExport) {
-                  throw new Error(
-                    `Command at ${commandPathname} has invalid default export. Please use defineCommand function. If it used there are multiple versions of @ondrej-langr/bob package`,
-                  );
-                }
+      const commandsAsPromises = commandsPathnames.map(
+        async (commandPathname): Promise<Command<any>> => {
+          const command = await import(commandPathname);
+          const defaultExport =
+            command && ('default' in command ? command.default : command);
+          const hasValidExport = defaultExport && defaultExport instanceof Command;
 
-                return command;
-              }),
-            ),
-          ),
-        );
-      }
+          if (!hasValidExport) {
+            throw new Error(
+              `Command at ${commandPathname} has invalid default export. Please use defineCommand function. If it used there are multiple versions of @ondrej-langr/bob package`,
+            );
+          }
+
+          return command;
+        },
+      );
       const resolvedCommands = await Promise.all(commandsAsPromises);
       this.commands = new Set(resolvedCommands.flatMap((commands) => commands));
     }

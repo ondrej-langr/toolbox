@@ -1,59 +1,61 @@
+import { defineCommand, FileSystem, Project, Workspace } from '@ondrej-langr/bob';
 import path from 'node:path';
-import { FileSystem } from '~/FileSystem.js';
 import { projectMetadata } from '~/metadata-types/projectMetadata.js';
-import { getProgramOptions } from '~/utils/getProgramOptions.js';
-import { log } from '~/utils/log.js';
-
-import { Command } from '../../Command.js';
-import { Project } from '../../Project.js';
-import { Workspace } from '../../Workspace.js';
 
 let closestWorkspace: Workspace | null = null;
 let closestProject: Project | null = null;
 
-export default Command.define<{
+export default defineCommand<{
   projectLocationInWorkspace?: string;
 }>({
   description: 'Update project',
-  questions: [
-    {
-      name: 'projectLocationInWorkspace',
-      type: 'list',
-      message: 'What project should be updated in current workspace?',
-      async when() {
-        const { cwd } = getProgramOptions();
-        closestWorkspace ??= await Workspace.loadNearest(cwd);
-        closestProject ??= await Project.loadNearest(cwd);
+  questions() {
+    const program = this.getProgram();
 
-        if (
-          closestWorkspace &&
-          closestProject &&
-          closestWorkspace?.getRoot() !== closestProject?.getRoot()
-        ) {
-          log.debug('valid project', {
-            work: closestWorkspace?.getRoot(),
-            proj: closestProject?.getRoot(),
-          });
-          return false;
-        }
+    return [
+      {
+        name: 'projectLocationInWorkspace',
+        type: 'list',
+        message: 'What project should be updated in current workspace?',
+        async when() {
+          const options = await program.getOptions();
+          const { cwd } = options;
 
-        return !!closestWorkspace;
+          closestWorkspace ??= await Workspace.loadNearest(cwd);
+          closestProject ??= await Project.loadNearest(cwd);
+
+          if (
+            closestWorkspace &&
+            closestProject &&
+            closestWorkspace?.getRoot() !== closestProject?.getRoot()
+          ) {
+            // log.debug('valid project', {
+            //   work: closestWorkspace?.getRoot(),
+            //   proj: closestProject?.getRoot(),
+            // });
+            return false;
+          }
+
+          return !!closestWorkspace;
+        },
+        async choices() {
+          const workspaceProjects = await closestWorkspace?.getProjects();
+
+          if (!workspaceProjects?.length) {
+            throw new Error('Workspace has no projects');
+          }
+
+          return workspaceProjects.map((project) =>
+            project.getRoot().replace(closestWorkspace!.getRoot(), ''),
+          );
+        },
       },
-      async choices() {
-        const workspaceProjects = await closestWorkspace?.getProjects();
-
-        if (!workspaceProjects?.length) {
-          throw new Error('Workspace has no projects');
-        }
-
-        return workspaceProjects.map((project) =>
-          project.getRoot().replace(closestWorkspace!.getRoot(), ''),
-        );
-      },
-    },
-  ],
+    ];
+  },
   async handler() {
-    const { cwd } = getProgramOptions();
+    const options = await this.getProgram().getOptions();
+    const { cwd } = options;
+
     if (!closestProject && !closestWorkspace) {
       throw new Error(
         `No workspace or project has been found on ${cwd} or anywhere up in the file system`,

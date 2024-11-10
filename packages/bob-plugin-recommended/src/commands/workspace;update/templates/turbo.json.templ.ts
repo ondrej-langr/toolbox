@@ -1,12 +1,12 @@
-import { turboJsonSchema } from '~/schemas/turboJsonSchema.js';
-import { TemplateFile } from '~/TemplateFile.js';
+import { defineTemplateFile } from '@ondrej-langr/bob';
+import { turboJsonSchema } from '~/turboJsonSchema.js';
 
 const mergeWithoutDuplicates = <const A extends Array<any>, const B extends Array<any>>(
   a: A,
   b: B,
 ) => [...new Set([...a, ...b])] as A & B;
 
-export default TemplateFile.define('json', (unvalid) => {
+export default defineTemplateFile('json', (unvalid) => {
   const previous = turboJsonSchema.parse(unvalid);
 
   return {

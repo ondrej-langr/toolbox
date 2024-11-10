@@ -1,15 +1,13 @@
+import { defineCommand, FileSystem, Workspace } from '@ondrej-langr/bob';
 import path from 'node:path';
-import { defineCommand } from '~/defineCommand.js';
-import { FileSystem } from '~/FileSystem.js';
 import { workspaceMetadata } from '~/metadata-types/workspaceMetadata.js';
-
-import { Workspace } from '../../Workspace.js';
 
 export default defineCommand({
   description: 'Update workspace',
   questions: [],
   async handler() {
-    const { cwd } = getProgramOptions();
+    const options = await this.getProgram().getOptions();
+    const { cwd } = options;
     const workspace = await Workspace.loadNearest(cwd);
 
     if (!workspace) {

@@ -1,19 +1,14 @@
+import { defineCommand, FileSystem, Project, Workspace } from '@ondrej-langr/bob';
+import { packageJsonSchema, projectNameSchema } from '@ondrej-langr/bob/schemas';
 import type { AsyncDynamicQuestionProperty } from 'inquirer';
 import path from 'node:path';
 import type { z } from 'zod';
-import { FileSystem } from '~/FileSystem.js';
+import { getPackageJsonDefaults } from '~/getPackageJsonDefaults.js';
 import {
   projectMetadata,
   projectMetadataConfigFeatures,
 } from '~/metadata-types/projectMetadata.js';
-import { Project } from '~/Project.js';
-import { getProgramOptions } from '~/utils/getProgramOptions.js';
 
-import { Command } from '../../Command.js';
-import type { packageJsonSchema } from '../../schemas/packageJsonSchema.js';
-import { projectNameSchema } from '../../schemas/projectNameSchema.js';
-import { getPackageJsonDefaults } from '../../utils/getPackageJsonDefaults.js';
-import { Workspace } from '../../Workspace.js';
 import projectUpdateCommand from '../project;update/command.js';
 
 import { projectPresets } from './constants.js';
@@ -21,16 +16,16 @@ import { getProjectFolderNameFromProjectName } from './getProjectFolderNameFromP
 import { presetNextRouterChoices } from './presetNextRouterChoices.js';
 
 let _forWorkspace: Workspace | null = null;
-const getWorkspace = async () => {
-  const { cwd } = getProgramOptions();
+const getWorkspace = async (cwd: string) => {
   _forWorkspace ??= await Workspace.loadNearest(cwd);
   return _forWorkspace;
 };
 
-const enabledWhenInWorkspace: AsyncDynamicQuestionProperty<boolean, any> = async () =>
-  !!(await getWorkspace());
+const enabledWhenInWorkspace: AsyncDynamicQuestionProperty<boolean, any> = async (
+  cwd: string,
+) => !!(await getWorkspace(cwd));
 
-export default Command.define<{
+export default defineCommand<{
   name: string;
   description: string;
   preset: (typeof projectPresets)[number];
@@ -39,82 +34,92 @@ export default Command.define<{
   selectedFeatures: typeof projectMetadataConfigFeatures;
 }>({
   description: 'Create project',
-  questions: [
-    {
-      name: 'name',
-      type: 'input',
-      message: 'Whats the project name?',
-      validate(input) {
-        const zodOutput = projectNameSchema.safeParse(input);
+  questions() {
+    const program = this.getProgram();
 
-        if (zodOutput.error) {
-          return zodOutput.error.format()._errors.join(', ');
-        }
+    return [
+      {
+        name: 'name',
+        type: 'input',
+        message: 'Whats the project name?',
+        validate(input) {
+          const zodOutput = projectNameSchema.safeParse(input);
 
-        return true;
+          if (zodOutput.error) {
+            return zodOutput.error.format()._errors.join(', ');
+          }
+
+          return true;
+        },
       },
-    },
-    {
-      name: 'description',
-      type: 'input',
-      message: "What's the workspace description?",
-    },
-    {
-      name: 'preset',
-      type: 'list',
-      message: 'Choose project preset',
-      choices: projectPresets,
-    },
-    {
-      name: 'presetNextRouterPreset',
-      type: 'list',
-      message: 'Select router type',
-      when: ({ preset }) => preset === 'next',
-      default: Object.values(presetNextRouterChoices.enum['app-router']),
-      choices: Object.values(presetNextRouterChoices.enum),
-    },
-    {
-      name: 'selectedFeatures',
-      type: 'checkbox',
-      message: 'Select features',
-      default: projectMetadataConfigFeatures,
-      async choices(answers) {
-        let result = [...projectMetadataConfigFeatures];
-
-        if (await getWorkspace()) {
-          // Prettier configuration is taken from workspace
-          result = result.filter((value) => value !== 'prettier');
-        }
-
-        if (answers.preset === 'next') {
-          return result;
-        }
-
-        // Disable option for testing-e2e outside of next preset
-        return result.filter((value) => value !== 'testing-e2e');
+      {
+        name: 'description',
+        type: 'input',
+        message: "What's the workspace description?",
       },
-    },
-    {
-      name: 'projectLocationInWorkspace',
-      type: 'list',
-      message: 'What will be the project location inside current workspace?',
-      when: enabledWhenInWorkspace,
-      async choices(answers) {
-        const workspaces = await (await getWorkspace())?.getProjectsPathsRaw();
-
-        return (
-          workspaces?.map((workspacePath) =>
-            path.join(
-              workspacePath.replace('/*', ''),
-              getProjectFolderNameFromProjectName(answers.name),
-            ),
-          ) ?? []
-        );
+      {
+        name: 'preset',
+        type: 'list',
+        message: 'Choose project preset',
+        choices: projectPresets,
       },
-    },
-  ],
+      {
+        name: 'presetNextRouterPreset',
+        type: 'list',
+        message: 'Select router type',
+        when: ({ preset }) => preset === 'next',
+        default: Object.values(presetNextRouterChoices.enum['app-router']),
+        choices: Object.values(presetNextRouterChoices.enum),
+      },
+      {
+        name: 'selectedFeatures',
+        type: 'checkbox',
+        message: 'Select features',
+        default: projectMetadataConfigFeatures,
+        async choices(answers) {
+          let result = [...projectMetadataConfigFeatures];
+          const options = await program.getOptions();
+
+          if (await getWorkspace(options.cwd)) {
+            // Prettier configuration is taken from workspace
+            result = result.filter((value) => value !== 'prettier');
+          }
+
+          if (answers.preset === 'next') {
+            return result;
+          }
+
+          // Disable option for testing-e2e outside of next preset
+          return result.filter((value) => value !== 'testing-e2e');
+        },
+      },
+      {
+        name: 'projectLocationInWorkspace',
+        type: 'list',
+        message: 'What will be the project location inside current workspace?',
+        when: enabledWhenInWorkspace,
+        async choices(answers) {
+          const options = await program.getOptions();
+          const workspaces = await (
+            await getWorkspace(options.cwd)
+          )?.getProjectsPathsRaw();
+
+          return (
+            workspaces?.map((workspacePath) =>
+              path.join(
+                workspacePath.replace('/*', ''),
+                getProjectFolderNameFromProjectName(answers.name),
+              ),
+            ) ?? []
+          );
+        },
+      },
+    ];
+  },
   async handler() {
-    const { cwd } = getProgramOptions();
+    const options = await this.getProgram().getOptions();
+    const { cwd } = options;
+
     const {
       projectLocationInWorkspace,
       name,
@@ -125,7 +130,7 @@ export default Command.define<{
     } = this.getAnswers();
 
     const projectPath = projectLocationInWorkspace
-      ? path.join((await getWorkspace())!.getRoot(), projectLocationInWorkspace)
+      ? path.join((await getWorkspace(cwd))!.getRoot(), projectLocationInWorkspace)
       : path.join(cwd, name.replace('@', '').replace('/', '-'));
 
     FileSystem.writeJson(path.join(projectPath, 'package.json'), {

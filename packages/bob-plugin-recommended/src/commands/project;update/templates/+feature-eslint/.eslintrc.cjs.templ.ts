@@ -1,13 +1,10 @@
+import { defineTemplateFile } from '@ondrej-langr/bob';
+import { getAstFromString, upsertObjectCjsExport } from '@ondrej-langr/bob/ast/js-ts';
 import ts from 'typescript';
-
-import { packageJsonSchema } from '../../../../schemas/packageJsonSchema.js';
-import { TemplateFile } from '../../../../TemplateFile.js';
-import { getAstFromString } from '../../../../utils/ast/getAstFromString.js';
-import { upsertObjectCjsExport } from '../../../../utils/ast/upsertObjectCjsExport.js';
 
 const { factory } = ts;
 
-export default TemplateFile.define('ts', (existing = getAstFromString('')) => {
+export default defineTemplateFile('ts', (existing = getAstFromString('')) => {
   let result = existing;
 
   result = upsertObjectCjsExport(result, (statements) => {

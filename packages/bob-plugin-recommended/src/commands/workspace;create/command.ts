@@ -1,21 +1,18 @@
+import { defineCommand, FileSystem, Workspace } from '@ondrej-langr/bob';
+import { packageJsonSchema } from '@ondrej-langr/bob/schemas';
 import path from 'node:path';
 import type { z } from 'zod';
-import { FileSystem } from '~/FileSystem.js';
+import { getPackageJsonDefaults } from '~/getPackageJsonDefaults.js';
 import {
   workspaceMetadata,
   workspaceMetadataConfigFeatures,
 } from '~/metadata-types/workspaceMetadata.js';
-import { getProgramOptions } from '~/utils/getProgramOptions.js';
-import { Workspace } from '~/Workspace.js';
 
-import { Command } from '../../Command.js';
-import type { packageJsonSchema } from '../../schemas/packageJsonSchema.js';
-import { getPackageJsonDefaults } from '../../utils/getPackageJsonDefaults.js';
 import updateWorkspaceCommand from '../workspace;update/command.js';
 
 const WORKSPACE_NAME_REGEX = /([a-z]|[1-9]|-){2,}/;
 
-export default Command.define<{
+export default defineCommand<{
   name: string;
   description: string;
   selectedFeatures: typeof workspaceMetadataConfigFeatures;
@@ -46,7 +43,8 @@ export default Command.define<{
     },
   ],
   async handler() {
-    const { cwd } = getProgramOptions();
+    const options = await this.getProgram().getOptions();
+    const { cwd } = options;
     const { name, description, selectedFeatures } = this.getAnswers();
 
     const workspacePath = name === path.basename(cwd) ? cwd : path.join(cwd, name);

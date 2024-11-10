@@ -1,8 +1,8 @@
-import { packageJsonSchema } from '~/schemas/packageJsonSchema.js';
-import { TemplateFile } from '~/TemplateFile.js';
-import { getPackageJsonDefaults } from '~/utils/getPackageJsonDefaults.js';
+import { defineTemplateFile } from '@ondrej-langr/bob';
+import { packageJsonSchema } from '@ondrej-langr/bob/schemas';
+import { getPackageJsonDefaults } from '~/getPackageJsonDefaults.js';
 
-export default TemplateFile.define('json', (existing) => {
+export default defineTemplateFile('json', (existing) => {
   const existingValidated = packageJsonSchema.parse(existing);
 
   return {

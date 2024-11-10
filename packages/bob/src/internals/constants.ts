@@ -7,5 +7,3 @@ export const PACKAGE_RUNTIME_ROOT = root;
 export const BOB_FOLDER_NAME = '.bob';
 export const PNPM_WORKSPACE_YAML = 'pnpm-workspace.yaml';
 export const PACKAGE_JSON = 'package.json';
-export const DEFAULT_NODE_VERSION = 20;
-export const DEFAULT_PNPM_VERSION = 8;

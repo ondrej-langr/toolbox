@@ -23,6 +23,10 @@
     "./schemas": {
       "import": "./dist/schemas/index.js",
       "types": "./dist/schemas/index.d.ts"
+    },
+    "./ast/js-ts": {
+      "import": "./dist/ast/js-ts/index.js",
+      "types": "./dist/ast/js-ts/index.d.ts"
     }
   },
   "bin": "./.bin/run-bob.js",

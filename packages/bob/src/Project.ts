@@ -87,8 +87,6 @@ export class Project {
       return null;
     }
 
-    console.log({ nearestPackageJson });
-
     projectPath = path.dirname(nearestPackageJson);
 
     return this.loadAt(projectPath);

@@ -1,11 +1,11 @@
 import ts from 'typescript';
 import yaml from 'yaml';
+import { getAstFromString } from '~/ast/js-ts/getAstFromString.js';
+import { getStringFromAstNode } from '~/ast/js-ts/getStringFromAstNode.js';
 import { FileSystem } from '~/FileSystem.js';
 import { Json, JsonPartial } from '~/schemas/jsonSchema.js';
 
 import { MaybePromise } from './types/MaybePromise.js';
-import { getAstFromString } from './utils/getAstFromString.js';
-import { getStringFromAstNode } from './utils/getStringFromAstNode.js';
 
 export type TemplateHandler<I, O = I> = (incomming?: I) => MaybePromise<O>;
 

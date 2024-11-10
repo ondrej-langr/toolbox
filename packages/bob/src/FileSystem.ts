@@ -100,6 +100,13 @@ export class FileSystem {
     return exists;
   }
 
+  static async exists(absoluteFilePath: string) {
+    const exists =
+      this.cache.has(absoluteFilePath) || (await fs.exists(absoluteFilePath));
+    logger.debug(`Checking if file ${absoluteFilePath} exists: ${exists ? '✅' : '❌'}`);
+    return exists;
+  }
+
   static writeFile(absoluteFilePath: string, value: string) {
     logger.debug(`Registering text file for write ${absoluteFilePath}`);
     this.cache.set(absoluteFilePath, value);

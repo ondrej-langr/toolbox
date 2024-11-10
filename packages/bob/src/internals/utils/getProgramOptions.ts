@@ -1,3 +1,3 @@
-import { ProgramOptions } from '~/ProgramOptions.js';
+import { DefaultProgramOptions } from '~/DefaultProgramOptions.js';
 
-export const getProgramOptions = (): ProgramOptions => global.cachedProgramOptions;
+export const getProgramOptions = (): DefaultProgramOptions => global.cachedProgramOptions;

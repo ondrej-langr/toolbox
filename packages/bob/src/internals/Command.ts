@@ -5,10 +5,10 @@ import path from 'node:path';
 import type { Json } from '../schemas/jsonSchema.js';
 
 import { logger } from './logger.js';
+import { Program } from './Program.js';
 import { LayerConstructorOptions, TemplateLayer } from './TemplateLayer.js';
 import { MaybeArray } from './types/MaybeArray.js';
 import { MaybePromise } from './types/MaybePromise.js';
-import { getProgramOptions } from './utils/getProgramOptions.js';
 
 export interface CommandOptions<
   QuestionAnswers extends InquirerQuestionAnswers,
@@ -33,12 +33,10 @@ export interface CommandOptions<
 
 export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
   readonly options: CommandOptions<QuestionAnswers>;
-
   readonly name: string;
-
   readonly description: string;
-
   private answers: QuestionAnswers | undefined;
+  private program: Omit<Program, 'run'>;
 
   private templateLayers: Array<{
     templatePathRelative: string;
@@ -84,6 +82,20 @@ export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
     return this;
   }
 
+  setProgram(program: Program) {
+    this.program = program;
+
+    return this;
+  }
+
+  getProgram() {
+    if (typeof this.program === 'undefined') {
+      throw new Error('Command does not belong to any program');
+    }
+
+    return this.program;
+  }
+
   bindTemplatesLayer(
     relativeTemplatesPath: string,
     options: LayerConstructorOptions<QuestionAnswers> & { renderTo: string },
@@ -123,7 +135,7 @@ export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
   }
 
   async execute() {
-    const options = getProgramOptions();
+    const options = this.getProgram().getOptions();
 
     logger.debug('Running command', {
       name: this.name,

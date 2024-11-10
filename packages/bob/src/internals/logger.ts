@@ -1,11 +1,9 @@
 import type { Json } from '~/schemas/jsonSchema.js';
 
-import { getProgramOptions } from './utils/getProgramOptions.js';
-
 const runWhenDebugEnabled =
   <T extends (...params: any[]) => any>(action: T) =>
   (...params: Parameters<T>) => {
-    if (!getProgramOptions().debug) {
+    if (!process.argv0.includes('--debug')) {
       return;
     }
 

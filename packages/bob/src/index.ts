@@ -3,7 +3,7 @@ export * from './defineConfig.js';
 export * from './definePlugin.js';
 export * from './defineTemplateFile.js';
 export * from './FileSystem.js';
-export * from './ProgramOptions.js';
+export * from './DefaultProgramOptions.js';
 export * from './Project.js';
 export * from './Workspace.js';
 

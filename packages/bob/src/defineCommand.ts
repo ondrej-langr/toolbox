@@ -3,7 +3,6 @@ import path from 'node:path';
 
 import { Command, CommandOptions } from './internals/Command.js';
 import { logger } from './internals/logger.js';
-import { program } from './internals/program.js';
 import { getCallerFilename } from './internals/utils/getCallerFilename.js';
 
 export function defineCommand<QuestionAnswers extends InquirerQuestionAnswers>(
@@ -37,13 +36,6 @@ export function defineCommand<QuestionAnswers extends InquirerQuestionAnswers>(
   });
 
   logger.debug(`Defined command ${commandName}`);
-
-  program
-    .command(command.name)
-    .description(command.description)
-    .action(async () => {
-      await command.execute();
-    });
 
   return command;
 }

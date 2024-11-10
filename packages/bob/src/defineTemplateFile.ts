@@ -1,6 +1,6 @@
 import { TemplateFile, TemplateHandlerTypeToHandler } from './internals/TemplateFile.js';
 
-export function defineTemplateFil<
+export function defineTemplateFile<
   K extends keyof TemplateHandlerTypeToHandler,
   H extends TemplateHandlerTypeToHandler[K],
 >(type: K, handler: H) {

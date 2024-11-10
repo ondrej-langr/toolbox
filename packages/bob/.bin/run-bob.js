@@ -1,2 +1,6 @@
 #!/usr/bin/env node
-import '../dist/run.js';
+import { Program } from '../dist/internals/Program.js';
+
+const program = new Program();
+
+await program.run();

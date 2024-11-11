@@ -40,9 +40,7 @@ export class FileSystem {
 
     const test = (folderName: string): string | undefined => {
       const filepath = path.join(folderName, filename);
-      const absoluteFilepath = path.isAbsolute(filepath)
-        ? filepath
-        : path.join('/', filepath);
+      const absoluteFilepath = path.isAbsolute(filepath) ? filepath : path.join('/', filepath);
       const exists = this.existsSync(absoluteFilepath);
 
       if (!exists) {
@@ -101,8 +99,7 @@ export class FileSystem {
   }
 
   static async exists(absoluteFilePath: string) {
-    const exists =
-      this.cache.has(absoluteFilePath) || (await fs.exists(absoluteFilePath));
+    const exists = this.cache.has(absoluteFilePath) || (await fs.exists(absoluteFilePath));
     logger.debug(`Checking if file ${absoluteFilePath} exists: ${exists ? '✅' : '❌'}`);
     return exists;
   }
@@ -143,18 +140,14 @@ export class FileSystem {
 
   static async commit(pathOrPaths?: string[] | string) {
     logger.debug('Commiting files from memory');
-    const keys = [
-      ...(Array.isArray(pathOrPaths)
-        ? pathOrPaths
-        : pathOrPaths
-          ? [pathOrPaths]
-          : this.cache.keys()),
-    ].sort((a, b) => {
-      const depthA = a.split(path.sep).length;
-      const depthB = b.split(path.sep).length;
+    const keys = [...(Array.isArray(pathOrPaths) ? pathOrPaths : pathOrPaths ? [pathOrPaths] : this.cache.keys())].sort(
+      (a, b) => {
+        const depthA = a.split(path.sep).length;
+        const depthB = b.split(path.sep).length;
 
-      return depthA > depthB ? 1 : depthA === depthB ? 0 : -1;
-    });
+        return depthA > depthB ? 1 : depthA === depthB ? 0 : -1;
+      },
+    );
 
     let resolvedPrettierConfig: prettier.Options | null = null;
 
@@ -164,9 +157,7 @@ export class FileSystem {
       const prettierConfigFile = FileSystem.findFile(prettierFilename, {
         cwd: path.dirname(deepestFilePath),
       });
-      const prettierFileContents = prettierConfigFile
-        ? await FileSystem.readFile(prettierConfigFile)
-        : null;
+      const prettierFileContents = prettierConfigFile ? await FileSystem.readFile(prettierConfigFile) : null;
 
       if (prettierFileContents) {
         const { filepath: prettierTemporaryFilepath } = await this.writeTempFile(

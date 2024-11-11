@@ -16,4 +16,8 @@ export const logger = {
       `\u001B[0m\u001B[34m[DEBUG]: ${message}${meta ? ` ${JSON.stringify(meta, null, 2)}` : ''}`,
     ),
   ),
+  warn: (message: string, meta?: Json) =>
+    console.log(
+      `\u001B[0m\u001B[34m[WARN]: ${message}${meta ? ` ${JSON.stringify(meta, null, 2)}` : ''}`,
+    ),
 };

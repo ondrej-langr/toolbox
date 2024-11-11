@@ -22,7 +22,7 @@ export const projectMetadataConfigFeatures = [
   'testing-e2e',
 ] as const;
 
-const projectSnapshotSchema = z.object({
+export const projectMetadataSchema = z.object({
   config: z
     .discriminatedUnion('preset', [
       presetsToMetaConfig.empty,
@@ -41,5 +41,3 @@ const projectSnapshotSchema = z.object({
       }),
     ),
 });
-
-export const projectMetadata = defineProjectMeta(projectSnapshotSchema);

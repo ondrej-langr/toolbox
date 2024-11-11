@@ -3,11 +3,11 @@
   "compilerOptions": {
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "noEmit": false,
     "paths": {
       "~/*": ["./src/*"]
     }
   },
   "include": [".eslintrc.cjs", "src/**/*", "tests/**/*", "vitest.config.ts"],
-  "exclude": ["dist", "node_modules"],
-  "references": []
+  "exclude": ["dist", "node_modules"]
 }

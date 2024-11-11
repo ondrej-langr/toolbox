@@ -6,10 +6,10 @@ import { logger } from './internals/logger.js';
 import { getCallerFilename } from './internals/utils/getCallerFilename.js';
 
 export function defineCommand<QuestionAnswers extends InquirerQuestionAnswers>(
-  options: Omit<CommandOptions<QuestionAnswers>, 'templatesRoot'> & {
+  options: Omit<CommandOptions<QuestionAnswers>, 'templatesRoot' | 'schema'> & {
     description: string;
   },
-) {
+): Command<QuestionAnswers> {
   const filepath = getCallerFilename();
   const { description, ...commandOptions } = options;
   const filename = path.basename(filepath);

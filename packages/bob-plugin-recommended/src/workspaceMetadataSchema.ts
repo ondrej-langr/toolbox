@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const workspaceMetadataConfigFeatures = ['eslint', 'prettier', 'testing'] as const;
 
-const workspaceSnapshotSchema = z.object({
+export const workspaceMetadataSchema = z.object({
   config: z.object({
     features: z.object(
       Object.fromEntries(
@@ -13,5 +13,3 @@ const workspaceSnapshotSchema = z.object({
     ),
   }),
 });
-
-export const workspaceMetadata = defineProjectMeta(workspaceSnapshotSchema);

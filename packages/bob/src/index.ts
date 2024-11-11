@@ -6,6 +6,7 @@ export * from './FileSystem.js';
 export * from './DefaultProgramOptions.js';
 export * from './Project.js';
 export * from './Workspace.js';
+export { BOB_FOLDER_NAME } from './internals/constants.js';
 
 export { type Command } from './internals/Command.js';
 export { type Config } from './internals/Config.js';

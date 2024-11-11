@@ -1,11 +1,18 @@
 import path from 'node:path';
+import { z } from 'zod';
 
 import { FileSystem } from './FileSystem.js';
-import { PACKAGE_JSON, PNPM_WORKSPACE_YAML } from './internals/constants.js';
+import {
+  BOB_FOLDER_NAME,
+  PACKAGE_JSON,
+  PNPM_WORKSPACE_YAML,
+} from './internals/constants.js';
+import { logger } from './internals/logger.js';
 import type { PackageJson } from './schemas/packageJsonSchema.js';
 import { packageJsonSchema } from './schemas/packageJsonSchema.js';
 import type { Workspace } from './Workspace.js';
 
+const METADATA_PATH_IN_PROJECT = path.join(BOB_FOLDER_NAME, 'metadata.json');
 const recursiveFindNonWorkspacePackageJson = (startAt: string): string | null => {
   const closest = FileSystem.findFile(PACKAGE_JSON, {
     cwd: startAt,
@@ -90,6 +97,55 @@ export class Project {
     projectPath = path.dirname(nearestPackageJson);
 
     return this.loadAt(projectPath);
+  }
+
+  private async readMetadataFile() {
+    const metadataJsonFilepath = path.join(this.getRoot(), METADATA_PATH_IN_PROJECT);
+    let metadataFromFile: Record<string, Record<string, any>> = {};
+
+    if (FileSystem.existsSync(metadataJsonFilepath)) {
+      metadataFromFile = await FileSystem.readJson(metadataJsonFilepath, {
+        // Make sure that its an object
+        schema: z.record(z.string(), z.record(z.any())),
+      })
+        .catch((error) => {
+          logger.warn(`Failed to read or parse the ${METADATA_PATH_IN_PROJECT}`, {
+            errorMessage: error instanceof Error ? error.message : error,
+            metadataJsonFilepath,
+          });
+
+          return {};
+        })
+        .then((result) => result ?? {});
+    }
+
+    return metadataFromFile;
+  }
+
+  getMetadataNamespace<TMetadataSchema extends z.ZodObject<any>>(
+    namespace: string,
+    schema: TMetadataSchema,
+  ) {
+    return {
+      /** Gets metadata for current project, validated according to @{link schema} */
+      get: async (): Promise<z.output<TMetadataSchema>> => {
+        const metadataFromFile = await this.readMetadataFile();
+        const metadataUnderNamespace = metadataFromFile[namespace] ?? {};
+
+        return await schema.parseAsync(metadataUnderNamespace);
+      },
+      /** Records new value for metadata. Not validated when saving to file */
+      set: async (newValue: z.infer<TMetadataSchema>) => {
+        const metadataFromFile = await this.readMetadataFile();
+
+        metadataFromFile[namespace] = newValue;
+
+        FileSystem.writeJson(
+          path.join(this.getRoot(), METADATA_PATH_IN_PROJECT),
+          metadataFromFile,
+        );
+      },
+    };
   }
 
   /**

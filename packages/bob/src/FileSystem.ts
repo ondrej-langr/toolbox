@@ -67,7 +67,7 @@ export class FileSystem {
     return null;
   }
 
-  static async readJson<S extends z.ZodObject<any>>(
+  static async readJson<S extends z.ZodObject<any> | z.ZodRecord>(
     absoluteFilePath: string,
     options: {
       reviver?: (key: string, value: any) => any;

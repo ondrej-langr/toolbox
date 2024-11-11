@@ -1,9 +1,7 @@
 import { defineCommand, FileSystem, Project, Workspace } from '@ondrej-langr/bob';
 import path from 'node:path';
-import { projectMetadata } from '~/metadata-types/projectMetadata.js';
-
-let closestWorkspace: Workspace | null = null;
-let closestProject: Project | null = null;
+import { PROJECT_METADATA_PROJECT_NAMESPACE } from '~/constants.js';
+import { projectMetadataSchema } from '~/projectMetadataSchema.js';
 
 export default defineCommand<{
   projectLocationInWorkspace?: string;
@@ -18,71 +16,73 @@ export default defineCommand<{
         type: 'list',
         message: 'What project should be updated in current workspace?',
         async when() {
-          const options = await program.getOptions();
-          const { cwd } = options;
+          const closestProjectOrWorkspace = await program.getProject();
 
-          closestWorkspace ??= await Workspace.loadNearest(cwd);
-          closestProject ??= await Project.loadNearest(cwd);
-
-          if (
-            closestWorkspace &&
-            closestProject &&
-            closestWorkspace?.getRoot() !== closestProject?.getRoot()
-          ) {
-            // log.debug('valid project', {
-            //   work: closestWorkspace?.getRoot(),
-            //   proj: closestProject?.getRoot(),
-            // });
-            return false;
-          }
-
-          return !!closestWorkspace;
+          return (
+            closestProjectOrWorkspace && closestProjectOrWorkspace instanceof Workspace
+          );
         },
         async choices() {
-          const workspaceProjects = await closestWorkspace?.getProjects();
+          const workspace = await program.getProject();
+          if (!workspace || workspace instanceof Workspace === false) {
+            throw new Error(
+              'Cannot show choices when project is not workspace. This is a bug of @ondrej-langr/bob',
+            );
+          }
+
+          const workspaceProjects = await workspace.getProjects();
 
           if (!workspaceProjects?.length) {
             throw new Error('Workspace has no projects');
           }
 
           return workspaceProjects.map((project) =>
-            project.getRoot().replace(closestWorkspace!.getRoot(), ''),
+            project.getRoot().replace(workspace.getRoot(), ''),
           );
         },
       },
     ];
   },
   async handler() {
-    const options = await this.getProgram().getOptions();
+    const program = this.getProgram();
+    const options = await program.getOptions();
+    const closestProjectOrWorkspace = await program.getProject();
     const { cwd } = options;
 
-    if (!closestProject && !closestWorkspace) {
+    if (!closestProjectOrWorkspace) {
       throw new Error(
         `No workspace or project has been found on ${cwd} or anywhere up in the file system`,
       );
     }
 
     const answers = this.getAnswers();
-    const renderTo = closestProject
-      ? closestProject.getRoot()
-      : path.join(closestWorkspace!.getRoot(), answers.projectLocationInWorkspace!);
+    const renderTo = answers.projectLocationInWorkspace
+      ? path.join(closestProjectOrWorkspace.getRoot(), answers.projectLocationInWorkspace)
+      : closestProjectOrWorkspace.getRoot();
 
-    const project = closestProject || (await Project.loadAt(renderTo));
-    const projectMeta = await projectMetadata.getForProject(project);
-    const projectConfig = projectMeta.getConfig();
+    const project = answers.projectLocationInWorkspace
+      ? await Project.loadAt(renderTo)
+      : (closestProjectOrWorkspace as Project);
 
-    const presetTemplateFolderName = `+preset-${projectConfig.preset}`;
+    const projectMeta = await project
+      .getMetadataNamespace(PROJECT_METADATA_PROJECT_NAMESPACE, projectMetadataSchema)
+      .get();
+
+    const presetTemplateFolderName = `+preset-${projectMeta.config.preset}`;
 
     this.bindTemplatesLayer('/', { renderTo });
     this.bindTemplatesLayer(presetTemplateFolderName, { renderTo });
 
-    if (projectConfig.preset === 'next' && projectConfig.features['testing-e2e']) {
+    if (
+      projectMeta.config.preset === 'next' &&
+      projectMeta.config.features['testing-e2e']
+    ) {
       this.bindTemplatesLayer(`${presetTemplateFolderName}/+feature-testing-e2e`, {
         renderTo,
       });
     }
 
-    for (const [featureName, enabled] of Object.entries(projectConfig.features)) {
+    for (const [featureName, enabled] of Object.entries(projectMeta.config.features)) {
       if (!enabled) {
         continue;
       }

@@ -1,13 +1,20 @@
-import { defineCommand, FileSystem, Project, Workspace } from '@ondrej-langr/bob';
+import {
+  BOB_FOLDER_NAME,
+  defineCommand,
+  FileSystem,
+  Project,
+  Workspace,
+} from '@ondrej-langr/bob';
 import { packageJsonSchema, projectNameSchema } from '@ondrej-langr/bob/schemas';
 import type { AsyncDynamicQuestionProperty } from 'inquirer';
 import path from 'node:path';
-import type { z } from 'zod';
+import { z } from 'zod';
+import { PROJECT_METADATA_PROJECT_NAMESPACE } from '~/constants.js';
 import { getPackageJsonDefaults } from '~/getPackageJsonDefaults.js';
 import {
-  projectMetadata,
   projectMetadataConfigFeatures,
-} from '~/metadata-types/projectMetadata.js';
+  projectMetadataSchema,
+} from '~/projectMetadataSchema.js';
 
 import projectUpdateCommand from '../project;update/command.js';
 
@@ -117,7 +124,8 @@ export default defineCommand<{
     ];
   },
   async handler() {
-    const options = await this.getProgram().getOptions();
+    const program = this.getProgram();
+    const options = await program.getOptions();
     const { cwd } = options;
 
     const {
@@ -145,21 +153,21 @@ export default defineCommand<{
       projectMetadataConfigFeatures.map((key) => [key, selectedFeatures.includes(key)]),
     ) as { [key in (typeof projectMetadataConfigFeatures)[number]]: boolean };
 
-    projectMetadata.writeForProject(newProject, {
-      config:
-        preset === 'next'
-          ? {
-              preset,
-              routerPreset: presetNextRouterPreset!,
-              features,
-            }
-          : {
-              preset,
-              features,
-            },
-    });
-
-    getProgramOptions().cwd = projectPath;
+    await newProject
+      .getMetadataNamespace(PROJECT_METADATA_PROJECT_NAMESPACE, projectMetadataSchema)
+      .set({
+        config:
+          preset === 'next'
+            ? {
+                preset,
+                routerPreset: presetNextRouterPreset!,
+                features,
+              }
+            : {
+                preset,
+                features,
+              },
+      });
 
     // Create initial files on create
     this.bindTemplatesLayer(`+preset-${preset}`, { renderTo: projectPath });
@@ -169,6 +177,8 @@ export default defineCommand<{
       });
     }
 
+    // Prepare cwd for project:update command
+    await program.setCwd(projectPath);
     await projectUpdateCommand.execute();
   },
 });

@@ -20,7 +20,6 @@ export class Program {
   private commanderProgram: CommanderCommand;
   private plugins: Map<string, Plugin>;
   private commands: Set<Command<any>>;
-  private projectOrWorkspace: Project | Workspace;
 
   private async getCommanderProgram() {
     if (typeof this.commanderProgram === 'undefined') {
@@ -46,37 +45,44 @@ export class Program {
     return this.commanderProgram;
   }
 
-  /** Gets project */
+  /** Gets project for which current command has been executed */
   async getProject() {
     const program = await this.getCommanderProgram();
     const { cwd } = program.opts<DefaultProgramOptions>();
+    let projectOrWorkspace: Project | Workspace | null = null;
 
     try {
-      this.projectOrWorkspace = await Workspace.loadAt(cwd);
+      projectOrWorkspace = await Workspace.loadAt(cwd);
     } catch {
-      this.projectOrWorkspace = await Project.loadAt(cwd);
+      projectOrWorkspace = await Project.loadAt(cwd).catch(() => null);
     }
 
-    return this.projectOrWorkspace;
+    return projectOrWorkspace;
   }
 
   private async getPlugins() {
     if (typeof this.plugins === 'undefined') {
       const project = await this.getProject();
-      const projectBobConfig = await Config.loadAt(project.getRoot());
       const totalConfigPluginsOptions: ConfigOptions['plugins'] = [];
 
-      if (projectBobConfig) {
-        totalConfigPluginsOptions.push(...(projectBobConfig.getOptions().plugins ?? []));
-      }
+      if (project) {
+        const projectBobConfig = await Config.loadAt(project.getRoot());
 
-      if (project.workspace) {
-        const workspaceBobConfig = await Config.loadAt(project.workspace.getRoot());
+        if (projectBobConfig) {
+          totalConfigPluginsOptions.push(
+            ...(projectBobConfig.getOptions().plugins ?? []),
+          );
+        }
 
-        totalConfigPluginsOptions.push(
-          ...(workspaceBobConfig?.getOptions().plugins ?? []),
-        );
+        if (project.workspace) {
+          const workspaceBobConfig = await Config.loadAt(project.workspace.getRoot());
+
+          totalConfigPluginsOptions.push(
+            ...(workspaceBobConfig?.getOptions().plugins ?? []),
+          );
+        }
       }
+      // TODO: allow user to define plugins with cli arguments
 
       const resolvedPlugins = await Promise.all(
         totalConfigPluginsOptions.map(
@@ -96,33 +102,32 @@ export class Program {
       const plugins = await this.getPlugins();
       const project = await this.getProject();
 
-      const commandsPathnames = await glob(
-        [
-          // Find commands in plugins
-          ...[...plugins.entries()].map(([pluginPackageName]) => {
-            const pluginPackageSrcRoot = path.basename(
-              require.resolve(pluginPackageName),
-            );
+      const commandsGlobMatches: string[] = [
+        // Find commands in plugins
+        ...[...plugins.entries()].map(([pluginPackageName]) => {
+          const pluginPackageSrcRoot = path.basename(require.resolve(pluginPackageName));
 
-            return path.join(pluginPackageSrcRoot, COMMANDS_FILE_MATCH);
-          }),
-          // Find commands in current project where command has been executed
+          return path.join(pluginPackageSrcRoot, COMMANDS_FILE_MATCH);
+        }),
+      ];
+
+      if (project) {
+        // Find commands in current project where command has been executed
+        commandsGlobMatches.push(
           path.join(project.getRoot(), BOB_FOLDER_NAME, COMMANDS_FILE_MATCH),
-          // Find commands in workspace if its there
-          ...(project instanceof Workspace || !project.workspace
-            ? []
-            : [
-                path.join(
-                  project.workspace.getRoot(),
-                  BOB_FOLDER_NAME,
-                  COMMANDS_FILE_MATCH,
-                ),
-              ]),
-        ],
-        {
-          absolute: true,
-        },
-      );
+        );
+
+        // Find commands in workspace if its there
+        if (project instanceof Workspace === false && project.workspace) {
+          commandsGlobMatches.push(
+            path.join(project.workspace.getRoot(), BOB_FOLDER_NAME, COMMANDS_FILE_MATCH),
+          );
+        }
+      }
+
+      const commandsPathnames = await glob(commandsGlobMatches, {
+        absolute: true,
+      });
 
       const commandsAsPromises = commandsPathnames.map(
         async (commandPathname): Promise<Command<any>> => {
@@ -165,6 +170,14 @@ export class Program {
     const commanderProgram = await this.getCommanderProgram();
 
     return commanderProgram.opts<DefaultProgramOptions>();
+  }
+
+  async setCwd(newValue: string) {
+    const commanderProgram = await this.getCommanderProgram();
+
+    commanderProgram.setOptionValue('cwd', newValue);
+
+    return this;
   }
 
   async getVersion() {

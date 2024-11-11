@@ -2,11 +2,12 @@ import { defineCommand, FileSystem, Workspace } from '@ondrej-langr/bob';
 import { packageJsonSchema } from '@ondrej-langr/bob/schemas';
 import path from 'node:path';
 import type { z } from 'zod';
+import { PROJECT_METADATA_WORKSPACE_NAMESPACE } from '~/constants.js';
 import { getPackageJsonDefaults } from '~/getPackageJsonDefaults.js';
 import {
-  workspaceMetadata,
   workspaceMetadataConfigFeatures,
-} from '~/metadata-types/workspaceMetadata.js';
+  workspaceMetadataSchema,
+} from '~/workspaceMetadataSchema.js';
 
 import updateWorkspaceCommand from '../workspace;update/command.js';
 
@@ -43,7 +44,8 @@ export default defineCommand<{
     },
   ],
   async handler() {
-    const options = await this.getProgram().getOptions();
+    const program = this.getProgram();
+    const options = await program.getOptions();
     const { cwd } = options;
     const { name, description, selectedFeatures } = this.getAnswers();
 
@@ -56,21 +58,22 @@ export default defineCommand<{
     } satisfies z.input<typeof packageJsonSchema>);
     FileSystem.writeFile(path.join(workspacePath, 'pnpm-workspace.yaml'), 'packages:');
 
-    getProgramOptions().cwd = workspacePath;
-
     const newProject = await Workspace.loadAt(workspacePath);
+    await newProject
+      .getMetadataNamespace(PROJECT_METADATA_WORKSPACE_NAMESPACE, workspaceMetadataSchema)
+      .set({
+        config: {
+          features: Object.fromEntries(
+            workspaceMetadataConfigFeatures.map((key) => [
+              key,
+              selectedFeatures.includes(key),
+            ]),
+          ) as { [key in (typeof workspaceMetadataConfigFeatures)[number]]: boolean },
+        },
+      });
 
-    workspaceMetadata.writeForProject(newProject, {
-      config: {
-        features: Object.fromEntries(
-          workspaceMetadataConfigFeatures.map((key) => [
-            key,
-            selectedFeatures.includes(key),
-          ]),
-        ) as { [key in (typeof workspaceMetadataConfigFeatures)[number]]: boolean },
-      },
-    });
-
+    // Prepare cwd for update workspace command
+    await program.setCwd(workspacePath);
     await updateWorkspaceCommand.execute();
   },
 });

@@ -19,6 +19,13 @@
     "dist",
     ".bin"
   ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
     "prebuild": "rm -rf dist .temp tsconfig.tsbuildinfo tsconfig.typecheck.tsbuildinfo",
     "build": "pnpm build:transpile && pnpm build:types",

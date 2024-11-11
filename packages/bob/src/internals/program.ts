@@ -2,6 +2,7 @@ import { Command as CommanderCommand } from 'commander';
 import { glob } from 'glob';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { DefaultProgramOptions } from '~/DefaultProgramOptions.js';
 import { FileSystem } from '~/FileSystem.js';
 import { Project } from '~/Project.js';
@@ -9,8 +10,8 @@ import { Workspace } from '~/Workspace.js';
 
 import { Command } from './Command.js';
 import { Config, ConfigOptions } from './Config.js';
-import { BOB_FOLDER_NAME, PACKAGE_RUNTIME_ROOT } from './constants.js';
 import { Plugin } from './Plugin.js';
+import { BOB_FOLDER_NAME, PACKAGE_RUNTIME_ROOT } from './constants.js';
 
 const require = createRequire(import.meta.filename);
 
@@ -33,10 +34,7 @@ export class Program {
         .option(
           '-c, --cwd <value>',
           'Define cwd for commands, defaults to cwd that this cli application is executed from',
-          (passedValue) =>
-            path.isAbsolute(passedValue)
-              ? passedValue
-              : path.join(process.cwd(), passedValue),
+          (passedValue) => (path.isAbsolute(passedValue) ? passedValue : path.join(process.cwd(), passedValue)),
           process.cwd(),
         )
         .option('-d, --debug', 'If true it enables logging debug messages', false);
@@ -69,25 +67,20 @@ export class Program {
         const projectBobConfig = await Config.loadAt(project.getRoot());
 
         if (projectBobConfig) {
-          totalConfigPluginsOptions.push(
-            ...(projectBobConfig.getOptions().plugins ?? []),
-          );
+          totalConfigPluginsOptions.push(...(projectBobConfig.getOptions().plugins ?? []));
         }
 
         if (project.workspace) {
           const workspaceBobConfig = await Config.loadAt(project.workspace.getRoot());
 
-          totalConfigPluginsOptions.push(
-            ...(workspaceBobConfig?.getOptions().plugins ?? []),
-          );
+          totalConfigPluginsOptions.push(...(workspaceBobConfig?.getOptions().plugins ?? []));
         }
       }
       // TODO: allow user to define plugins with cli arguments
 
       const resolvedPlugins = await Promise.all(
         totalConfigPluginsOptions.map(
-          async (pluginPackageName) =>
-            [pluginPackageName, await Plugin.loadAt(pluginPackageName)] as const,
+          async (pluginPackageName) => [pluginPackageName, await Plugin.loadAt(pluginPackageName)] as const,
         ),
       );
 
@@ -105,7 +98,7 @@ export class Program {
       const commandsGlobMatches: string[] = [
         // Find commands in plugins
         ...[...plugins.entries()].map(([pluginPackageName]) => {
-          const pluginPackageSrcRoot = path.basename(require.resolve(pluginPackageName));
+          const pluginPackageSrcRoot = path.dirname(fileURLToPath(import.meta.resolve(pluginPackageName)));
 
           return path.join(pluginPackageSrcRoot, COMMANDS_FILE_MATCH);
         }),
@@ -113,15 +106,11 @@ export class Program {
 
       if (project) {
         // Find commands in current project where command has been executed
-        commandsGlobMatches.push(
-          path.join(project.getRoot(), BOB_FOLDER_NAME, COMMANDS_FILE_MATCH),
-        );
+        commandsGlobMatches.push(path.join(project.getRoot(), BOB_FOLDER_NAME, COMMANDS_FILE_MATCH));
 
         // Find commands in workspace if its there
         if (project instanceof Workspace === false && project.workspace) {
-          commandsGlobMatches.push(
-            path.join(project.workspace.getRoot(), BOB_FOLDER_NAME, COMMANDS_FILE_MATCH),
-          );
+          commandsGlobMatches.push(path.join(project.workspace.getRoot(), BOB_FOLDER_NAME, COMMANDS_FILE_MATCH));
         }
       }
 
@@ -129,22 +118,19 @@ export class Program {
         absolute: true,
       });
 
-      const commandsAsPromises = commandsPathnames.map(
-        async (commandPathname): Promise<Command<any>> => {
-          const command = await import(commandPathname);
-          const defaultExport =
-            command && ('default' in command ? command.default : command);
-          const hasValidExport = defaultExport && defaultExport instanceof Command;
+      const commandsAsPromises = commandsPathnames.map(async (commandPathname): Promise<Command<any>> => {
+        const command = await import(commandPathname);
+        const defaultExport = command && ('default' in command ? command.default : command);
+        const hasValidExport = defaultExport && defaultExport instanceof Command;
 
-          if (!hasValidExport) {
-            throw new Error(
-              `Command at ${commandPathname} has invalid default export. Please use defineCommand function. If it used there are multiple versions of @ondrej-langr/bob package`,
-            );
-          }
+        if (!hasValidExport) {
+          throw new Error(
+            `Command at ${commandPathname} has invalid default export. Please use defineCommand function. If it used there are multiple versions of @ondrej-langr/bob package`,
+          );
+        }
 
-          return command;
-        },
-      );
+        return defaultExport;
+      });
       const resolvedCommands = await Promise.all(commandsAsPromises);
       this.commands = new Set(resolvedCommands.flatMap((commands) => commands));
     }

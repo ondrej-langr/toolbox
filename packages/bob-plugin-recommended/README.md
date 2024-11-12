@@ -1,6 +1,6 @@
-# @ondrej-langr/bob
+# @ondrej-langr/bob-plugin-recommended
 
-@ondrej-langr/bob is a project that allows for simpler CLI applications with focus on code generation.
+Starting plugin for any bob project or workspace. Includes every template and command that user or business can benefit from greatly.
 
 ## Supported engines
 
@@ -13,31 +13,23 @@ Installation works like in any other package installation
 
 - globally:
   ```bash
-  pnpm i -g @ondrej-langr/bob
+  pnpm i -g @ondrej-langr/bob-plugin-recommended
   ```
 - in existing project or workspace:
   ```bash
-  pnpm i @ondrej-langr/bob
+  pnpm i @ondrej-langr/bob-plugin-recommended
   ```
 
 ## Usage
 
-- any command - `npx @ondrej-langr/bob <command>`
+This is a @ondrej-langr/bob plugin. Please follow plugin documentation here [../bob/docs/plugins.md]
 
-## Commands
+### Commands
 
-Bob already includes working commands with predefined templates.
-
-- `help` - prints help of the program
 - `workspace:create` - creates workspace, throws if command is executed in workspace
 - `workspace:update` - updates workspace with active settings with latest templates
 - `project:create` - creates new project in current workspace or in current working directory
 - `project:update` - updates project with active settings with latest templates
-
-### Global arguments
-
-- `--cwd` - specifies in which directory should program work, if not defined then its current working directory as default
-- `--debug` - if defined enables debug messages
 
 ## Contribution
 

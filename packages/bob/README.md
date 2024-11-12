@@ -24,6 +24,10 @@ Installation works like in any other package installation
 
 TBD
 
+### Using Plugins
+
+TBD
+
 ### Default Global Arguments
 
 Default global arguments are accessible in every command

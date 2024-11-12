@@ -1,18 +1,26 @@
-import type { DistinctQuestion, Answers as InquirerQuestionAnswers } from 'inquirer';
+import type {
+  DistinctQuestion,
+  Answers as InquirerQuestionAnswers,
+} from 'inquirer';
 import inquirer from 'inquirer';
 import path from 'node:path';
 
 import type { Json } from '../schemas/jsonSchema.js';
 
 import { logger } from './logger.js';
-import { Program } from './Program.js';
-import { LayerConstructorOptions, TemplateLayer } from './TemplateLayer.js';
-import { MaybeArray } from './types/MaybeArray.js';
-import { MaybePromise } from './types/MaybePromise.js';
+import type { Program } from './Program.js';
+import {
+  type LayerConstructorOptions,
+  TemplateLayer,
+} from './TemplateLayer.js';
+import type { MaybeArray } from './types/MaybeArray.js';
+import type { MaybePromise } from './types/MaybePromise.js';
 
 export interface CommandOptions<
   QuestionAnswers extends InquirerQuestionAnswers,
-  Question = DistinctQuestion<QuestionAnswers> & { name: keyof QuestionAnswers },
+  Question = DistinctQuestion<QuestionAnswers> & {
+    name: keyof QuestionAnswers;
+  },
 > {
   templatesRoot?: string | undefined;
 
@@ -21,17 +29,25 @@ export interface CommandOptions<
    */
   questions:
     | Array<Question>
-    | ((this: Command<QuestionAnswers>) => MaybePromise<Array<Question>>);
+    | ((
+        this: Command<QuestionAnswers>,
+      ) => MaybePromise<Array<Question>>);
 
   /**
    * Runs before current layer is executed
    */
   handler?: // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-  | ((this: Command<QuestionAnswers>) => MaybePromise<MaybeArray<Command<any>> | void>)
+  | ((
+        this: Command<QuestionAnswers>,
+      ) => MaybePromise<MaybeArray<
+        Command<any>
+      > | void>)
     | undefined;
 }
 
-export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
+export class Command<
+  QuestionAnswers extends InquirerQuestionAnswers,
+> {
   readonly options: CommandOptions<QuestionAnswers>;
   readonly name: string;
   readonly description: string;
@@ -65,19 +81,26 @@ export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
     return this.answers;
   }
 
-  private async askQuestions(initialAnswers?: Partial<QuestionAnswers>) {
+  private async askQuestions(
+    initialAnswers?: Partial<QuestionAnswers>,
+  ) {
     if (!this.options.questions) {
       return this;
     }
 
-    const resolvedQuestions = Array.isArray(this.options.questions)
+    const resolvedQuestions = Array.isArray(
+      this.options.questions,
+    )
       ? this.options.questions
-      : await Promise.resolve(this.options.questions.apply(this));
+      : await Promise.resolve(
+          this.options.questions.apply(this),
+        );
 
-    this.answers = await inquirer.prompt<QuestionAnswers>(
-      resolvedQuestions,
-      initialAnswers,
-    );
+    this.answers =
+      await inquirer.prompt<QuestionAnswers>(
+        resolvedQuestions,
+        initialAnswers,
+      );
 
     return this;
   }
@@ -90,7 +113,9 @@ export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
 
   getProgram() {
     if (typeof this.program === 'undefined') {
-      throw new Error('Command does not belong to any program');
+      throw new Error(
+        'Command does not belong to any program',
+      );
     }
 
     return this.program;
@@ -98,10 +123,17 @@ export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
 
   bindTemplatesLayer(
     relativeTemplatesPath: string,
-    options: LayerConstructorOptions<QuestionAnswers> & { renderTo: string },
+    options: LayerConstructorOptions<QuestionAnswers> & {
+      renderTo: string;
+    },
   ) {
-    if (path.isAbsolute(relativeTemplatesPath) && relativeTemplatesPath !== '/') {
-      throw new Error(`Templates layer path "${relativeTemplatesPath}" must be relative`);
+    if (
+      path.isAbsolute(relativeTemplatesPath) &&
+      relativeTemplatesPath !== '/'
+    ) {
+      throw new Error(
+        `Templates layer path "${relativeTemplatesPath}" must be relative`,
+      );
     }
 
     if (!this.options.templatesRoot) {
@@ -118,7 +150,9 @@ export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
       layer: new TemplateLayer(
         path.join(
           this.options.templatesRoot,
-          relativeTemplatesPath === '/' ? '' : relativeTemplatesPath,
+          relativeTemplatesPath === '/'
+            ? ''
+            : relativeTemplatesPath,
         ),
         layerOptions,
       ),
@@ -128,14 +162,19 @@ export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
   }
 
   async renderTemplateLayers() {
-    for (const { layer, renderTo } of this.templateLayers) {
+    for (const { layer, renderTo } of this
+      .templateLayers) {
       // eslint-disable-next-line no-await-in-loop -- intended
-      await layer.renderTemplates(renderTo, this.answers);
+      await layer.renderTemplates(
+        renderTo,
+        this.answers,
+      );
     }
   }
 
   async execute() {
-    const options = this.getProgram().getOptions();
+    const options =
+      this.getProgram().getOptions();
 
     logger.debug('Running command', {
       name: this.name,
@@ -144,7 +183,9 @@ export class Command<QuestionAnswers extends InquirerQuestionAnswers> {
 
     await this.askQuestions();
 
-    await Promise.resolve(this.options?.handler?.apply(this));
+    await Promise.resolve(
+      this.options?.handler?.apply(this),
+    );
     await this.renderTemplateLayers();
   }
 

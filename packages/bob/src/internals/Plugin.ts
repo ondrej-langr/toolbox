@@ -12,8 +12,14 @@ export class Plugin {
 
   static async loadAt(packageName: string) {
     const plugin = await import(packageName);
-    const defaultExport = plugin && ('default' in plugin ? plugin.default : plugin);
-    const hasValidExport = defaultExport && defaultExport instanceof Plugin;
+    const defaultExport =
+      plugin &&
+      ('default' in plugin
+        ? plugin.default
+        : plugin);
+    const hasValidExport =
+      defaultExport &&
+      defaultExport instanceof Plugin;
 
     if (!hasValidExport) {
       throw new Error(

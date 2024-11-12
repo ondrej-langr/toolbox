@@ -1,33 +1,54 @@
 import { defineTemplateFile } from '@ondrej-langr/bob';
-import { getAstFromString, upsertObjectCjsExport } from '@ondrej-langr/bob/ast/js-ts';
+import {
+  getAstFromString,
+  upsertObjectCjsExport,
+} from '@ondrej-langr/bob/ast/js-ts';
 import ts from 'typescript';
 
 const { factory } = ts;
 
-export default defineTemplateFile('ts', (existing = getAstFromString('')) => {
-  let result = existing;
+export default defineTemplateFile(
+  'ts',
+  (existing = getAstFromString('')) => {
+    let result = existing;
 
-  result = upsertObjectCjsExport(result, (statements) => {
-    const identifierNameToIndex = new Map(
-      statements
-        .filter((statement) => ts.isPropertyAssignment(statement))
-        .map((statement) => [statement.name.getText(), ''] as const),
+    result = upsertObjectCjsExport(
+      result,
+      (statements) => {
+        const identifierNameToIndex = new Map(
+          statements
+            .filter((statement) =>
+              ts.isPropertyAssignment(statement),
+            )
+            .map(
+              (statement) =>
+                [
+                  statement.name.getText(),
+                  '',
+                ] as const,
+            ),
+        );
+
+        console.log();
+
+        return [...statements];
+      },
     );
 
-    console.log();
-
-    return [...statements];
-  });
-
-  return result;
-});
+    return result;
+  },
+);
 
 factory.createObjectLiteralExpression(
   [
     factory.createPropertyAssignment(
       factory.createIdentifier('extends'),
       factory.createArrayLiteralExpression(
-        [factory.createStringLiteral('@apitree.cz')],
+        [
+          factory.createStringLiteral(
+            '@apitree.cz',
+          ),
+        ],
         false,
       ),
     ),
@@ -37,10 +58,14 @@ factory.createObjectLiteralExpression(
         [
           factory.createPropertyAssignment(
             factory.createIdentifier('project'),
-            factory.createStringLiteral('tsconfig.json'),
+            factory.createStringLiteral(
+              'tsconfig.json',
+            ),
           ),
           factory.createPropertyAssignment(
-            factory.createIdentifier('tsconfigRootDir'),
+            factory.createIdentifier(
+              'tsconfigRootDir',
+            ),
             factory.createIdentifier('__dirname'),
           ),
         ],
@@ -61,11 +86,21 @@ factory.createObjectLiteralExpression(
                 factory.createIdentifier('files'),
                 factory.createArrayLiteralExpression(
                   [
-                    factory.createStringLiteral('**/*.e2e.ts'),
-                    factory.createStringLiteral('**/*.e2e.tsx'),
-                    factory.createStringLiteral('**/*.test.ts'),
-                    factory.createStringLiteral('**/*.test.tsx'),
-                    factory.createStringLiteral('playwright.config.ts'),
+                    factory.createStringLiteral(
+                      '**/*.e2e.ts',
+                    ),
+                    factory.createStringLiteral(
+                      '**/*.e2e.tsx',
+                    ),
+                    factory.createStringLiteral(
+                      '**/*.test.ts',
+                    ),
+                    factory.createStringLiteral(
+                      '**/*.test.tsx',
+                    ),
+                    factory.createStringLiteral(
+                      'playwright.config.ts',
+                    ),
                   ],
                   true,
                 ),
@@ -75,12 +110,20 @@ factory.createObjectLiteralExpression(
                 factory.createObjectLiteralExpression(
                   [
                     factory.createPropertyAssignment(
-                      factory.createStringLiteral('import/no-extraneous-dependencies'),
-                      factory.createStringLiteral('off'),
+                      factory.createStringLiteral(
+                        'import/no-extraneous-dependencies',
+                      ),
+                      factory.createStringLiteral(
+                        'off',
+                      ),
                     ),
                     factory.createPropertyAssignment(
-                      factory.createStringLiteral('unicorn/prevent-abbreviations'),
-                      factory.createStringLiteral('off'),
+                      factory.createStringLiteral(
+                        'unicorn/prevent-abbreviations',
+                      ),
+                      factory.createStringLiteral(
+                        'off',
+                      ),
                     ),
                   ],
                   true,

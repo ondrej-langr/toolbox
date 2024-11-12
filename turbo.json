@@ -7,8 +7,17 @@
       "cache": true
     },
     "test": {
-      "dependsOn": ["^build", "typecheck", "lint"],
-      "outputs": ["coverage/**", "test-results.xml", ".next/**", "dist/**"],
+      "dependsOn": [
+        "^build",
+        "typecheck",
+        "lint"
+      ],
+      "outputs": [
+        "coverage/**",
+        "test-results.xml",
+        ".next/**",
+        "dist/**"
+      ],
       "cache": false
     },
     "lint": {

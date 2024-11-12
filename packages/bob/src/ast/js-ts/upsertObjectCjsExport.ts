@@ -2,32 +2,52 @@ import ts from 'typescript';
 
 import { getAstFromString } from './getAstFromString.js';
 
-const isIdentifierWithContent = (node: ts.Node, text: ts.__String | string) =>
-  ts.isIdentifier(node) && node.escapedText === text;
+const isIdentifierWithContent = (
+  node: ts.Node,
+  text: ts.__String | string,
+) =>
+  ts.isIdentifier(node) &&
+  node.escapedText === text;
 function findObjectVariableDeclarationByName(
   node: ts.VariableStatement,
   name: ts.__String | string,
 ) {
   return node.declarationList.declarations.find(
     (declaration) =>
-      isIdentifierWithContent(declaration.name, name) &&
+      isIdentifierWithContent(
+        declaration.name,
+        name,
+      ) &&
       declaration?.initializer &&
-      ts.isObjectLiteralExpression(declaration.initializer),
+      ts.isObjectLiteralExpression(
+        declaration.initializer,
+      ),
   );
 }
 
 function createEmptyCjsExport(): ts.ExpressionStatement {
-  const [statement] = getAstFromString(`module.exports = {};`).statements;
+  const [statement] = getAstFromString(
+    `module.exports = {};`,
+  ).statements;
 
-  if (!statement || !ts.isExpressionStatement(statement)) {
-    throw new Error('getStatementsFromString function returned invalid output');
+  if (
+    !statement ||
+    !ts.isExpressionStatement(statement)
+  ) {
+    throw new Error(
+      'getStatementsFromString function returned invalid output',
+    );
   }
 
   return statement;
 }
 
-function isCjsExport(statement: ts.Statement): statement is ts.ExpressionStatement & {
-  expression: ts.BinaryExpression & { left: ts.PropertyAccessExpression };
+function isCjsExport(
+  statement: ts.Statement,
+): statement is ts.ExpressionStatement & {
+  expression: ts.BinaryExpression & {
+    left: ts.PropertyAccessExpression;
+  };
 } {
   if (
     !ts.isExpressionStatement(statement) ||
@@ -40,10 +60,19 @@ function isCjsExport(statement: ts.Statement): statement is ts.ExpressionStateme
 
   // Check if its "module.exports = "
   if (
-    !ts.isPropertyAccessExpression(expression.left) ||
-    !isIdentifierWithContent(expression.left.expression, 'module') ||
-    !isIdentifierWithContent(expression.left.name, 'exports') ||
-    expression.operatorToken.kind !== ts.SyntaxKind['EqualsToken']
+    !ts.isPropertyAccessExpression(
+      expression.left,
+    ) ||
+    !isIdentifierWithContent(
+      expression.left.expression,
+      'module',
+    ) ||
+    !isIdentifierWithContent(
+      expression.left.name,
+      'exports',
+    ) ||
+    expression.operatorToken.kind !==
+      ts.SyntaxKind['EqualsToken']
   ) {
     return false;
   }
@@ -60,7 +89,10 @@ function isCjsExportWithAnonymousObject(
   };
 } {
   return (
-    isCjsExport(statement) && ts.isObjectLiteralExpression(statement.expression.right)
+    isCjsExport(statement) &&
+    ts.isObjectLiteralExpression(
+      statement.expression.right,
+    )
   );
 }
 
@@ -74,7 +106,11 @@ function getCjsExportIndex(file: ts.SourceFile) {
 
     const { expression } = statement;
     // if the exports value is object then just say its correct
-    if (ts.isObjectLiteralExpression(expression.right)) {
+    if (
+      ts.isObjectLiteralExpression(
+        expression.right,
+      )
+    ) {
       return index - 1;
     }
 
@@ -83,12 +119,19 @@ function getCjsExportIndex(file: ts.SourceFile) {
       continue;
     }
 
-    const { escapedText: variableName } = expression.right;
-    const referencedExportsVariableIndex = file.statements.findIndex(
-      (otherStatement) =>
-        ts.isVariableStatement(otherStatement) &&
-        findObjectVariableDeclarationByName(otherStatement, variableName),
-    );
+    const { escapedText: variableName } =
+      expression.right;
+    const referencedExportsVariableIndex =
+      file.statements.findIndex(
+        (otherStatement) =>
+          ts.isVariableStatement(
+            otherStatement,
+          ) &&
+          findObjectVariableDeclarationByName(
+            otherStatement,
+            variableName,
+          ),
+      );
 
     if (referencedExportsVariableIndex === -1) {
       continue;
@@ -113,70 +156,96 @@ export function upsertObjectCjsExport(
 
   if (exportsValueIndex === -1) {
     // Add new cjs export, its either missing or we dont support such expression
-    outcommingFile = ts.factory.updateSourceFile(outcommingFile, [
-      ...outcommingFile.statements,
-      createEmptyCjsExport(),
-    ]);
-    exportsValueIndex = outcommingFile.statements.length - 1;
+    outcommingFile = ts.factory.updateSourceFile(
+      outcommingFile,
+      [
+        ...outcommingFile.statements,
+        createEmptyCjsExport(),
+      ],
+    );
+    exportsValueIndex =
+      outcommingFile.statements.length - 1;
   }
 
   outcommingFile = ts.factory.updateSourceFile(
     outcommingFile,
-    outcommingFile.statements.map((statement, index) => {
-      if (index === exportsValueIndex) {
-        // module.exports = { ... }
-        if (isCjsExportWithAnonymousObject(statement)) {
-          const objectValue = ts.factory.updateObjectLiteralExpression(
-            statement.expression.right,
-            callback(statement.expression.right.properties),
-          );
-
-          return ts.factory.updateExpressionStatement(
-            statement,
-            ts.factory.updateBinaryExpression(
-              statement.expression,
-              statement.expression.left,
-              statement.expression.operatorToken,
-              objectValue,
-            ),
-          );
-        }
-        // variable used as default export
-        else if (ts.isVariableStatement(statement)) {
-          const [declaration] = statement.declarationList.declarations;
-
+    outcommingFile.statements.map(
+      (statement, index) => {
+        if (index === exportsValueIndex) {
+          // module.exports = { ... }
           if (
-            !declaration ||
-            !declaration.initializer ||
-            !ts.isObjectLiteralExpression(declaration.initializer)
+            isCjsExportWithAnonymousObject(
+              statement,
+            )
           ) {
-            throw new Error('Not a correct variable declaration');
-          }
-
-          return ts.factory.updateVariableStatement(
-            statement,
-            statement.modifiers,
-            ts.factory.createVariableDeclarationList(
-              [
-                ts.factory.updateVariableDeclaration(
-                  declaration,
-                  declaration.name,
-                  declaration.exclamationToken,
-                  declaration.type,
-                  ts.factory.updateObjectLiteralExpression(
-                    declaration.initializer,
-                    callback(declaration.initializer.properties),
-                  ),
+            const objectValue =
+              ts.factory.updateObjectLiteralExpression(
+                statement.expression.right,
+                callback(
+                  statement.expression.right
+                    .properties,
                 ),
-              ],
-              statement.declarationList.flags,
-            ),
-          );
-        }
-      }
+              );
 
-      return statement;
-    }),
+            return ts.factory.updateExpressionStatement(
+              statement,
+              ts.factory.updateBinaryExpression(
+                statement.expression,
+                statement.expression.left,
+                statement.expression
+                  .operatorToken,
+                objectValue,
+              ),
+            );
+          }
+          // variable used as default export
+          else if (
+            ts.isVariableStatement(statement)
+          ) {
+            const [declaration] =
+              statement.declarationList
+                .declarations;
+
+            if (
+              !declaration ||
+              !declaration.initializer ||
+              !ts.isObjectLiteralExpression(
+                declaration.initializer,
+              )
+            ) {
+              throw new Error(
+                'Not a correct variable declaration',
+              );
+            }
+
+            return ts.factory.updateVariableStatement(
+              statement,
+              statement.modifiers,
+              ts.factory.createVariableDeclarationList(
+                [
+                  ts.factory.updateVariableDeclaration(
+                    declaration,
+                    declaration.name,
+                    declaration.exclamationToken,
+                    declaration.type,
+                    ts.factory.updateObjectLiteralExpression(
+                      declaration.initializer,
+                      callback(
+                        declaration.initializer
+                          .properties,
+                      ),
+                    ),
+                  ),
+                ],
+                statement.declarationList.flags,
+              ),
+            );
+          }
+        }
+
+        return statement;
+      },
+    ),
   );
 
   return outcommingFile;

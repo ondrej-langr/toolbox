@@ -8,14 +8,17 @@ export function getCallerFilename() {
 
   Error.prepareStackTrace = (_, stack) => stack;
 
-  const stack = error.stack as unknown as NodeJS.CallSite[];
+  const stack =
+    error.stack as unknown as NodeJS.CallSite[];
 
   Error.prepareStackTrace = undefined;
 
   const callerFilename = stack[2]?.getFileName();
 
   if (!callerFilename) {
-    throw new Error('Cannot get caller filename of called function from callstack');
+    throw new Error(
+      'Cannot get caller filename of called function from callstack',
+    );
   }
 
   return callerFilename.startsWith('file://')

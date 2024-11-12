@@ -4,7 +4,10 @@
   "access": "public",
   "baseBranch": "main",
   "commit": false,
-  "changelog": ["@changesets/changelog-github", { "repo": "ondrej-langr/toolbox" }],
+  "changelog": [
+    "@changesets/changelog-github",
+    { "repo": "ondrej-langr/toolbox" }
+  ],
   "fixed": [],
   "linked": [],
   "ignore": [],

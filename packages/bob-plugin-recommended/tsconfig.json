@@ -7,7 +7,12 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": [".eslintrc.cjs", "src/**/*", "tests/**/*", "vitest.config.ts"],
+  "include": [
+    ".eslintrc.cjs",
+    "src/**/*",
+    "tests/**/*",
+    "vitest.config.ts"
+  ],
   "exclude": ["dist", "node_modules"],
   "references": [{ "path": "../bob" }]
 }

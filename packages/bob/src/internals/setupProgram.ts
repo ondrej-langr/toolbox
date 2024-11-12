@@ -6,8 +6,11 @@ import { PACKAGE_RUNTIME_ROOT } from './constants.js';
 
 export async function setupProgram() {
   const program = new Command();
-  const bobPackage = await Project.loadAt(path.join(PACKAGE_RUNTIME_ROOT, '..'));
-  const bobPackageJson = bobPackage.getPackageInfo();
+  const bobPackage = await Project.loadAt(
+    path.join(PACKAGE_RUNTIME_ROOT, '..'),
+  );
+  const bobPackageJson =
+    bobPackage.getPackageInfo();
 
   program
     .name(bobPackageJson.name)
@@ -22,7 +25,11 @@ export async function setupProgram() {
           : path.join(process.cwd(), passedValue),
       process.cwd(),
     )
-    .option('-d, --debug', 'If true it enables logging debug messages', false);
+    .option(
+      '-d, --debug',
+      'If true it enables logging debug messages',
+      false,
+    );
 
   return program;
 }

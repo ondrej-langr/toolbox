@@ -2,10 +2,13 @@ import ts from 'typescript';
 
 const isTransformable = (
   node: ts.ObjectLiteralElementLike,
-): node is ts.PropertyAssignment & { name: ts.StringLiteral | ts.Identifier } =>
+): node is ts.PropertyAssignment & {
+  name: ts.StringLiteral | ts.Identifier;
+} =>
   ts.isPropertyAssignment(node) &&
   node.name &&
-  (ts.isStringLiteral(node.name) || ts.isIdentifier(node.name));
+  (ts.isStringLiteral(node.name) ||
+    ts.isIdentifier(node.name));
 
 export function mergeObjectProperties(
   original: readonly ts.ObjectLiteralElementLike[],
@@ -14,7 +17,9 @@ export function mergeObjectProperties(
   const resultItems = [];
   const propertyAssignments = new Map<
     string,
-    ts.PropertyAssignment & { name: ts.StringLiteral | ts.Identifier }
+    ts.PropertyAssignment & {
+      name: ts.StringLiteral | ts.Identifier;
+    }
   >();
 
   // First we transform originals so we can easily know what to recursively merge or just replace
@@ -25,7 +30,10 @@ export function mergeObjectProperties(
       continue;
     }
 
-    propertyAssignments.set(node.name.getText(), node);
+    propertyAssignments.set(
+      node.name.getText(),
+      node,
+    );
   }
 
   for (const node of override) {
@@ -35,18 +43,31 @@ export function mergeObjectProperties(
       continue;
     }
 
-    const existing = propertyAssignments.get(node.name.getText());
+    const existing = propertyAssignments.get(
+      node.name.getText(),
+    );
     if (
       !existing ||
-      existing.initializer.kind !== node.initializer.kind ||
-      !ts.isObjectLiteralExpression(existing.initializer) ||
-      !ts.isArrayLiteralExpression(existing.initializer)
+      existing.initializer.kind !==
+        node.initializer.kind ||
+      !ts.isObjectLiteralExpression(
+        existing.initializer,
+      ) ||
+      !ts.isArrayLiteralExpression(
+        existing.initializer,
+      )
     ) {
-      propertyAssignments.set(node.name.getText(), node);
+      propertyAssignments.set(
+        node.name.getText(),
+        node,
+      );
     }
 
     // existing.
   }
 
-  return [...resultItems, ...propertyAssignments.values()];
+  return [
+    ...resultItems,
+    ...propertyAssignments.values(),
+  ];
 }

@@ -1,4 +1,9 @@
-import { defineCommand, FileSystem, Project, Workspace } from '@ondrej-langr/bob';
+import {
+  defineCommand,
+  FileSystem,
+  Project,
+  Workspace,
+} from '@ondrej-langr/bob';
 import path from 'node:path';
 import { PROJECT_METADATA_PROJECT_NAMESPACE } from '~/constants.js';
 import { projectMetadataSchema } from '~/projectMetadataSchema.js';
@@ -14,30 +19,45 @@ export default defineCommand<{
       {
         name: 'projectLocationInWorkspace',
         type: 'list',
-        message: 'What project should be updated in current workspace?',
+        message:
+          'What project should be updated in current workspace?',
         async when() {
-          const closestProjectOrWorkspace = await program.getProject();
+          const closestProjectOrWorkspace =
+            await program.getProject();
 
           return (
-            closestProjectOrWorkspace && closestProjectOrWorkspace instanceof Workspace
+            closestProjectOrWorkspace &&
+            closestProjectOrWorkspace instanceof
+              Workspace
           );
         },
         async choices() {
-          const workspace = await program.getProject();
-          if (!workspace || workspace instanceof Workspace === false) {
+          const workspace =
+            await program.getProject();
+          if (
+            !workspace ||
+            workspace instanceof Workspace ===
+              false
+          ) {
             throw new Error(
               'Cannot show choices when project is not workspace. This is a bug of @ondrej-langr/bob',
             );
           }
 
-          const workspaceProjects = await workspace.getProjects();
+          const workspaceProjects =
+            await workspace.getProjects();
 
           if (!workspaceProjects?.length) {
-            throw new Error('Workspace has no projects');
+            throw new Error(
+              'Workspace has no projects',
+            );
           }
 
-          return workspaceProjects.map((project) =>
-            project.getRoot().replace(workspace.getRoot(), ''),
+          return workspaceProjects.map(
+            (project) =>
+              project
+                .getRoot()
+                .replace(workspace.getRoot(), ''),
           );
         },
       },
@@ -46,7 +66,8 @@ export default defineCommand<{
   async handler() {
     const program = this.getProgram();
     const options = await program.getOptions();
-    const closestProjectOrWorkspace = await program.getProject();
+    const closestProjectOrWorkspace =
+      await program.getProject();
     const { cwd } = options;
 
     if (!closestProjectOrWorkspace) {
@@ -56,33 +77,52 @@ export default defineCommand<{
     }
 
     const answers = this.getAnswers();
-    const renderTo = answers.projectLocationInWorkspace
-      ? path.join(closestProjectOrWorkspace.getRoot(), answers.projectLocationInWorkspace)
-      : closestProjectOrWorkspace.getRoot();
+    const renderTo =
+      answers.projectLocationInWorkspace
+        ? path.join(
+            closestProjectOrWorkspace.getRoot(),
+            answers.projectLocationInWorkspace,
+          )
+        : closestProjectOrWorkspace.getRoot();
 
-    const project = answers.projectLocationInWorkspace
-      ? await Project.loadAt(renderTo)
-      : (closestProjectOrWorkspace as Project);
+    const project =
+      answers.projectLocationInWorkspace
+        ? await Project.loadAt(renderTo)
+        : (closestProjectOrWorkspace as Project);
 
     const projectMeta = await project
-      .getMetadataNamespace(PROJECT_METADATA_PROJECT_NAMESPACE, projectMetadataSchema)
+      .getMetadataNamespace(
+        PROJECT_METADATA_PROJECT_NAMESPACE,
+        projectMetadataSchema,
+      )
       .get();
 
     const presetTemplateFolderName = `+preset-${projectMeta.config.preset}`;
 
     this.bindTemplatesLayer('/', { renderTo });
-    this.bindTemplatesLayer(presetTemplateFolderName, { renderTo });
+    this.bindTemplatesLayer(
+      presetTemplateFolderName,
+      { renderTo },
+    );
 
     if (
       projectMeta.config.preset === 'next' &&
       projectMeta.config.features['testing-e2e']
     ) {
-      this.bindTemplatesLayer(`${presetTemplateFolderName}/+feature-testing-e2e`, {
-        renderTo,
-      });
+      this.bindTemplatesLayer(
+        `${presetTemplateFolderName}/+feature-testing-e2e`,
+        {
+          renderTo,
+        },
+      );
     }
 
-    for (const [featureName, enabled] of Object.entries(projectMeta.config.features)) {
+    for (const [
+      featureName,
+      enabled,
+    ] of Object.entries(
+      projectMeta.config.features,
+    )) {
       if (!enabled) {
         continue;
       }
@@ -92,17 +132,29 @@ export default defineCommand<{
         this.options.templatesRoot!,
         featureTemplateFolderName,
       );
-      const presetFeatureTemplatesPath = path.join(
-        this.options.templatesRoot!,
-        presetTemplateFolderName,
-        featureTemplateFolderName,
-      );
+      const presetFeatureTemplatesPath =
+        path.join(
+          this.options.templatesRoot!,
+          presetTemplateFolderName,
+          featureTemplateFolderName,
+        );
 
-      if (FileSystem.cacheless.existsSync(rootFeatureTemplatesPath)) {
-        this.bindTemplatesLayer(featureTemplateFolderName, { renderTo });
+      if (
+        FileSystem.cacheless.existsSync(
+          rootFeatureTemplatesPath,
+        )
+      ) {
+        this.bindTemplatesLayer(
+          featureTemplateFolderName,
+          { renderTo },
+        );
       }
 
-      if (FileSystem.cacheless.existsSync(presetFeatureTemplatesPath)) {
+      if (
+        FileSystem.cacheless.existsSync(
+          presetFeatureTemplatesPath,
+        )
+      ) {
         this.bindTemplatesLayer(
           `${presetTemplateFolderName}/${featureTemplateFolderName}`,
           { renderTo },

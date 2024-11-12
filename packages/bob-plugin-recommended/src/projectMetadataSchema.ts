@@ -13,7 +13,10 @@ const presetsToMetaConfig = {
   library: z.object({
     preset: z.literal('library'),
   }),
-} satisfies Record<(typeof projectPresets)[number], z.ZodObject<any>>;
+} satisfies Record<
+  (typeof projectPresets)[number],
+  z.ZodObject<any>
+>;
 
 export const projectMetadataConfigFeatures = [
   'testing',
@@ -33,7 +36,12 @@ export const projectMetadataSchema = z.object({
       z.object({
         features: z.object(
           Object.fromEntries(
-            projectMetadataConfigFeatures.map((key) => [key, z.boolean().default(false)]),
+            projectMetadataConfigFeatures.map(
+              (key) => [
+                key,
+                z.boolean().default(false),
+              ],
+            ),
           ) as {
             [key in (typeof projectMetadataConfigFeatures)[number]]: z.ZodDefault<z.ZodBoolean>;
           },

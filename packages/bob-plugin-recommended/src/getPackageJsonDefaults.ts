@@ -11,5 +11,8 @@ export const getPackageJsonDefaults = () =>
     packageManager: 'pnpm@9.7.0',
   }) satisfies Pick<
     z.input<typeof packageJsonSchema>,
-    'author' | 'engines' | 'packageManager' | 'type'
+    | 'author'
+    | 'engines'
+    | 'packageManager'
+    | 'type'
   >;

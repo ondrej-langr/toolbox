@@ -12,11 +12,19 @@ import type { PackageJson } from './schemas/packageJsonSchema.js';
 import { packageJsonSchema } from './schemas/packageJsonSchema.js';
 import type { Workspace } from './Workspace.js';
 
-const METADATA_PATH_IN_PROJECT = path.join(BOB_FOLDER_NAME, 'metadata.json');
-const recursiveFindNonWorkspacePackageJson = (startAt: string): string | null => {
-  const closest = FileSystem.findFile(PACKAGE_JSON, {
-    cwd: startAt,
-  });
+const METADATA_PATH_IN_PROJECT = path.join(
+  BOB_FOLDER_NAME,
+  'metadata.json',
+);
+const recursiveFindNonWorkspacePackageJson = (
+  startAt: string,
+): string | null => {
+  const closest = FileSystem.findFile(
+    PACKAGE_JSON,
+    {
+      cwd: startAt,
+    },
+  );
 
   if (!closest) {
     return null;
@@ -24,11 +32,16 @@ const recursiveFindNonWorkspacePackageJson = (startAt: string): string | null =>
 
   const closestDirname = path.dirname(closest);
   const isWorkspace = FileSystem.existsSync(
-    path.join(closestDirname, PNPM_WORKSPACE_YAML),
+    path.join(
+      closestDirname,
+      PNPM_WORKSPACE_YAML,
+    ),
   );
 
   if (isWorkspace) {
-    return recursiveFindNonWorkspacePackageJson(path.dirname(closestDirname));
+    return recursiveFindNonWorkspacePackageJson(
+      path.dirname(closestDirname),
+    );
   }
 
   return closest;
@@ -59,7 +72,8 @@ export class Project {
     workspace: Workspace | null = null,
   ) {
     this.root = packageRoot;
-    this.packageJsonContents = packageJsonContents;
+    this.packageJsonContents =
+      packageJsonContents;
     this.workspace = workspace;
   }
 
@@ -67,11 +81,18 @@ export class Project {
   /**
    * Loads necessary info and returns new instance
    */
-  static async loadAt(at: string, workspace?: Workspace) {
-    const packageJsonPath = path.join(at, PACKAGE_JSON);
-    const packageJsonContent = await FileSystem.readJson(packageJsonPath, {
-      schema: packageJsonSchema,
-    });
+  static async loadAt(
+    at: string,
+    workspace?: Workspace,
+  ) {
+    const packageJsonPath = path.join(
+      at,
+      PACKAGE_JSON,
+    );
+    const packageJsonContent =
+      await FileSystem.readJson(packageJsonPath, {
+        schema: packageJsonSchema,
+      });
 
     if (!packageJsonContent) {
       throw new Error(
@@ -79,69 +100,112 @@ export class Project {
       );
     }
 
-    return new Project(at, packageJsonContent, workspace);
+    return new Project(
+      at,
+      packageJsonContent,
+      workspace,
+    );
   }
 
   /**
    * Gets nearest possible project for provided path (walks recursively up until it hits user root)
    * If found project is workspace it skips it and continues
    */
-  static async loadNearest(startFrom: string): Promise<InstanceType<typeof this> | null> {
+  static async loadNearest(
+    startFrom: string,
+  ): Promise<InstanceType<typeof this> | null> {
     let projectPath: string | undefined;
 
-    const nearestPackageJson = recursiveFindNonWorkspacePackageJson(startFrom);
+    const nearestPackageJson =
+      recursiveFindNonWorkspacePackageJson(
+        startFrom,
+      );
     if (!nearestPackageJson) {
       return null;
     }
 
-    projectPath = path.dirname(nearestPackageJson);
+    projectPath = path.dirname(
+      nearestPackageJson,
+    );
 
     return this.loadAt(projectPath);
   }
 
   private async readMetadataFile() {
-    const metadataJsonFilepath = path.join(this.getRoot(), METADATA_PATH_IN_PROJECT);
-    let metadataFromFile: Record<string, Record<string, any>> = {};
+    const metadataJsonFilepath = path.join(
+      this.getRoot(),
+      METADATA_PATH_IN_PROJECT,
+    );
+    let metadataFromFile: Record<
+      string,
+      Record<string, any>
+    > = {};
 
-    if (FileSystem.existsSync(metadataJsonFilepath)) {
-      metadataFromFile = await FileSystem.readJson(metadataJsonFilepath, {
-        // Make sure that its an object
-        schema: z.record(z.string(), z.record(z.any())),
-      })
-        .catch((error) => {
-          logger.warn(`Failed to read or parse the ${METADATA_PATH_IN_PROJECT}`, {
-            errorMessage: error instanceof Error ? error.message : error,
-            metadataJsonFilepath,
-          });
+    if (
+      FileSystem.existsSync(metadataJsonFilepath)
+    ) {
+      metadataFromFile =
+        await FileSystem.readJson(
+          metadataJsonFilepath,
+          {
+            // Make sure that its an object
+            schema: z.record(
+              z.string(),
+              z.record(z.any()),
+            ),
+          },
+        )
+          .catch((error) => {
+            logger.warn(
+              `Failed to read or parse the ${METADATA_PATH_IN_PROJECT}`,
+              {
+                errorMessage:
+                  error instanceof Error
+                    ? error.message
+                    : error,
+                metadataJsonFilepath,
+              },
+            );
 
-          return {};
-        })
-        .then((result) => result ?? {});
+            return {};
+          })
+          .then((result) => result ?? {});
     }
 
     return metadataFromFile;
   }
 
-  getMetadataNamespace<TMetadataSchema extends z.ZodObject<any>>(
-    namespace: string,
-    schema: TMetadataSchema,
-  ) {
+  getMetadataNamespace<
+    TMetadataSchema extends z.ZodObject<any>,
+  >(namespace: string, schema: TMetadataSchema) {
     return {
       /** Gets metadata for current project, validated according to @{link schema} */
-      get: async (): Promise<z.output<TMetadataSchema>> => {
-        const metadataFromFile = await this.readMetadataFile();
-        const metadataUnderNamespace = metadataFromFile[namespace] ?? {};
+      get: async (): Promise<
+        z.output<TMetadataSchema>
+      > => {
+        const metadataFromFile =
+          await this.readMetadataFile();
+        const metadataUnderNamespace =
+          metadataFromFile[namespace] ?? {};
 
-        return await schema.parseAsync(metadataUnderNamespace);
+        return await schema.parseAsync(
+          metadataUnderNamespace,
+        );
       },
       /** Records new value for metadata. Not validated when saving to file */
-      set: async (newValue: z.infer<TMetadataSchema>) => {
-        const metadataFromFile = await this.readMetadataFile();
+      set: async (
+        newValue: z.infer<TMetadataSchema>,
+      ) => {
+        const metadataFromFile =
+          await this.readMetadataFile();
 
         metadataFromFile[namespace] = newValue;
 
         FileSystem.writeJson(
-          path.join(this.getRoot(), METADATA_PATH_IN_PROJECT),
+          path.join(
+            this.getRoot(),
+            METADATA_PATH_IN_PROJECT,
+          ),
           metadataFromFile,
         );
       },

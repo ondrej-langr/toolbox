@@ -7,7 +7,11 @@ export type ConfigOptions = {
   plugins?: string[] | undefined;
 };
 
-const allowedConfigFileExtensions = ['.js', '.cjs', '.mjs'];
+const allowedConfigFileExtensions = [
+  '.js',
+  '.cjs',
+  '.mjs',
+];
 
 export class Config {
   private options: ConfigOptions;
@@ -21,7 +25,10 @@ export class Config {
 
   static async loadAt(projectRoot: string) {
     const foundConfigFilePaths = await glob(
-      allowedConfigFileExtensions.map((extension) => `${BOB_FOLDER_NAME}/config${extension}`),
+      allowedConfigFileExtensions.map(
+        (extension) =>
+          `${BOB_FOLDER_NAME}/config${extension}`,
+      ),
       { cwd: projectRoot, absolute: true },
     );
 
@@ -29,9 +36,17 @@ export class Config {
       return null;
     }
 
-    const plugin = await import(foundConfigFilePaths[0]);
-    const defaultExport = plugin && ('default' in plugin ? plugin.default : plugin);
-    const hasValidExport = defaultExport && defaultExport instanceof Config;
+    const plugin = await import(
+      foundConfigFilePaths[0]
+    );
+    const defaultExport =
+      plugin &&
+      ('default' in plugin
+        ? plugin.default
+        : plugin);
+    const hasValidExport =
+      defaultExport &&
+      defaultExport instanceof Config;
 
     return hasValidExport ? defaultExport : null;
   }

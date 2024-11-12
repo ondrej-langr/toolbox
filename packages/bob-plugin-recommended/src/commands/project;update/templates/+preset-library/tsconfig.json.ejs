@@ -1,13 +1,19 @@
 {
   "extends": "@apitree.cz/ts-config/library",
   "compilerOptions": {
-    "module": "ES2022",
-    "moduleResolution": "Bundler",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noEmit": false,
+    "verbatimModuleSyntax": true,
     "paths": {
       "~/*": ["./src/*"]
     }
   },
-  "include": [".eslintrc.cjs", "src/**/*", "tests/**/*", "vitest.config.ts"],
-  "exclude": ["dist", "node_modules"],
-  "references": []
+  "include": [
+    ".eslintrc.cjs",
+    "src/**/*",
+    "tests/**/*",
+    "vitest.config.ts"
+  ],
+  "exclude": ["dist", "node_modules"]
 }

@@ -15,6 +15,7 @@ export default defineTemplateFile('json', (existing) => {
       build: 'turbo run build',
     },
     dependencies: {
+      ...existingValidated.dependencies,
       '@apitree.cz/prettier-config': '^0.2.3',
       '@changesets/changelog-github': '^0.5.0',
       '@changesets/cli': '^2.27.5',

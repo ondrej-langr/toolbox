@@ -43,7 +43,7 @@
     "start": "pnpm run prebuild && pnpm run build && node .bin/run-bob.js --cwd=\"./.temp\"",
     "test": "pnpm test:unit && pnpm test:types",
     "test:types": "tsc --project tsconfig.typecheck.json --noEmit ",
-    "test:unit": "vitest --watch false"
+    "test:unit": "vitest --watch false --passWithNoTests"
   },
   "dependencies": {
     "commander": "^12.1.0",

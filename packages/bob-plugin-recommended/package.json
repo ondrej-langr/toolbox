@@ -23,17 +23,16 @@
   },
   "files": [
     "src",
-    "dist",
-    ".bin"
+    "dist"
   ],
   "scripts": {
-    "prebuild": "rm -rf dist .temp tsconfig.tsbuildinfo tsconfig.typecheck.tsbuildinfo",
+    "prebuild": "rm -rf dist .temp tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
     "build": "pnpm build:transpile && pnpm build:types",
     "build:transpile": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths",
-    "build:types": "tsc --project tsconfig.typecheck.json",
+    "build:types": "tsc --project tsconfig.build.json",
     "start": "pnpm run prebuild && pnpm run build && node .bin/run-bob.js --cwd=\"./.temp\"",
     "test": "pnpm test:unit && pnpm test:types",
-    "test:types": "tsc --project tsconfig.typecheck.json --noEmit ",
+    "test:types": "tsc --noEmit",
     "test:unit": "vitest --watch false --passWithNoTests"
   },
   "dependencies": {

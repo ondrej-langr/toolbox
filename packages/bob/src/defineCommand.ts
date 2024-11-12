@@ -17,9 +17,7 @@ export function defineCommand<QuestionAnswers extends InquirerQuestionAnswers>(
   let commandName = path.basename(commandRoot);
 
   if (filename !== 'command.js' && filename !== 'command.ts') {
-    throw new Error(
-      `File where Command.define is called must be named command.ts. Got ${filename}`,
-    );
+    throw new Error(`File where Command.define is called must be named command.ts. Got ${filename}`);
   }
 
   if (commandName.includes('$')) {
@@ -27,7 +25,7 @@ export function defineCommand<QuestionAnswers extends InquirerQuestionAnswers>(
   }
 
   if (commandName.includes(';')) {
-    commandName = commandName.replaceAll(':', path.basename(commandName));
+    commandName = commandName.replaceAll(';', ':');
   }
 
   const command = new Command(commandName, description, {

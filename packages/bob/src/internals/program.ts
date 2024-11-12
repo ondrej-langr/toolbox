@@ -1,6 +1,5 @@
 import { Command as CommanderCommand } from 'commander';
 import { glob } from 'glob';
-import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DefaultProgramOptions } from '~/DefaultProgramOptions.js';
@@ -12,8 +11,6 @@ import { Command } from './Command.js';
 import { Config, ConfigOptions } from './Config.js';
 import { Plugin } from './Plugin.js';
 import { BOB_FOLDER_NAME, PACKAGE_RUNTIME_ROOT } from './constants.js';
-
-const require = createRequire(import.meta.filename);
 
 const COMMANDS_FILE_MATCH = 'commands/*/command.js';
 
@@ -128,6 +125,8 @@ export class Program {
             `Command at ${commandPathname} has invalid default export. Please use defineCommand function. If it used there are multiple versions of @ondrej-langr/bob package`,
           );
         }
+
+        defaultExport.setProgram(this);
 
         return defaultExport;
       });

@@ -11,6 +11,7 @@ import { Command } from './Command.js';
 import { Config, ConfigOptions } from './Config.js';
 import { Plugin } from './Plugin.js';
 import { BOB_FOLDER_NAME, PACKAGE_RUNTIME_ROOT } from './constants.js';
+import { logger } from './logger.js';
 
 const COMMANDS_FILE_MATCH = 'commands/*/command.js';
 
@@ -185,8 +186,11 @@ export class Program {
     // Start program
     await this.commanderProgram.parseAsync();
 
+    logger.info('Success, writing files...');
     // TODO: create a local pull request for written files when appropriate action turns that on
     // Commit all files in one go
     await FileSystem.commit();
+
+    logger.success('All finished!');
   }
 }

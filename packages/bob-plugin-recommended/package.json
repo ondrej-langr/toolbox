@@ -14,11 +14,6 @@
     }
   ],
   "type": "module",
-  "files": [
-    "src",
-    "dist",
-    ".bin"
-  ],
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -26,6 +21,11 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "files": [
+    "src",
+    "dist",
+    ".bin"
+  ],
   "scripts": {
     "prebuild": "rm -rf dist .temp tsconfig.tsbuildinfo tsconfig.typecheck.tsbuildinfo",
     "build": "pnpm build:transpile && pnpm build:types",
@@ -38,11 +38,14 @@
   },
   "dependencies": {
     "@ondrej-langr/bob": "workspace:*",
+    "inquirer": "9.2.23",
+    "lodash": "^4.17.21",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@swc/cli": "^0.5.0",
     "@swc/core": "^1.7.42",
+    "@types/inquirer": "^9.0.7",
     "@types/node": "^20.17.6",
     "typescript": "5.5.2",
     "vite": "^5.4.10",

@@ -1,16 +1,22 @@
 import { defineTemplateFile } from '@ondrej-langr/bob';
-import { Json, packageJsonSchema } from '@ondrej-langr/bob/schemas';
-import lodash from 'lodash';
+import { packageJsonSchema } from '@ondrej-langr/bob/schemas';
+import { merge } from 'webpack-merge';
 
-export default defineTemplateFile('json', (existing) => {
-  const existingValidated = packageJsonSchema.parse(existing);
+export default defineTemplateFile(
+  'json',
+  (existing) => {
+    const existingValidated =
+      packageJsonSchema.parse(existing);
 
-  return lodash.merge(existingValidated, {
-    commands: {
-      build: 'next build',
-    },
-    dependencies: {
-      next: '^14',
-    },
-  }) as Json;
-});
+    return merge<
+      Partial<typeof existingValidated>
+    >(existingValidated, {
+      commands: {
+        build: 'next build',
+      },
+      dependencies: {
+        next: '^14',
+      },
+    });
+  },
+);

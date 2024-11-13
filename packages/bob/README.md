@@ -22,19 +22,15 @@ Installation works like in any other package installation
 
 ## Usage
 
-- any command - `npx @ondrej-langr/bob <command>`
+TBD
 
-## Commands
+### Using Plugins
 
-Bob already includes working commands with predefined templates.
+TBD
 
-- `help` - prints help of the program
-- `workspace:create` - creates workspace, throws if command is executed in workspace
-- `workspace:update` - updates workspace with active settings with latest templates
-- `project:create` - creates new project in current workspace or in current working directory
-- `project:update` - updates project with active settings with latest templates
+### Default Global Arguments
 
-### Global arguments
+Default global arguments are accessible in every command
 
 - `--cwd` - specifies in which directory should program work, if not defined then its current working directory as default
 - `--debug` - if defined enables debug messages

@@ -1,0 +1,10 @@
+{
+  "workspace": {
+    "config": {
+      "features": {
+        "prettier": true,
+        "testing": true
+      }
+    }
+  }
+}

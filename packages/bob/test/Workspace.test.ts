@@ -1,4 +1,9 @@
-import { afterEach, describe, it, vi } from 'vitest';
+import {
+  afterEach,
+  describe,
+  it,
+  vi,
+} from 'vitest';
 
 import { Workspace } from '../src/Workspace';
 
@@ -9,7 +14,9 @@ describe('Workspace', () => {
     vi.clearAllMocks();
   });
 
-  it.todo('Should find nearest NPM workspace when PNPM workspace is not found');
+  it.todo(
+    'Should find nearest NPM workspace when PNPM workspace is not found',
+  );
 
   // it('Should find nearest NPM workspace when PNPM workspace is not found', async () => {
   //   vi.mocked(findConfig).mockImplementation((startPlace, options) => {

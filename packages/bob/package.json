@@ -14,6 +14,21 @@
     }
   ],
   "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./schemas": {
+      "import": "./dist/schemas/index.js",
+      "types": "./dist/schemas/index.d.ts"
+    },
+    "./ast/js-ts": {
+      "import": "./dist/ast/js-ts/index.js",
+      "types": "./dist/ast/js-ts/index.d.ts"
+    }
+  },
   "bin": "./.bin/run-bob.js",
   "files": [
     "src",
@@ -21,12 +36,14 @@
     ".bin"
   ],
   "scripts": {
-    "prebuild": "rm -rf dist .temp",
-    "build": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths",
+    "prebuild": "rm -rf dist .temp tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
+    "build": "pnpm build:transpile && pnpm build:types",
+    "build:transpile": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths",
+    "build:types": "tsc --project tsconfig.build.json",
     "start": "pnpm run prebuild && pnpm run build && node .bin/run-bob.js --cwd=\"./.temp\"",
     "test": "pnpm test:unit && pnpm test:types",
     "test:types": "tsc --noEmit",
-    "test:unit": "vitest --watch false"
+    "test:unit": "vitest --watch false --passWithNoTests"
   },
   "dependencies": {
     "commander": "^12.1.0",
@@ -37,7 +54,7 @@
     "fs-extra": "^11.2.0",
     "glob": "^10.4.5",
     "inquirer": "9.2.23",
-    "lodash": "^4.17.21",
+    "picocolors": "^1.1.1",
     "prettier": "^3.3.3",
     "yaml": "^2.6.0",
     "zod": "^3.23.8"
@@ -48,7 +65,6 @@
     "@types/find-config": "^1.0.4",
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^9.0.7",
-    "@types/lodash": "^4.17.13",
     "@types/node": "^20.17.6",
     "typescript": "5.5.2",
     "vite": "^5.4.10",

@@ -1,9 +1,9 @@
 import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 
-import { getAstFromString } from '../../../src/utils/ast/getAstFromString';
-import { getStringFromAstNode } from '../../../src/utils/ast/getStringFromAstNode';
-import { upsertObjectCjsExport } from '../../../src/utils/ast/upsertObjectCjsExport';
+import { getAstFromString } from '../../../src/ast/js-ts/getAstFromString';
+import { getStringFromAstNode } from '../../../src/ast/js-ts/getStringFromAstNode';
+import { upsertObjectCjsExport } from '../../../src/ast/js-ts/upsertObjectCjsExport';
 
 describe('upsertObjectCjsExport', () => {
   it('should create default export with data', () => {
@@ -13,12 +13,16 @@ describe('upsertObjectCjsExport', () => {
         return [
           ...statements,
           // Add some properties
-          ts.factory.createPropertyAssignment('root', ts.factory.createTrue()),
+          ts.factory.createPropertyAssignment(
+            'root',
+            ts.factory.createTrue(),
+          ),
         ];
       },
     );
 
-    expect(getStringFromAstNode(existingContent)).toMatchInlineSnapshot(`
+    expect(getStringFromAstNode(existingContent))
+      .toMatchInlineSnapshot(`
       "const hello = "world";
       module.exports = { root: true };
       "`);
@@ -36,12 +40,16 @@ describe('upsertObjectCjsExport', () => {
         return [
           ...statements,
           // Add some properties
-          ts.factory.createPropertyAssignment('root', ts.factory.createTrue()),
+          ts.factory.createPropertyAssignment(
+            'root',
+            ts.factory.createTrue(),
+          ),
         ];
       },
     );
 
-    expect(getStringFromAstNode(existingContent)).toMatchInlineSnapshot(`
+    expect(getStringFromAstNode(existingContent))
+      .toMatchInlineSnapshot(`
       "const hello = "world";
       module.exports = {
           my: "World",
@@ -64,12 +72,16 @@ describe('upsertObjectCjsExport', () => {
         return [
           ...statements,
           // Add some properties
-          ts.factory.createPropertyAssignment('root', ts.factory.createTrue()),
+          ts.factory.createPropertyAssignment(
+            'root',
+            ts.factory.createTrue(),
+          ),
         ];
       },
     );
 
-    expect(getStringFromAstNode(existingContent)).toMatchInlineSnapshot(`
+    expect(getStringFromAstNode(existingContent))
+      .toMatchInlineSnapshot(`
       "const hello = "world";
       const exportVariable = {
           my: "World",
@@ -89,12 +101,16 @@ describe('upsertObjectCjsExport', () => {
         return [
           ...statements,
           // Add some properties
-          ts.factory.createPropertyAssignment('root', ts.factory.createTrue()),
+          ts.factory.createPropertyAssignment(
+            'root',
+            ts.factory.createTrue(),
+          ),
         ];
       },
     );
 
-    expect(getStringFromAstNode(existingContent)).toMatchInlineSnapshot(`
+    expect(getStringFromAstNode(existingContent))
+      .toMatchInlineSnapshot(`
       "const hello = "world";
       module.exports = null;
       module.exports = { root: true };

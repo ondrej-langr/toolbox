@@ -1,5 +1,5 @@
 {
-  "name": "ondrejlangr-toolbox",
+  "name": "ondrej-langr",
   "version": "0.0.0",
   "description": "Toolbox with tools and wrenches made by Ondřej Langr",
   "license": "ISC",
@@ -10,9 +10,10 @@
   "type": "module",
   "scripts": {
     "build": "turbo run build",
-    "deps:check": "pnpm dlx taze major -r",
+    "deps:check": "pnpm dlx taze -r",
     "format": "prettier . -w",
     "lint": "turbo run lint",
+    "prepare": "pnpm build && npx bob workspace:update",
     "release:prerelease": "changeset publish --tag next --no-git-tag",
     "release:stable": "changeset publish",
     "test": "turbo run test",
@@ -20,18 +21,26 @@
     "version:stable": "changeset version"
   },
   "dependencies": {
-    "@apitree.cz/prettier-config": "^0.2.5",
+    "@apitree.cz/eslint-config": "^0.3.5",
+    "@apitree.cz/prettier-config": "^0.2.3",
     "@apitree.cz/ts-config": "^0.2.3",
     "@changesets/changelog-github": "^0.5.0",
-    "@changesets/cli": "^2.27.9",
+    "@changesets/cli": "^2.27.5",
+    "@ondrej-langr/bob": "workspace:*",
+    "@ondrej-langr/bob-plugin-recommended": "workspace:*",
+    "@swc/cli": "^0.3.12",
+    "@swc/core": "^1.6.4",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
-    "prettier": "^3.3.3",
-    "prettier-plugin-packagejson": "^2.5.3",
-    "turbo": "^2.2.3"
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.2",
+    "prettier-plugin-packagejson": "^2.5.0",
+    "turbo": "^2.0.4",
+    "vite": "^5.3.1",
+    "vitest": "^1.6.0"
   },
-  "packageManager": "pnpm@9.12.3",
+  "packageManager": "pnpm@9.7.0",
   "engines": {
-    "node": ">=20.9.0",
-    "pnpm": ">=8.15.0"
+    "node": ">=20",
+    "pnpm": ">=8"
   }
 }

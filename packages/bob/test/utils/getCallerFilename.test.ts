@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { getCallerFilename } from '../../src/utils/getCallerFilename';
+import { getCallerFilename } from '../../src/internals/utils/getCallerFilename';
 
 function testingFunction() {
   const caller = getCallerFilename();
@@ -10,6 +10,10 @@ function testingFunction() {
 
 describe('getCallerFilename', () => {
   it('should correctly resolve caller in function', () => {
-    expect(testingFunction().endsWith('getCallerFilename.test.ts')).to.be.true;
+    expect(
+      testingFunction().endsWith(
+        'getCallerFilename.test.ts',
+      ),
+    ).to.be.true;
   });
 });

@@ -1,5 +1,16 @@
 # @ondrej-langr/bob
 
+## 0.2.0
+
+### Minor Changes
+
+- [#1](https://github.com/ondrej-langr/toolbox/pull/1) [`fd6668a`](https://github.com/ondrej-langr/toolbox/commit/fd6668a69ffc1385a43c27c35a7aa5dbe8c331ca) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Fixes commands and updates its templates. Updated templates are mainly for prettier and package.jsons.
+
+### Patch Changes
+
+- Updated dependencies [[`fd6668a`](https://github.com/ondrej-langr/toolbox/commit/fd6668a69ffc1385a43c27c35a7aa5dbe8c331ca), [`fd6668a`](https://github.com/ondrej-langr/toolbox/commit/fd6668a69ffc1385a43c27c35a7aa5dbe8c331ca), [`fd6668a`](https://github.com/ondrej-langr/toolbox/commit/fd6668a69ffc1385a43c27c35a7aa5dbe8c331ca)]:
+  - @ondrej-langr/bob@0.2.0
+
 ## 0.1.0
 
 ### Minor Changes

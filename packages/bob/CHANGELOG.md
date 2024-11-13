@@ -1,5 +1,15 @@
 # @ondrej-langr/bob
 
+## 0.2.0
+
+### Minor Changes
+
+- [#1](https://github.com/ondrej-langr/toolbox/pull/1) [`fd6668a`](https://github.com/ondrej-langr/toolbox/commit/fd6668a69ffc1385a43c27c35a7aa5dbe8c331ca) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - BREAKING: Updates exported API and exports only minimal functions and definitions for creating plugins.
+
+- [#1](https://github.com/ondrej-langr/toolbox/pull/1) [`fd6668a`](https://github.com/ondrej-langr/toolbox/commit/fd6668a69ffc1385a43c27c35a7aa5dbe8c331ca) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - BREAKING: Reworks metadata logic. Metadata can now be defined through Project instances with `getMetadataNamespace` method. Through this method user provides namespace name and its schema. Return type has get and set.
+
+- [#1](https://github.com/ondrej-langr/toolbox/pull/1) [`fd6668a`](https://github.com/ondrej-langr/toolbox/commit/fd6668a69ffc1385a43c27c35a7aa5dbe8c331ca) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - BREAKING: Detaches commands from package and implements plugin functionality. Plugins will define commands and are used either in whole workspace, in standalone project or workspace project where the plugins defined in workspace are inherited to currently executed project.
+
 ## 0.1.0
 
 ### Minor Changes

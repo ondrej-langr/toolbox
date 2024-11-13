@@ -1,13 +1,8 @@
 {
   "name": "ondrej-langr",
-  "version": "0.0.0",
   "description": "Toolbox with tools and wrenches made by Ondřej Langr",
-  "license": "ISC",
-  "author": {
-    "name": "Ondřej Langr",
-    "email": "hi@ondrejlangr.cz"
-  },
   "type": "module",
+  "version": "0.0.0",
   "scripts": {
     "build": "turbo run build",
     "deps:check": "pnpm dlx taze -r",
@@ -19,6 +14,11 @@
     "test": "turbo run test",
     "version:prerelease": "changeset version --snapshot unstable --snapshot-prerelease-template \"{tag}-{commit}\"",
     "version:stable": "changeset version"
+  },
+  "license": "ISC",
+  "author": {
+    "name": "Ondřej Langr",
+    "email": "hi@ondrejlangr.cz"
   },
   "dependencies": {
     "@apitree.cz/eslint-config": "^0.3.5",
@@ -38,9 +38,9 @@
     "vite": "^5.3.1",
     "vitest": "^1.6.0"
   },
-  "packageManager": "pnpm@9.7.0",
   "engines": {
     "node": ">=20",
     "pnpm": ">=8"
-  }
+  },
+  "packageManager": "pnpm@9.7.0"
 }

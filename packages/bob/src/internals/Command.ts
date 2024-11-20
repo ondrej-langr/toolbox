@@ -3,16 +3,12 @@ import type {
   Answers as InquirerQuestionAnswers,
 } from 'inquirer';
 import inquirer from 'inquirer';
-import path from 'node:path';
 
 import type { Json } from '../schemas/jsonSchema.js';
 
 import { logger } from './logger.js';
 import type { Program } from './Program.js';
-import {
-  type LayerConstructorOptions,
-  TemplateLayer,
-} from './TemplateLayer.js';
+import { TemplatesLayer } from './TemplatesLayer.js';
 import type { MaybeArray } from './types/MaybeArray.js';
 import type { MaybePromise } from './types/MaybePromise.js';
 
@@ -55,9 +51,8 @@ export class Command<
   private program: Omit<Program, 'run'>;
 
   private templateLayers: Array<{
-    templatePathRelative: string;
     renderTo: string;
-    readonly layer: TemplateLayer;
+    readonly layer: TemplatesLayer;
   }> = [];
 
   constructor(
@@ -121,45 +116,58 @@ export class Command<
     return this.program;
   }
 
-  bindTemplatesLayer(
-    relativeTemplatesPath: string,
-    options: LayerConstructorOptions<QuestionAnswers> & {
-      renderTo: string;
-    },
+  addTemplatesLayer(
+    templatesLayer: TemplatesLayer,
+    options: Pick<
+      (typeof this.templateLayers)[number],
+      'renderTo'
+    >,
   ) {
-    if (
-      path.isAbsolute(relativeTemplatesPath) &&
-      relativeTemplatesPath !== '/'
-    ) {
-      throw new Error(
-        `Templates layer path "${relativeTemplatesPath}" must be relative`,
-      );
-    }
-
-    if (!this.options.templatesRoot) {
-      throw new Error(
-        'Cannot register template when no templatesRoot option has been provided',
-      );
-    }
-
-    const { renderTo, ...layerOptions } = options;
-
     this.templateLayers.push({
-      templatePathRelative: relativeTemplatesPath,
-      renderTo,
-      layer: new TemplateLayer(
-        path.join(
-          this.options.templatesRoot,
-          relativeTemplatesPath === '/'
-            ? ''
-            : relativeTemplatesPath,
-        ),
-        layerOptions,
-      ),
+      layer: templatesLayer,
+      ...options,
     });
-
-    return this;
   }
+
+  // bindTemplatesLayer(
+  //   relativeTemplatesPath: string,
+  //   options: LayerConstructorOptions<QuestionAnswers> & {
+  //     renderTo: string;
+  //   },
+  // ) {
+  //   if (
+  //     path.isAbsolute(relativeTemplatesPath) &&
+  //     relativeTemplatesPath !== '/'
+  //   ) {
+  //     throw new Error(
+  //       `Templates layer path "${relativeTemplatesPath}" must be relative`,
+  //     );
+  //   }
+
+  //   if (!this.options.templatesRoot) {
+  //     throw new Error(
+  //       'Cannot register template when no templatesRoot option has been provided',
+  //     );
+  //   }
+
+  //   const { renderTo, ...layerOptions } = options;
+
+  //   this.templateLayers.push({
+  //     templatePathRelative: relativeTemplatesPath,
+  //     renderTo,
+  //     layer: new TemplatesLayer(
+  //       path.join(
+  //         this.options.templatesRoot,
+  //         relativeTemplatesPath === '/'
+  //           ? ''
+  //           : relativeTemplatesPath,
+  //       ),
+  //       layerOptions,
+  //     ),
+  //   });
+
+  //   return this;
+  // }
 
   async renderTemplateLayers() {
     for (const { layer, renderTo } of this
@@ -172,6 +180,7 @@ export class Command<
     }
   }
 
+  // TODO: through params override program options
   async execute() {
     const options =
       this.getProgram().getOptions();

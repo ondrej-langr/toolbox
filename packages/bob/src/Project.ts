@@ -56,6 +56,7 @@ export class Project {
    */
   private readonly root: string;
 
+  // TODO: load workspace through function and do not save
   /**
    * Workspace of this package
    */

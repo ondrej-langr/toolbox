@@ -133,6 +133,7 @@ export class Workspace extends Project {
    * Gets workspace packages as array of {@link Package} instances
    */
   async getProjects() {
+    // TODO: Do not cache
     if (this.projects?.length) {
       return this.projects;
     }

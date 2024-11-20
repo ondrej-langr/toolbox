@@ -34,7 +34,7 @@ This project is build upon some rules that every developer of this project must 
   - Global utility functions
 - [Command.ts](../src/Command.ts)
   - Class which defines logic tied to commands it self
-  - Also includes rendering helpers connected to the [TemplateLayer.ts](../src/TemplateLayer.ts)
+  - Also includes rendering helpers connected to the [TemplatesLayer.ts](../src/TemplatesLayer.ts)
 - [FileSystem.ts](../src/FileSystem.ts)
   - Custom filesystem that batches any type of work into one method
 - [program.ts](../src/program.ts)
@@ -47,7 +47,7 @@ This project is build upon some rules that every developer of this project must 
 - [TemplateFile.ts](../src/TemplateFile.ts)
   - Defines template rendering for a file
   - Can be used to define templates programaticaly (See [About types of templates](#about-types-of-templates) for more info)
-- [TemplateLayer.ts](../src/TemplateLayer.ts)
+- [TemplatesLayer.ts](../src/TemplatesLayer.ts)
   - Handles the execution of multiple [TemplateFile.ts](../src/TemplateFile.ts) in one [layer](#template-layers)
 - [Workspace.ts](../src/Workspace.ts)
   - Is built on [Project.ts](../src/Project.ts) with functionality geared towards Node.js workspaces
@@ -182,19 +182,19 @@ Required mentality around template layers is pretty simple. The whole idea is ju
 To put it simply: "Template Layers" is just fancy work for "folder structure rules"
 
 To start with layers user needs to define one root folder that will serve as the root layer where user will put the files that will render.
-To render files user will create a folder in which templates will reside. Path to this folder is then passed to the [TemplateLayer.ts](../src/TemplateLayer.ts) constructor itself.
-Adding sublayers (layers that share common file structure, but differ in some files) is as easy as creating a new folder with the name having a `+` sign at the start. This tells the rendering engine ([TemplateLayer.ts](../src/TemplateLayer.ts)) to not go further when rendering the upper template layer.
+To render files user will create a folder in which templates will reside. Path to this folder is then passed to the [TemplatesLayer.ts](../src/TemplatesLayer.ts) constructor itself.
+Adding sublayers (layers that share common file structure, but differ in some files) is as easy as creating a new folder with the name having a `+` sign at the start. This tells the rendering engine ([TemplatesLayer.ts](../src/TemplatesLayer.ts)) to not go further when rendering the upper template layer.
 
 In case of commands - commands have one simple rule since binding template layer is done through Command interface itself: top layer is `templates` folder created at the root of the command folder.
 
 ### Rendering
 
 Template Layer should be used for rendering.
-To get started user needs to use the [TemplateLayer.ts](../src/TemplateLayer.ts) class to mark where the template layer resides and then run `renderTemplates(...)` method to actually render the files.
+To get started user needs to use the [TemplatesLayer.ts](../src/TemplatesLayer.ts) class to mark where the template layer resides and then run `renderTemplates(...)` method to actually render the files.
 
 ```ts
-import { TemplateLayer } from './TemplateLayer.js';
-const templateLayer = new TemplateLayer(
+import { TemplatesLayer } from './TemplatesLayer.js';
+const templateLayer = new TemplatesLayer(
   "/my/absolute/path/to/templates",
   options: {
     onBeforeRender() {

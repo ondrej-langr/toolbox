@@ -20,13 +20,13 @@ export interface LayerConstructorOptions<
    * Runs before current layer is executed
    */
   onBeforeRender?: (
-    this: TemplateLayer<QuestionAnswers>,
+    this: TemplatesLayer<QuestionAnswers>,
   ) => MaybePromise<void>;
   /**
    * Runs after current layer is executed
    */
   onAfterRender?: (
-    this: TemplateLayer<QuestionAnswers>,
+    this: TemplatesLayer<QuestionAnswers>,
   ) => MaybePromise<void>;
 
   /**
@@ -34,19 +34,19 @@ export interface LayerConstructorOptions<
    * You can return object that is passed into each file as values that can be accessed inside templates
    */
   onBeforeFileRender?: (
-    this: TemplateLayer<QuestionAnswers>,
+    this: TemplatesLayer<QuestionAnswers>,
   ) => MaybePromise<Record<string, any> | void>;
 
   /**
    * Runs after each file that has been created
    */
   onAfterFileRender?: (
-    this: TemplateLayer<QuestionAnswers>,
+    this: TemplatesLayer<QuestionAnswers>,
   ) => MaybePromise<void>;
 }
 
 // TODO: this should be dumb rendering engine - find all templates and render them all. Everything other should control command
-export class TemplateLayer<
+export class TemplatesLayer<
   QuestionAnswers extends
     InquirerQuestionAnswers = InquirerQuestionAnswers,
 > {

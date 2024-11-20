@@ -1,5 +1,6 @@
 import {
   defineCommand,
+  defineTemplatesLayer,
   FileSystem,
   Project,
   Workspace,
@@ -99,9 +100,15 @@ export default defineCommand<{
 
     const presetTemplateFolderName = `+preset-${projectMeta.config.preset}`;
 
-    this.bindTemplatesLayer('/', { renderTo });
-    this.bindTemplatesLayer(
-      presetTemplateFolderName,
+    this.addTemplatesLayer(
+      defineTemplatesLayer('templates'),
+      { renderTo },
+    );
+
+    this.addTemplatesLayer(
+      defineTemplatesLayer(
+        presetTemplateFolderName,
+      ),
       { renderTo },
     );
 
@@ -109,11 +116,11 @@ export default defineCommand<{
       projectMeta.config.preset === 'next' &&
       projectMeta.config.features['testing-e2e']
     ) {
-      this.bindTemplatesLayer(
-        `${presetTemplateFolderName}/+feature-testing-e2e`,
-        {
-          renderTo,
-        },
+      this.addTemplatesLayer(
+        defineTemplatesLayer(
+          `templates/${presetTemplateFolderName}/+feature-testing-e2e`,
+        ),
+        { renderTo },
       );
     }
 
@@ -144,8 +151,10 @@ export default defineCommand<{
           rootFeatureTemplatesPath,
         )
       ) {
-        this.bindTemplatesLayer(
-          featureTemplateFolderName,
+        this.addTemplatesLayer(
+          defineTemplatesLayer(
+            featureTemplateFolderName,
+          ),
           { renderTo },
         );
       }
@@ -155,8 +164,10 @@ export default defineCommand<{
           presetFeatureTemplatesPath,
         )
       ) {
-        this.bindTemplatesLayer(
-          `${presetTemplateFolderName}/${featureTemplateFolderName}`,
+        this.addTemplatesLayer(
+          defineTemplatesLayer(
+            `templates/${presetTemplateFolderName}/${featureTemplateFolderName}`,
+          ),
           { renderTo },
         );
       }

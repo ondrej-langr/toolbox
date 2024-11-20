@@ -1,6 +1,6 @@
 import {
-  BOB_FOLDER_NAME,
   defineCommand,
+  defineTemplatesLayer,
   FileSystem,
   Project,
   Workspace,
@@ -222,12 +222,20 @@ export default defineCommand<{
       });
 
     // Create initial files on create
-    this.bindTemplatesLayer(`+preset-${preset}`, {
-      renderTo: projectPath,
-    });
+    this.addTemplatesLayer(
+      defineTemplatesLayer(
+        `templates/+preset-${preset}`,
+      ),
+      {
+        renderTo: projectPath,
+      },
+    );
+
     if (preset === 'next') {
-      this.bindTemplatesLayer(
-        `+preset-next/+preset-${presetNextRouterPreset}`,
+      this.addTemplatesLayer(
+        defineTemplatesLayer(
+          `+preset-next/+preset-${presetNextRouterPreset}`,
+        ),
         {
           renderTo: projectPath,
         },

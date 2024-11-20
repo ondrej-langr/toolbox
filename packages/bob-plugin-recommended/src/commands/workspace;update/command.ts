@@ -1,5 +1,6 @@
 import {
   defineCommand,
+  defineTemplatesLayer,
   FileSystem,
   Project,
   Workspace,
@@ -41,9 +42,12 @@ export default defineCommand({
       )
       .get();
 
-    this.bindTemplatesLayer('/', {
-      renderTo: workspace.getRoot(),
-    });
+    this.addTemplatesLayer(
+      defineTemplatesLayer('templates'),
+      {
+        renderTo: workspace.getRoot(),
+      },
+    );
 
     // const metadata = await this.getMetadata();
     for (const [
@@ -68,8 +72,10 @@ export default defineCommand({
           rootFeatureTemplatesPath,
         )
       ) {
-        this.bindTemplatesLayer(
-          featureTemplateFolderName,
+        this.addTemplatesLayer(
+          defineTemplatesLayer(
+            `templates/${featureTemplateFolderName}`,
+          ),
           {
             renderTo: workspace.getRoot(),
           },

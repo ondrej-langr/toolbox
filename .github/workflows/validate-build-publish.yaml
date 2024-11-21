@@ -2,9 +2,10 @@ name: Validate, Build and Publish
 
 on:
   workflow_dispatch:
+  pull_request:
   push:
     paths:
-      - '**'
+      - 'main'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -122,7 +123,7 @@ jobs:
         uses: ./.github/actions/install-dependencies
 
       - name: Publish Unstable
-        if: ${{ github.event.pull_request.base.ref == 'main' }}
+        if: ${{ github.event.pull_request.base.ref == github.event.pull_request.base.repo.default_branch }}
         uses: ./.github/actions/publish-unstable
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}

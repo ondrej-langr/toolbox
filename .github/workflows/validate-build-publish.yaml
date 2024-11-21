@@ -5,7 +5,7 @@ on:
   pull_request:
   push:
     paths:
-      - '**'
+      - 'main'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -122,13 +122,8 @@ jobs:
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
 
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-
-      - name: Publish Unstable on target ${{github.event.pull_request.base.ref}}
-        if: ${{ github.event.pull_request.base.ref == 'main' }}
+      - name: Publish Unstable
+        if: ${{ github.event.pull_request.base.ref == github.event.pull_request.base.repo.default_branch }}
         uses: ./.github/actions/publish-unstable
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}

@@ -26,13 +26,9 @@ const tasks = z.record(
 
 const rootSchema = z.object({
   tasks,
-  globalDependencies: z
-    .array(z.string())
-    .optional(),
+  globalDependencies: z.array(z.string()).optional(),
   globalEnv: z.array(z.string()).optional(),
-  globalPassThroughEnv: z
-    .array(z.string())
-    .optional(),
+  globalPassThroughEnv: z.array(z.string()).optional(),
   globalDotEnv: z.array(z.string()).nullish(),
 });
 

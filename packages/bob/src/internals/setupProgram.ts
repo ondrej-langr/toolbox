@@ -9,8 +9,7 @@ export async function setupProgram() {
   const bobPackage = await Project.loadAt(
     path.join(PACKAGE_RUNTIME_ROOT, '..'),
   );
-  const bobPackageJson =
-    bobPackage.getPackageInfo();
+  const bobPackageJson = bobPackage.getPackageInfo();
 
   program
     .name(bobPackageJson.name)

@@ -1,5 +1,4 @@
 import { glob } from 'glob';
-import type { Answers as InquirerQuestionAnswers } from 'inquirer';
 import nodeFs from 'node:fs';
 import path from 'node:path';
 
@@ -14,19 +13,20 @@ const allowedTemplateExtensions = [
 ];
 
 export interface LayerConstructorOptions<
-  QuestionAnswers extends InquirerQuestionAnswers,
+  TVariables extends Record<string, any>,
 > {
+  variables?: TVariables;
   /**
    * Runs before current layer is executed
    */
   onBeforeRender?: (
-    this: TemplatesLayer<QuestionAnswers>,
+    this: TemplatesLayer<TVariables>,
   ) => MaybePromise<void>;
   /**
    * Runs after current layer is executed
    */
   onAfterRender?: (
-    this: TemplatesLayer<QuestionAnswers>,
+    this: TemplatesLayer<TVariables>,
   ) => MaybePromise<void>;
 
   /**
@@ -34,31 +34,33 @@ export interface LayerConstructorOptions<
    * You can return object that is passed into each file as values that can be accessed inside templates
    */
   onBeforeFileRender?: (
-    this: TemplatesLayer<QuestionAnswers>,
+    this: TemplatesLayer<TVariables>,
   ) => MaybePromise<Record<string, any> | void>;
 
   /**
    * Runs after each file that has been created
    */
   onAfterFileRender?: (
-    this: TemplatesLayer<QuestionAnswers>,
+    this: TemplatesLayer<TVariables>,
   ) => MaybePromise<void>;
 }
 
 // TODO: this should be dumb rendering engine - find all templates and render them all. Everything other should control command
 export class TemplatesLayer<
-  QuestionAnswers extends
-    InquirerQuestionAnswers = InquirerQuestionAnswers,
+  TVariables extends Record<string, any> = Record<
+    string,
+    any
+  >,
 > {
   private readonly options:
-    | LayerConstructorOptions<QuestionAnswers>
+    | LayerConstructorOptions<TVariables>
     | undefined;
 
   private readonly dirname: string;
 
   constructor(
     dirname: string,
-    options?: LayerConstructorOptions<QuestionAnswers>,
+    options?: LayerConstructorOptions<TVariables>,
   ) {
     this.options = options;
     this.dirname = dirname;
@@ -114,7 +116,7 @@ export class TemplatesLayer<
 
   async renderTemplates(
     to: string,
-    variables: object | undefined,
+    variables: Record<string, any> | undefined,
   ) {
     const [resolvedFiles] = await Promise.all([
       this.resolveTemplates(),
@@ -143,13 +145,12 @@ export class TemplatesLayer<
 
         createdFilesAsPromises.push(
           Promise.resolve()
-            .then(() =>
-              this.options?.onBeforeFileRender?.apply(
-                this,
-              ),
-            )
             .then(async () => {
+              await this.options?.onBeforeFileRender?.apply(
+                this,
+              );
               const template: TemplateFile<
+                any,
                 any,
                 any
               > =
@@ -179,6 +180,7 @@ export class TemplatesLayer<
 
               await template.writeTo(
                 writeTemplateTo,
+                variables,
               );
             })
             .then(async () => {

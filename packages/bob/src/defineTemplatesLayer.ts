@@ -1,4 +1,3 @@
-import type { Answers as InquirerQuestionAnswers } from 'inquirer';
 import path from 'node:path';
 
 import {
@@ -8,11 +7,10 @@ import {
 import { getCallerFilename } from './internals/utils/getCallerFilename.js';
 
 export const defineTemplatesLayer = <
-  QuestionAnswers extends
-    InquirerQuestionAnswers = InquirerQuestionAnswers,
+  TVariables extends Record<string, any>,
 >(
   templatesRootPath: string,
-  options?: LayerConstructorOptions<QuestionAnswers>,
+  options?: LayerConstructorOptions<TVariables>,
 ) => {
   const callerFilepath = getCallerFilename();
 

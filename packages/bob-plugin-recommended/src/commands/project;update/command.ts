@@ -28,17 +28,14 @@ export default defineCommand<{
 
           return (
             closestProjectOrWorkspace &&
-            closestProjectOrWorkspace instanceof
-              Workspace
+            closestProjectOrWorkspace instanceof Workspace
           );
         },
         async choices() {
-          const workspace =
-            await program.getProject();
+          const workspace = await program.getProject();
           if (
             !workspace ||
-            workspace instanceof Workspace ===
-              false
+            workspace instanceof Workspace === false
           ) {
             throw new Error(
               'Cannot show choices when project is not workspace. This is a bug of @ondrej-langr/bob',
@@ -49,16 +46,11 @@ export default defineCommand<{
             await workspace.getProjects();
 
           if (!workspaceProjects?.length) {
-            throw new Error(
-              'Workspace has no projects',
-            );
+            throw new Error('Workspace has no projects');
           }
 
-          return workspaceProjects.map(
-            (project) =>
-              project
-                .getRoot()
-                .replace(workspace.getRoot(), ''),
+          return workspaceProjects.map((project) =>
+            project.getRoot().replace(workspace.getRoot(), ''),
           );
         },
       },
@@ -67,8 +59,7 @@ export default defineCommand<{
   async handler() {
     const program = this.getProgram();
     const options = await program.getOptions();
-    const closestProjectOrWorkspace =
-      await program.getProject();
+    const closestProjectOrWorkspace = await program.getProject();
     const { cwd } = options;
 
     if (!closestProjectOrWorkspace) {
@@ -78,18 +69,16 @@ export default defineCommand<{
     }
 
     const answers = this.getAnswers();
-    const renderTo =
-      answers.projectLocationInWorkspace
-        ? path.join(
-            closestProjectOrWorkspace.getRoot(),
-            answers.projectLocationInWorkspace,
-          )
-        : closestProjectOrWorkspace.getRoot();
+    const renderTo = answers.projectLocationInWorkspace
+      ? path.join(
+          closestProjectOrWorkspace.getRoot(),
+          answers.projectLocationInWorkspace,
+        )
+      : closestProjectOrWorkspace.getRoot();
 
-    const project =
-      answers.projectLocationInWorkspace
-        ? await Project.loadAt(renderTo)
-        : (closestProjectOrWorkspace as Project);
+    const project = answers.projectLocationInWorkspace
+      ? await Project.loadAt(renderTo)
+      : (closestProjectOrWorkspace as Project);
 
     const projectMeta = await project
       .getMetadataNamespace(
@@ -100,15 +89,12 @@ export default defineCommand<{
 
     const presetTemplateFolderName = `+preset-${projectMeta.config.preset}`;
 
-    this.addTemplatesLayer(
-      defineTemplatesLayer('templates'),
-      { renderTo },
-    );
+    this.addTemplatesLayer(defineTemplatesLayer('templates'), {
+      renderTo,
+    });
 
     this.addTemplatesLayer(
-      defineTemplatesLayer(
-        presetTemplateFolderName,
-      ),
+      defineTemplatesLayer(presetTemplateFolderName),
       { renderTo },
     );
 
@@ -124,10 +110,7 @@ export default defineCommand<{
       );
     }
 
-    for (const [
-      featureName,
-      enabled,
-    ] of Object.entries(
+    for (const [featureName, enabled] of Object.entries(
       projectMeta.config.features,
     )) {
       if (!enabled) {
@@ -139,22 +122,17 @@ export default defineCommand<{
         this.options.templatesRoot!,
         featureTemplateFolderName,
       );
-      const presetFeatureTemplatesPath =
-        path.join(
-          this.options.templatesRoot!,
-          presetTemplateFolderName,
-          featureTemplateFolderName,
-        );
+      const presetFeatureTemplatesPath = path.join(
+        this.options.templatesRoot!,
+        presetTemplateFolderName,
+        featureTemplateFolderName,
+      );
 
       if (
-        FileSystem.cacheless.existsSync(
-          rootFeatureTemplatesPath,
-        )
+        FileSystem.cacheless.existsSync(rootFeatureTemplatesPath)
       ) {
         this.addTemplatesLayer(
-          defineTemplatesLayer(
-            featureTemplateFolderName,
-          ),
+          defineTemplatesLayer(featureTemplateFolderName),
           { renderTo },
         );
       }

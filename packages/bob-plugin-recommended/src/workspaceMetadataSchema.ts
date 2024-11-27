@@ -10,12 +10,10 @@ export const workspaceMetadataSchema = z.object({
   config: z.object({
     features: z.object(
       Object.fromEntries(
-        workspaceMetadataConfigFeatures.map(
-          (key) => [
-            key,
-            z.boolean().default(false),
-          ],
-        ),
+        workspaceMetadataConfigFeatures.map((key) => [
+          key,
+          z.boolean().default(false),
+        ]),
       ) as {
         [key in (typeof workspaceMetadataConfigFeatures)[number]]: z.ZodDefault<z.ZodBoolean>;
       },

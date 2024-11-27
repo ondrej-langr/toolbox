@@ -1,9 +1,4 @@
-import {
-  afterEach,
-  describe,
-  it,
-  vi,
-} from 'vitest';
+import { afterEach, describe, it, vi } from 'vitest';
 
 import { Workspace } from '../src/Workspace';
 

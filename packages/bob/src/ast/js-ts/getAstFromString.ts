@@ -1,8 +1,6 @@
 import ts from 'typescript';
 
-export const getAstFromString = (
-  statementString: string,
-) =>
+export const getAstFromString = (statementString: string) =>
   ts.createSourceFile(
     'temp.tsx',
     statementString,

@@ -10,8 +10,13 @@ import type {
 
 import type { MaybePromise } from './types/MaybePromise.js';
 
-export type TemplateHandler<I, O = I> = (
-  incomming?: I,
+export type TemplateHandler<
+  I,
+  O = I,
+  V = Record<string, any>,
+> = (
+  incomming: I | undefined,
+  metadata: { variables?: V },
 ) => MaybePromise<O>;
 
 export type JsonTemplateHandler = TemplateHandler<
@@ -96,6 +101,7 @@ const fileParser: {
 export class TemplateFile<
   K extends keyof TemplateHandlerTypeToHandler,
   H extends TemplateHandlerTypeToHandler[K],
+  V extends Record<string, any>,
 > {
   private handler: H;
 
@@ -110,6 +116,7 @@ export class TemplateFile<
     existingFileContentsAsString:
       | string
       | undefined = undefined,
+    variables?: V,
   ) {
     const existingContentDeserialized =
       await Promise.resolve(
@@ -121,6 +128,8 @@ export class TemplateFile<
     const result = await Promise.resolve(
       this.handler(
         existingContentDeserialized as any,
+        // Make sure that variables are always an object
+        { variables: variables ?? {} },
       ),
     );
 
@@ -129,12 +138,16 @@ export class TemplateFile<
     );
   }
 
-  async writeTo(resultLocation: string) {
+  async writeTo(
+    resultLocation: string,
+    variables?: V,
+  ) {
     const existingFileContentsAsString =
       await FileSystem.readFile(resultLocation);
     const templateContents =
       await this.runTemplateHandler(
         existingFileContentsAsString,
+        variables,
       );
 
     FileSystem.writeFile(

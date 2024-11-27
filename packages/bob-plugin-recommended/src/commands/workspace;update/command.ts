@@ -16,14 +16,12 @@ export default defineCommand({
     const program = this.getProgram();
     const options = await program.getOptions();
     const { cwd } = options;
-    const workspaceOrProject:
-      | Project
-      | Workspace = await program.getProject();
+    const workspaceOrProject: Project | Workspace =
+      await program.getProject();
 
     if (
       !workspaceOrProject ||
-      (workspaceOrProject instanceof Workspace ===
-        false &&
+      (workspaceOrProject instanceof Workspace === false &&
         !workspaceOrProject.workspace)
     ) {
       throw new Error(
@@ -42,18 +40,12 @@ export default defineCommand({
       )
       .get();
 
-    this.addTemplatesLayer(
-      defineTemplatesLayer('templates'),
-      {
-        renderTo: workspace.getRoot(),
-      },
-    );
+    this.addTemplatesLayer(defineTemplatesLayer('templates'), {
+      renderTo: workspace.getRoot(),
+    });
 
     // const metadata = await this.getMetadata();
-    for (const [
-      featureName,
-      enabled,
-    ] of Object.entries(
+    for (const [featureName, enabled] of Object.entries(
       definedMetadata.config.features,
     )) {
       if (!enabled) {
@@ -68,9 +60,7 @@ export default defineCommand({
       );
 
       if (
-        FileSystem.cacheless.existsSync(
-          rootFeatureTemplatesPath,
-        )
+        FileSystem.cacheless.existsSync(rootFeatureTemplatesPath)
       ) {
         this.addTemplatesLayer(
           defineTemplatesLayer(

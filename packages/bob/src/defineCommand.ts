@@ -19,16 +19,12 @@ export function defineCommand<
   },
 ): Command<QuestionAnswers> {
   const filepath = getCallerFilename();
-  const { description, ...commandOptions } =
-    options;
+  const { description, ...commandOptions } = options;
   const filename = path.basename(filepath);
   const commandRoot = path.dirname(filepath);
   let commandName = path.basename(commandRoot);
 
-  if (
-    filename !== 'command.js' &&
-    filename !== 'command.ts'
-  ) {
+  if (filename !== 'command.js' && filename !== 'command.ts') {
     throw new Error(
       `File where Command.define is called must be named command.ts. Got ${filename}`,
     );
@@ -42,23 +38,13 @@ export function defineCommand<
   }
 
   if (commandName.includes(';')) {
-    commandName = commandName.replaceAll(
-      ';',
-      ':',
-    );
+    commandName = commandName.replaceAll(';', ':');
   }
 
-  const command = new Command(
-    commandName,
-    description,
-    {
-      ...commandOptions,
-      templatesRoot: path.join(
-        commandRoot,
-        'templates',
-      ),
-    },
-  );
+  const command = new Command(commandName, description, {
+    ...commandOptions,
+    templatesRoot: path.join(commandRoot, 'templates'),
+  });
 
   logger.debug(`Defined command ${commandName}`);
 

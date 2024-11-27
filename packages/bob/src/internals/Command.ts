@@ -35,9 +35,7 @@ export interface CommandOptions<
   handler?: // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   | ((
         this: Command<QuestionAnswers>,
-      ) => MaybePromise<MaybeArray<
-        Command<any>
-      > | void>)
+      ) => MaybePromise<MaybeArray<Command<any>> | void>)
     | undefined;
 }
 
@@ -91,11 +89,10 @@ export class Command<
           this.options.questions.apply(this),
         );
 
-    this.answers =
-      await inquirer.prompt<QuestionAnswers>(
-        resolvedQuestions,
-        initialAnswers,
-      );
+    this.answers = await inquirer.prompt<QuestionAnswers>(
+      resolvedQuestions,
+      initialAnswers,
+    );
 
     return this;
   }
@@ -108,9 +105,7 @@ export class Command<
 
   getProgram() {
     if (typeof this.program === 'undefined') {
-      throw new Error(
-        'Command does not belong to any program',
-      );
+      throw new Error('Command does not belong to any program');
     }
 
     return this.program;
@@ -170,20 +165,15 @@ export class Command<
   // }
 
   async renderTemplateLayers() {
-    for (const { layer, renderTo } of this
-      .templateLayers) {
+    for (const { layer, renderTo } of this.templateLayers) {
       // eslint-disable-next-line no-await-in-loop -- intended
-      await layer.renderTemplates(
-        renderTo,
-        this.answers,
-      );
+      await layer.renderTemplates(renderTo, this.answers);
     }
   }
 
   // TODO: through params override program options
   async execute() {
-    const options =
-      this.getProgram().getOptions();
+    const options = this.getProgram().getOptions();
 
     logger.debug('Running command', {
       name: this.name,
@@ -192,9 +182,7 @@ export class Command<
 
     await this.askQuestions();
 
-    await Promise.resolve(
-      this.options?.handler?.apply(this),
-    );
+    await Promise.resolve(this.options?.handler?.apply(this));
     await this.renderTemplateLayers();
   }
 

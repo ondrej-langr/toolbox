@@ -150,17 +150,14 @@ Templates can be described by two types:
       ```ts
       import { TemplateFile } from '~/TemplateFile.js';
 
-      export default TemplateFile.define(
-        'json',
-        (existing) => {
-          // do magic (validation, fetching, etc...)
-          // And now return what should be in the file after the template is done generating
-          return {
-            ...existing,
-            override: 'this',
-          };
-        },
-      );
+      export default TemplateFile.define('json', (existing) => {
+        // do magic (validation, fetching, etc...)
+        // And now return what should be in the file after the template is done generating
+        return {
+          ...existing,
+          override: 'this',
+        };
+      });
       ```
 
   - ✅ Type inference
@@ -218,8 +215,7 @@ export default Command.define({
   questions: [],
   async handler() {
     const { cwd } = getProgramOptions();
-    const workspace =
-      await Workspace.loadNearest(cwd);
+    const workspace = await Workspace.loadNearest(cwd);
 
     if (!workspace) {
       throw new Error(

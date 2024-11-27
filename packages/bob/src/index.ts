@@ -10,6 +10,7 @@ export * from './Workspace.js';
 export { BOB_FOLDER_NAME } from './internals/constants.js';
 
 export { type Command } from './internals/Command.js';
+export { type Program } from './internals/Program.js';
 export { type Config } from './internals/Config.js';
 export { type Plugin } from './internals/Plugin.js';
 export { type TemplateFile } from './internals/TemplateFile.js';

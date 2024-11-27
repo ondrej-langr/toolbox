@@ -18,18 +18,13 @@ vi.mock('fs-extra', () => ({
   },
 }));
 
-vi.mock(
-  '../src/utils/getProgramOptions.ts',
-  () => ({
-    __esModule: true,
-    getProgramOptions: vi.fn(),
-  }),
-);
+vi.mock('../src/utils/getProgramOptions.ts', () => ({
+  __esModule: true,
+  getProgramOptions: vi.fn(),
+}));
 
 const mockedOutputFile = vi.mocked(fs.outputFile);
-const mockedFsExistsSync = vi.mocked(
-  fs.existsSync,
-);
+const mockedFsExistsSync = vi.mocked(fs.existsSync);
 
 describe('FileSystem', () => {
   beforeEach(() => {

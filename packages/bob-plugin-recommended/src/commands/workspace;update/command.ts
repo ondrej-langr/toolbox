@@ -2,7 +2,6 @@ import {
   defineCommand,
   defineTemplatesLayer,
   FileSystem,
-  Project,
   Workspace,
 } from '@ondrej-langr/bob';
 import path from 'node:path';
@@ -16,8 +15,7 @@ export default defineCommand({
     const program = this.getProgram();
     const options = await program.getOptions();
     const { cwd } = options;
-    const workspaceOrProject: Project | Workspace =
-      await program.getProject();
+    const workspaceOrProject = await program.getProject();
 
     if (
       !workspaceOrProject ||
@@ -59,13 +57,9 @@ export default defineCommand({
         featureTemplateFolderName,
       );
 
-      if (
-        FileSystem.cacheless.existsSync(rootFeatureTemplatesPath)
-      ) {
+      if (FileSystem.cacheless.existsSync(rootFeatureTemplatesPath)) {
         this.addTemplatesLayer(
-          defineTemplatesLayer(
-            `templates/${featureTemplateFolderName}`,
-          ),
+          defineTemplatesLayer(`templates/${featureTemplateFolderName}`),
           {
             renderTo: workspace.getRoot(),
           },

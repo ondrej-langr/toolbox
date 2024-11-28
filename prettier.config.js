@@ -2,7 +2,7 @@ import { config } from "@apitree.cz/prettier-config";
 
 export default {
   ...config,
-  printWidth: 75,
+  printWidth: 65,
   importOrder: ["<THIRD_PARTY_MODULES>", "^../", "^[./]", "^@/"],
   importOrderSeparation: true,
   importOrderSortSpecifiers: true,

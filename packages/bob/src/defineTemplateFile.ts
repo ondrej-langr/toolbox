@@ -6,6 +6,7 @@ import {
 export function defineTemplateFile<
   K extends keyof TemplateHandlerTypeToHandler,
   H extends TemplateHandlerTypeToHandler[K],
->(type: K, handler: H) {
+  V extends Record<string, any> = Record<string, any>,
+>(type: K, handler: H): TemplateFile<K, H, V> {
   return new TemplateFile(type, handler);
 }

@@ -2,17 +2,15 @@ import { Command as CommanderCommand } from 'commander';
 import { glob } from 'glob';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { DefaultProgramOptions } from '~/DefaultProgramOptions.js';
-import { FileSystem } from '~/FileSystem.js';
-import { Project } from '~/Project.js';
-import { Workspace } from '~/Workspace.js';
+
+import type { DefaultProgramOptions } from '../DefaultProgramOptions.js';
+import { FileSystem } from '../FileSystem.js';
+import { Project } from '../Project.js';
+import { Workspace } from '../Workspace.js';
 
 import { Command } from './Command.js';
 import { Config, type ConfigOptions } from './Config.js';
-import {
-  BOB_FOLDER_NAME,
-  PACKAGE_RUNTIME_ROOT,
-} from './constants.js';
+import { BOB_FOLDER_NAME, PACKAGE_RUNTIME_ROOT } from './constants.js';
 import { logger } from './logger.js';
 import { Plugin } from './Plugin.js';
 
@@ -62,9 +60,7 @@ export class Program {
     try {
       projectOrWorkspace = await Workspace.loadAt(cwd);
     } catch {
-      projectOrWorkspace = await Project.loadAt(cwd).catch(
-        () => null,
-      );
+      projectOrWorkspace = await Project.loadAt(cwd).catch(() => null);
     }
 
     return projectOrWorkspace;
@@ -73,13 +69,10 @@ export class Program {
   private async getPlugins() {
     if (typeof this.plugins === 'undefined') {
       const project = await this.getProject();
-      const totalConfigPluginsOptions: ConfigOptions['plugins'] =
-        [];
+      const totalConfigPluginsOptions: ConfigOptions['plugins'] = [];
 
       if (project) {
-        const projectBobConfig = await Config.loadAt(
-          project.getRoot(),
-        );
+        const projectBobConfig = await Config.loadAt(project.getRoot());
 
         if (projectBobConfig) {
           totalConfigPluginsOptions.push(
@@ -124,15 +117,10 @@ export class Program {
         // Find commands in plugins
         ...[...plugins.entries()].map(([pluginPackageName]) => {
           const pluginPackageSrcRoot = path.dirname(
-            fileURLToPath(
-              import.meta.resolve(pluginPackageName),
-            ),
+            fileURLToPath(import.meta.resolve(pluginPackageName)),
           );
 
-          return path.join(
-            pluginPackageSrcRoot,
-            COMMANDS_FILE_MATCH,
-          );
+          return path.join(pluginPackageSrcRoot, COMMANDS_FILE_MATCH);
         }),
       ];
 
@@ -147,10 +135,7 @@ export class Program {
         );
 
         // Find commands in workspace if its there
-        if (
-          project instanceof Workspace === false &&
-          project.workspace
-        ) {
+        if (project instanceof Workspace === false && project.workspace) {
           commandsGlobMatches.push(
             path.join(
               project.workspace.getRoot(),
@@ -169,8 +154,7 @@ export class Program {
         async (commandPathname): Promise<Command<any>> => {
           const command = await import(commandPathname);
           const defaultExport =
-            command &&
-            ('default' in command ? command.default : command);
+            command && ('default' in command ? command.default : command);
           const hasValidExport =
             defaultExport && defaultExport instanceof Command;
 
@@ -185,9 +169,7 @@ export class Program {
           return defaultExport;
         },
       );
-      const resolvedCommands = await Promise.all(
-        commandsAsPromises,
-      );
+      const resolvedCommands = await Promise.all(commandsAsPromises);
       this.commands = new Set(
         resolvedCommands.flatMap((commands) => commands),
       );
@@ -210,7 +192,7 @@ export class Program {
     }
   }
 
-  async getOptions() {
+  async getOptions(): Promise<DefaultProgramOptions> {
     const commanderProgram = await this.getCommanderProgram();
 
     return commanderProgram.opts<DefaultProgramOptions>();

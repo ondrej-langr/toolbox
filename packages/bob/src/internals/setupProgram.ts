@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import path from 'node:path';
-import { Project } from '~/Project.js';
+
+import { Project } from '../Project.js';
 
 import { PACKAGE_RUNTIME_ROOT } from './constants.js';
 

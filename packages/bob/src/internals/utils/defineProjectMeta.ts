@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- ok for this cases */
 import path from 'node:path';
 import type { z } from 'zod';
-import { FileSystem } from '~/FileSystem.js';
-import { Project } from '~/Project.js';
+
+import { FileSystem } from '../../FileSystem.js';
+import { Project } from '../../Project.js';
 
 type ProjectMetaValueSchema = z.ZodObject<{
   config:

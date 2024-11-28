@@ -1,5 +1,6 @@
 import colors from 'picocolors';
-import type { Json } from '~/schemas/jsonSchema.js';
+
+import type { Json } from '../schemas/jsonSchema.js';
 
 const runWhenDebugEnabled =
   <T extends (...params: any[]) => any>(action: T) =>

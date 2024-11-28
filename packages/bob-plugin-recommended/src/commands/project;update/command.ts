@@ -20,30 +20,24 @@ export default defineCommand<{
       {
         name: 'projectLocationInWorkspace',
         type: 'list',
-        message:
-          'What project should be updated in current workspace?',
+        message: 'What project should be updated in current workspace?',
         async when() {
-          const closestProjectOrWorkspace =
-            await program.getProject();
+          const closestProjectOrWorkspace = await program.getProject();
 
           return (
-            closestProjectOrWorkspace &&
+            !!closestProjectOrWorkspace &&
             closestProjectOrWorkspace instanceof Workspace
           );
         },
         async choices() {
           const workspace = await program.getProject();
-          if (
-            !workspace ||
-            workspace instanceof Workspace === false
-          ) {
+          if (!workspace || workspace instanceof Workspace === false) {
             throw new Error(
               'Cannot show choices when project is not workspace. This is a bug of @ondrej-langr/bob',
             );
           }
 
-          const workspaceProjects =
-            await workspace.getProjects();
+          const workspaceProjects = await workspace.getProjects();
 
           if (!workspaceProjects?.length) {
             throw new Error('Workspace has no projects');
@@ -128,20 +122,14 @@ export default defineCommand<{
         featureTemplateFolderName,
       );
 
-      if (
-        FileSystem.cacheless.existsSync(rootFeatureTemplatesPath)
-      ) {
+      if (FileSystem.cacheless.existsSync(rootFeatureTemplatesPath)) {
         this.addTemplatesLayer(
           defineTemplatesLayer(featureTemplateFolderName),
           { renderTo },
         );
       }
 
-      if (
-        FileSystem.cacheless.existsSync(
-          presetFeatureTemplatesPath,
-        )
-      ) {
+      if (FileSystem.cacheless.existsSync(presetFeatureTemplatesPath)) {
         this.addTemplatesLayer(
           defineTemplatesLayer(
             `templates/${presetTemplateFolderName}/${featureTemplateFolderName}`,

@@ -36,16 +36,16 @@ const enabledWhenInWorkspace: AsyncDynamicQuestionProperty<
   any
 > = async (cwd: string) => !!(await getWorkspace(cwd));
 
-export default defineCommand<{
+type CommandAnswers = {
   name: string;
   description: string;
   preset: (typeof projectPresets)[number];
   projectLocationInWorkspace?: string;
-  presetNextRouterPreset?: z.infer<
-    typeof presetNextRouterChoices
-  >;
+  presetNextRouterPreset?: z.infer<typeof presetNextRouterChoices>;
   selectedFeatures: typeof projectMetadataConfigFeatures;
-}>({
+};
+
+export default defineCommand<CommandAnswers>({
   description: 'Create project',
   questions() {
     const program = this.getProgram();
@@ -81,9 +81,7 @@ export default defineCommand<{
         type: 'list',
         message: 'Select router type',
         when: ({ preset }) => preset === 'next',
-        default: Object.values(
-          presetNextRouterChoices.enum['app-router'],
-        ),
+        default: Object.values(presetNextRouterChoices.enum['app-router']),
         choices: Object.values(presetNextRouterChoices.enum),
       },
       {
@@ -97,9 +95,7 @@ export default defineCommand<{
 
           if (await getWorkspace(options.cwd)) {
             // Prettier configuration is taken from workspace
-            result = result.filter(
-              (value) => value !== 'prettier',
-            );
+            result = result.filter((value) => value !== 'prettier');
           }
 
           if (answers.preset === 'next') {
@@ -107,9 +103,7 @@ export default defineCommand<{
           }
 
           // Disable option for testing-e2e outside of next preset
-          return result.filter(
-            (value) => value !== 'testing-e2e',
-          );
+          return result.filter((value) => value !== 'testing-e2e');
         },
       },
       {
@@ -128,9 +122,7 @@ export default defineCommand<{
             workspaces?.map((workspacePath) =>
               path.join(
                 workspacePath.replace('/*', ''),
-                getProjectFolderNameFromProjectName(
-                  answers.name,
-                ),
+                getProjectFolderNameFromProjectName(answers.name),
               ),
             ) ?? []
           );
@@ -159,17 +151,14 @@ export default defineCommand<{
         )
       : path.join(cwd, name.replace('@', '').replace('/', '-'));
 
-    FileSystem.writeJson(
-      path.join(projectPath, 'package.json'),
-      {
-        name,
-        description,
-        ...getPackageJsonDefaults(),
-        ...(preset !== 'next' && {
-          private: true,
-        }),
-      } satisfies z.input<typeof packageJsonSchema>,
-    );
+    FileSystem.writeJson(path.join(projectPath, 'package.json'), {
+      name,
+      description,
+      ...getPackageJsonDefaults(),
+      ...(preset !== 'next' && {
+        private: true,
+      }),
+    } satisfies z.input<typeof packageJsonSchema>);
 
     const newProject = await Project.loadAt(projectPath);
     const features = Object.fromEntries(

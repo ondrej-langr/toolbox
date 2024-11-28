@@ -1,9 +1,7 @@
-import type {
-  DistinctQuestion,
-  Answers as InquirerQuestionAnswers,
-} from 'inquirer';
 import inquirer from 'inquirer';
+import type { DistinctQuestion as InquirerQuestion } from 'inquirer';
 
+import type { DefaultCommandAnswers } from '../DefaultCommandAnswers.js';
 import type { Json } from '../schemas/jsonSchema.js';
 
 import { logger } from './logger.js';
@@ -12,40 +10,39 @@ import { TemplatesLayer } from './TemplatesLayer.js';
 import type { MaybeArray } from './types/MaybeArray.js';
 import type { MaybePromise } from './types/MaybePromise.js';
 
-export interface CommandOptions<
-  QuestionAnswers extends InquirerQuestionAnswers,
-  Question = DistinctQuestion<QuestionAnswers> & {
-    name: keyof QuestionAnswers;
-  },
-> {
-  templatesRoot?: string | undefined;
+export type CommandQuestion<CommandAnswers extends DefaultCommandAnswers> =
+  InquirerQuestion<CommandAnswers> & {
+    name: keyof CommandAnswers;
+  };
 
-  /**
-   * {@link https://github.com/SBoudrias/Inquirer.js Inquirer.js} questions as array, each array item could be function which will return question or null
-   */
-  questions:
-    | Array<Question>
+export type CommandOptions<CommandAnswers extends DefaultCommandAnswers> =
+  {
+    templatesRoot?: string | undefined;
+
+    /**
+     * {@link https://github.com/SBoudrias/Inquirer.js Inquirer.js} questions as array, each array item could be function which will return question or null
+     */
+    questions:
+      | Array<CommandQuestion<CommandAnswers>>
+      | ((
+          this: Command<CommandAnswers>,
+        ) => MaybePromise<Array<CommandQuestion<CommandAnswers>>>);
+
+    /**
+     * Runs before current layer is executed
+     */
+    handler?: // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     | ((
-        this: Command<QuestionAnswers>,
-      ) => MaybePromise<Array<Question>>);
+          this: Command<CommandAnswers>,
+        ) => MaybePromise<MaybeArray<Command<any>> | void>)
+      | undefined;
+  };
 
-  /**
-   * Runs before current layer is executed
-   */
-  handler?: // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-  | ((
-        this: Command<QuestionAnswers>,
-      ) => MaybePromise<MaybeArray<Command<any>> | void>)
-    | undefined;
-}
-
-export class Command<
-  QuestionAnswers extends InquirerQuestionAnswers,
-> {
-  readonly options: CommandOptions<QuestionAnswers>;
+export class Command<CommandAnswers extends DefaultCommandAnswers> {
+  readonly options: CommandOptions<CommandAnswers>;
   readonly name: string;
   readonly description: string;
-  private answers: QuestionAnswers | undefined;
+  private answers: CommandAnswers | undefined;
   private program: Omit<Program, 'run'>;
 
   private templateLayers: Array<{
@@ -56,7 +53,7 @@ export class Command<
   constructor(
     name: string,
     description: string,
-    options: CommandOptions<QuestionAnswers>,
+    options: CommandOptions<CommandAnswers>,
   ) {
     this.name = name;
     this.description = description;
@@ -74,22 +71,16 @@ export class Command<
     return this.answers;
   }
 
-  private async askQuestions(
-    initialAnswers?: Partial<QuestionAnswers>,
-  ) {
+  private async askQuestions(initialAnswers?: Partial<CommandAnswers>) {
     if (!this.options.questions) {
       return this;
     }
 
-    const resolvedQuestions = Array.isArray(
-      this.options.questions,
-    )
+    const resolvedQuestions = Array.isArray(this.options.questions)
       ? this.options.questions
-      : await Promise.resolve(
-          this.options.questions.apply(this),
-        );
+      : await Promise.resolve(this.options.questions.apply(this));
 
-    this.answers = await inquirer.prompt<QuestionAnswers>(
+    this.answers = await inquirer.prompt<CommandAnswers>(
       resolvedQuestions,
       initialAnswers,
     );
@@ -113,10 +104,7 @@ export class Command<
 
   addTemplatesLayer(
     templatesLayer: TemplatesLayer,
-    options: Pick<
-      (typeof this.templateLayers)[number],
-      'renderTo'
-    >,
+    options: Pick<(typeof this.templateLayers)[number], 'renderTo'>,
   ) {
     this.templateLayers.push({
       layer: templatesLayer,
@@ -126,7 +114,7 @@ export class Command<
 
   // bindTemplatesLayer(
   //   relativeTemplatesPath: string,
-  //   options: LayerConstructorOptions<QuestionAnswers> & {
+  //   options: LayerConstructorOptions<CommandAnswers> & {
   //     renderTo: string;
   //   },
   // ) {

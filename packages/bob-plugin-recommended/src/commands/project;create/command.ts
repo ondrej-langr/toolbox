@@ -41,7 +41,9 @@ type CommandAnswers = {
   description: string;
   preset: (typeof projectPresets)[number];
   projectLocationInWorkspace?: string;
-  presetNextRouterPreset?: z.infer<typeof presetNextRouterChoices>;
+  presetNextRouterPreset?: z.infer<
+    typeof presetNextRouterChoices
+  >;
   selectedFeatures: typeof projectMetadataConfigFeatures;
 };
 
@@ -81,7 +83,9 @@ export default defineCommand<CommandAnswers>({
         type: 'list',
         message: 'Select router type',
         when: ({ preset }) => preset === 'next',
-        default: Object.values(presetNextRouterChoices.enum['app-router']),
+        default: Object.values(
+          presetNextRouterChoices.enum['app-router'],
+        ),
         choices: Object.values(presetNextRouterChoices.enum),
       },
       {
@@ -95,7 +99,9 @@ export default defineCommand<CommandAnswers>({
 
           if (await getWorkspace(options.cwd)) {
             // Prettier configuration is taken from workspace
-            result = result.filter((value) => value !== 'prettier');
+            result = result.filter(
+              (value) => value !== 'prettier',
+            );
           }
 
           if (answers.preset === 'next') {
@@ -103,7 +109,9 @@ export default defineCommand<CommandAnswers>({
           }
 
           // Disable option for testing-e2e outside of next preset
-          return result.filter((value) => value !== 'testing-e2e');
+          return result.filter(
+            (value) => value !== 'testing-e2e',
+          );
         },
       },
       {
@@ -122,7 +130,9 @@ export default defineCommand<CommandAnswers>({
             workspaces?.map((workspacePath) =>
               path.join(
                 workspacePath.replace('/*', ''),
-                getProjectFolderNameFromProjectName(answers.name),
+                getProjectFolderNameFromProjectName(
+                  answers.name,
+                ),
               ),
             ) ?? []
           );
@@ -151,14 +161,17 @@ export default defineCommand<CommandAnswers>({
         )
       : path.join(cwd, name.replace('@', '').replace('/', '-'));
 
-    FileSystem.writeJson(path.join(projectPath, 'package.json'), {
-      name,
-      description,
-      ...getPackageJsonDefaults(),
-      ...(preset !== 'next' && {
-        private: true,
-      }),
-    } satisfies z.input<typeof packageJsonSchema>);
+    FileSystem.writeJson(
+      path.join(projectPath, 'package.json'),
+      {
+        name,
+        description,
+        ...getPackageJsonDefaults(),
+        ...(preset !== 'next' && {
+          private: true,
+        }),
+      } satisfies z.input<typeof packageJsonSchema>,
+    );
 
     const newProject = await Project.loadAt(projectPath);
     const features = Object.fromEntries(

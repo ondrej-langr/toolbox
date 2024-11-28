@@ -17,9 +17,15 @@ export {
   type CommandOptions,
   type CommandQuestion,
 } from './internals/Command.js';
-export { type Config, type ConfigOptions } from './internals/Config.js';
+export {
+  type Config,
+  type ConfigOptions,
+} from './internals/Config.js';
 export { type Program } from './internals/Program.js';
-export { type Plugin, type PluginOptions } from './internals/Plugin.js';
+export {
+  type Plugin,
+  type PluginOptions,
+} from './internals/Plugin.js';
 export {
   type TemplateFile,
   type TemplateHandler,

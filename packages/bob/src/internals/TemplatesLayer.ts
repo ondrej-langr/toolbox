@@ -47,10 +47,7 @@ export interface LayerConstructorOptions<
 
 // TODO: this should be dumb rendering engine - find all templates and render them all. Everything other should control command
 export class TemplatesLayer<
-  TVariables extends Record<string, any> = Record<
-    string,
-    any
-  >,
+  TVariables extends Record<string, any> = Record<string, any>,
 > {
   private readonly options:
     | LayerConstructorOptions<TVariables>
@@ -73,15 +70,11 @@ export class TemplatesLayer<
     { files: string[]; templatesRoot: string }[]
   > {
     const globsAsPromises: Promise<
-      Awaited<
-        ReturnType<typeof this.resolveTemplates>
-      >[number]
+      Awaited<ReturnType<typeof this.resolveTemplates>>[number]
     >[] = [];
 
     // TODO: validate this in constructor perhaps? Templates should be always present
-    if (
-      nodeFs.existsSync(this.dirname) === false
-    ) {
+    if (nodeFs.existsSync(this.dirname) === false) {
       throw new Error(
         `Defined template folder ${this.dirname} does not exist`,
       );
@@ -89,20 +82,18 @@ export class TemplatesLayer<
 
     globsAsPromises.push(
       glob(
-        allowedTemplateExtensions.map(
-          (templateExtension) =>
-            path.join(
-              this.dirname,
-              '**',
-              `*.${templateExtension}`,
-            ),
+        allowedTemplateExtensions.map((templateExtension) =>
+          path.join(
+            this.dirname,
+            '**',
+            `*.${templateExtension}`,
+          ),
         ),
         {
           dot: true,
           ignore: {
             // Ignore all folders starting with "+" which is reserved for naming nested template roots
-            childrenIgnored: (path) =>
-              path.name.startsWith('+'),
+            childrenIgnored: (path) => path.name.startsWith('+'),
           },
         },
       ).then((files) => ({
@@ -120,28 +111,24 @@ export class TemplatesLayer<
   ) {
     const [resolvedFiles] = await Promise.all([
       this.resolveTemplates(),
-      Promise.resolve(
-        this.options?.onBeforeRender?.apply(this),
-      ),
+      Promise.resolve(this.options?.onBeforeRender?.apply(this)),
     ]);
 
-    const createdFilesAsPromises: Promise<void>[] =
-      [];
+    const createdFilesAsPromises: Promise<void>[] = [];
     for (const {
       files: templateLocations,
       templatesRoot,
     } of resolvedFiles) {
       for (const templateFileLocation of templateLocations) {
         // Realpath of to-be-created file
-        const writeTemplateTo =
-          templateFileLocation
-            .replace(templatesRoot, to)
-            .replace(
-              new RegExp(
-                `\\.(${allowedTemplateExtensions.map((v) => v.replaceAll('.', String.raw`\.`)).join('|')})`,
-              ),
-              '',
-            );
+        const writeTemplateTo = templateFileLocation
+          .replace(templatesRoot, to)
+          .replace(
+            new RegExp(
+              `\\.(${allowedTemplateExtensions.map((v) => v.replaceAll('.', String.raw`\.`)).join('|')})`,
+            ),
+            '',
+          );
 
         createdFilesAsPromises.push(
           Promise.resolve()
@@ -149,45 +136,31 @@ export class TemplatesLayer<
               await this.options?.onBeforeFileRender?.apply(
                 this,
               );
-              const template: TemplateFile<
-                any,
-                any,
-                any
-              > =
-                await (templateFileLocation.endsWith(
-                  '.ejs',
-                )
-                  ? createEjsTemplateFile(
-                      templateFileLocation,
-                    )
-                  : import(
-                      templateFileLocation
-                    ).then((module) => {
-                      if (
-                        'default' in module ===
-                          false ||
-                        module.default instanceof
-                          TemplateFile ===
-                          false
-                      ) {
-                        throw new Error(
-                          `Template file at ${templateFileLocation} is incorrect. Please export return type from TemplateFile.define as default export from that file.`,
-                        );
-                      }
+              const template: TemplateFile<any, any, any> =
+                await (templateFileLocation.endsWith('.ejs')
+                  ? createEjsTemplateFile(templateFileLocation)
+                  : import(templateFileLocation).then(
+                      (module) => {
+                        if (
+                          'default' in module === false ||
+                          module.default instanceof
+                            TemplateFile ===
+                            false
+                        ) {
+                          throw new Error(
+                            `Template file at ${templateFileLocation} is incorrect. Please export return type from TemplateFile.define as default export from that file.`,
+                          );
+                        }
 
-                      return module.default;
-                    }));
+                        return module.default;
+                      },
+                    ));
 
-              await template.writeTo(
-                writeTemplateTo,
-                variables,
-              );
+              await template.writeTo(writeTemplateTo, variables);
             })
             .then(async () => {
               await Promise.resolve(
-                this.options?.onAfterFileRender?.apply(
-                  this,
-                ),
+                this.options?.onAfterFileRender?.apply(this),
               );
             }),
         );

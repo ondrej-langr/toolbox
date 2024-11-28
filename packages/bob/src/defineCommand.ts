@@ -1,19 +1,27 @@
 import path from 'node:path';
 
 import type { DefaultCommandAnswers } from './DefaultCommandAnswers.js';
-import { Command, type CommandOptions } from './internals/Command.js';
+import {
+  Command,
+  type CommandOptions,
+} from './internals/Command.js';
 import { logger } from './internals/logger.js';
 import { getCallerFilename } from './internals/utils/getCallerFilename.js';
 
 export type DefineCommandOptions<
   CommandAnswers extends DefaultCommandAnswers,
-> = Omit<CommandOptions<CommandAnswers>, 'templatesRoot' | 'schema'> & {
+> = Omit<
+  CommandOptions<CommandAnswers>,
+  'templatesRoot' | 'schema'
+> & {
   description: string;
 };
 
 export function defineCommand<
   CommandAnswers extends DefaultCommandAnswers,
->(options: DefineCommandOptions<CommandAnswers>): Command<CommandAnswers> {
+>(
+  options: DefineCommandOptions<CommandAnswers>,
+): Command<CommandAnswers> {
   const filepath = getCallerFilename();
   const { description, ...commandOptions } = options;
   const filename = path.basename(filepath);
@@ -27,7 +35,10 @@ export function defineCommand<
   }
 
   if (commandName.includes('$')) {
-    commandName = commandName.replaceAll('$', path.basename(commandName));
+    commandName = commandName.replaceAll(
+      '$',
+      path.basename(commandName),
+    );
   }
 
   if (commandName.includes(';')) {

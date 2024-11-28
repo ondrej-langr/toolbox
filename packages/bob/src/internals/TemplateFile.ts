@@ -4,18 +4,31 @@ import yaml from 'yaml';
 import { getAstFromString } from '../ast/js-ts/getAstFromString.js';
 import { getStringFromAstNode } from '../ast/js-ts/getStringFromAstNode.js';
 import { FileSystem } from '../FileSystem.js';
-import type { Json, JsonPartial } from '../schemas/jsonSchema.js';
+import type {
+  Json,
+  JsonPartial,
+} from '../schemas/jsonSchema.js';
 
 import type { MaybePromise } from './types/MaybePromise.js';
 
-export type TemplateHandler<I, O = I, V = Record<string, any>> = (
+export type TemplateHandler<
+  I,
+  O = I,
+  V = Record<string, any>,
+> = (
   incomming: I | undefined,
   metadata: { variables?: V },
 ) => MaybePromise<O>;
 
-export type JsonTemplateHandler = TemplateHandler<Json, JsonPartial>;
+export type JsonTemplateHandler = TemplateHandler<
+  Json,
+  JsonPartial
+>;
 export type TextTemplateHandler = TemplateHandler<string>;
-export type YamlTemplateHandler = TemplateHandler<Json, JsonPartial>;
+export type YamlTemplateHandler = TemplateHandler<
+  Json,
+  JsonPartial
+>;
 export type TSTemplateHandler = TemplateHandler<
   ts.SourceFile,
   ts.SourceFile
@@ -37,15 +50,20 @@ const fileParser: {
   [key in keyof TemplateHandlerTypeToHandler]: {
     deserialize: (
       existingFileContents?: string,
-    ) => ReturnType<TemplateHandlerTypeToHandler[key]> | undefined;
+    ) =>
+      | ReturnType<TemplateHandlerTypeToHandler[key]>
+      | undefined;
     serialize: (
-      value: Awaited<ReturnType<TemplateHandlerTypeToHandler[key]>>,
+      value: Awaited<
+        ReturnType<TemplateHandlerTypeToHandler[key]>
+      >,
     ) => MaybePromise<string>;
   };
 } = {
   json: {
     serialize: (value) => JSON.stringify(value, null, 2),
-    deserialize: (value) => (value ? (JSON.parse(value) as Json) : value),
+    deserialize: (value) =>
+      value ? (JSON.parse(value) as Json) : value,
   },
   text: {
     serialize: (value) => value ?? '',
@@ -89,7 +107,9 @@ export class TemplateFile<
     variables?: V,
   ) {
     const existingContentDeserialized = await Promise.resolve(
-      fileParser[this.type].deserialize(existingFileContentsAsString),
+      fileParser[this.type].deserialize(
+        existingFileContentsAsString,
+      ),
     );
 
     const result = await Promise.resolve(

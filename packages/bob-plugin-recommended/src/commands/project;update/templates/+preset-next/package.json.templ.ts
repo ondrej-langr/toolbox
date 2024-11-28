@@ -1,5 +1,8 @@
 import { defineTemplateFile } from '@ondrej-langr/bob';
-import { Json, packageJsonSchema } from '@ondrej-langr/bob/schemas';
+import {
+  Json,
+  packageJsonSchema,
+} from '@ondrej-langr/bob/schemas';
 import { merge } from 'webpack-merge';
 
 export default defineTemplateFile('json', (existing) => {

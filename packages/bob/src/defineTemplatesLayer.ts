@@ -19,8 +19,5 @@ export const defineTemplatesLayer = <
     templatesRootPath,
   );
 
-  return new TemplatesLayer(
-    realTemplatePath,
-    options,
-  );
+  return new TemplatesLayer(realTemplatePath, options);
 };

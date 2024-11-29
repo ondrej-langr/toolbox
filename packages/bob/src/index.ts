@@ -28,6 +28,6 @@ export {
 } from './internals/Plugin.js';
 export {
   type TemplateFile,
-  type TemplateHandler,
+  type TemplateFileHandler,
 } from './internals/TemplateFile.js';
 export { type TemplatesLayer } from './internals/TemplatesLayer.js';

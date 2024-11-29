@@ -27,6 +27,10 @@
     "./ast/js-ts": {
       "import": "./dist/ast/js-ts/index.js",
       "types": "./dist/ast/js-ts/index.d.ts"
+    },
+    "./parsers": {
+      "import": "./dist/parsers/index.js",
+      "types": "./dist/parsers/index.d.ts"
     }
   },
   "bin": "./.bin/run-bob.js",

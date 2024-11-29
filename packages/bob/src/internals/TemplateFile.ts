@@ -1,118 +1,61 @@
-import ts from 'typescript';
-import yaml from 'yaml';
-
-import { getAstFromString } from '../ast/js-ts/getAstFromString.js';
-import { getStringFromAstNode } from '../ast/js-ts/getStringFromAstNode.js';
 import { FileSystem } from '../FileSystem.js';
-import type {
-  Json,
-  JsonPartial,
-} from '../schemas/jsonSchema.js';
+import type { FileTypeToParsers } from '../parsers/FileTypeToParsers.js';
+import { javascriptFileTypeParser } from '../parsers/javascriptFileTypeParser.js';
+import { jsonFileTypeParser } from '../parsers/jsonFileTypeParser.js';
+import { textFileTypeParser } from '../parsers/textFileTypeParser.js';
+import { typescriptFileTypeParser } from '../parsers/typescriptFileTypeParser.js';
+import { yamlFileTypeParser } from '../parsers/yamlFileTypeParser.js';
 
 import type { MaybePromise } from './types/MaybePromise.js';
 
-export type TemplateHandler<
-  I,
-  O = I,
-  V = Record<string, any>,
-> = (
-  incomming: I | undefined,
-  metadata: { variables?: V },
-) => MaybePromise<O>;
-
-export type JsonTemplateHandler = TemplateHandler<
-  Json,
-  JsonPartial
->;
-export type TextTemplateHandler = TemplateHandler<string>;
-export type YamlTemplateHandler = TemplateHandler<
-  Json,
-  JsonPartial
->;
-export type TSTemplateHandler = TemplateHandler<
-  ts.SourceFile,
-  ts.SourceFile
->;
-export type JSTemplateHandler = TemplateHandler<
-  ts.SourceFile,
-  ts.SourceFile
->;
-
-export interface TemplateHandlerTypeToHandler {
-  json: JsonTemplateHandler;
-  text: TextTemplateHandler;
-  yaml: YamlTemplateHandler;
-  ts: TSTemplateHandler;
-  js: JSTemplateHandler;
-}
-
-const fileParser: {
-  [key in keyof TemplateHandlerTypeToHandler]: {
-    deserialize: (
-      existingFileContents?: string,
-    ) =>
-      | ReturnType<TemplateHandlerTypeToHandler[key]>
-      | undefined;
-    serialize: (
-      value: Awaited<
-        ReturnType<TemplateHandlerTypeToHandler[key]>
-      >,
-    ) => MaybePromise<string>;
-  };
-} = {
-  json: {
-    serialize: (value) => JSON.stringify(value, null, 2),
-    deserialize: (value) =>
-      value ? (JSON.parse(value) as Json) : value,
-  },
-  text: {
-    serialize: (value) => value ?? '',
-    deserialize: (value) => value ?? '',
-  },
-  yaml: {
-    serialize: (value) => yaml.stringify(value),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    deserialize: (value) => (value ? yaml.parse(value) : value),
-  },
-  ts: {
-    serialize: (value) => getStringFromAstNode(value),
-    deserialize: (value) => getAstFromString(value ?? ''),
-  },
-  js: {
-    serialize: (value) => getStringFromAstNode(value),
-    deserialize: (value) => getAstFromString(value ?? ''),
-  },
+const parsers: FileTypeToParsers = {
+  js: javascriptFileTypeParser,
+  json: jsonFileTypeParser,
+  text: textFileTypeParser,
+  ts: typescriptFileTypeParser,
+  yaml: yamlFileTypeParser,
 };
 
-// TODO: variables, would that be even welcomed?
+export type TemplateFileHandler<
+  TParserType extends keyof FileTypeToParsers,
+  TVariables extends Record<string, any>,
+> = (
+  fileContext: Parameters<
+    FileTypeToParsers[TParserType]['serialize']
+  >[0],
+  variables: TVariables,
+) => MaybePromise<
+  ReturnType<FileTypeToParsers[TParserType]['deserialize']>
+>;
+
 /**
  * Manages templates
  */
 export class TemplateFile<
-  K extends keyof TemplateHandlerTypeToHandler,
-  H extends TemplateHandlerTypeToHandler[K],
-  V extends Record<string, any>,
+  TParserType extends keyof FileTypeToParsers,
+  TVariables extends Record<string, any>,
+  THandler = TemplateFileHandler<TParserType, TVariables>,
 > {
-  private handler: H;
+  private handler: THandler;
+  private readonly type: TParserType;
 
-  private readonly type: K;
-
-  constructor(type: K, handler: H) {
+  constructor(type: TParserType, handler: THandler) {
     this.type = type;
     this.handler = handler;
   }
 
   private async runTemplateHandler(
     existingFileContentsAsString: string | undefined = undefined,
-    variables?: V,
+    variables?: TVariables,
   ) {
+    const parser = parsers[this.type];
+
     const existingContentDeserialized = await Promise.resolve(
-      fileParser[this.type].deserialize(
-        existingFileContentsAsString,
-      ),
+      parser.deserialize(existingFileContentsAsString),
     );
 
     const result = await Promise.resolve(
+      // @ts-expect-error -- Its callable, but type cannot be known at this point
       this.handler(
         existingContentDeserialized as any,
         // Make sure that variables are always an object
@@ -120,10 +63,10 @@ export class TemplateFile<
       ),
     );
 
-    return await fileParser[this.type].serialize(result as any);
+    return await parser.serialize(result as any);
   }
 
-  async writeTo(resultLocation: string, variables?: V) {
+  async writeTo(resultLocation: string, variables?: TVariables) {
     const existingFileContentsAsString =
       await FileSystem.readFile(resultLocation);
     const templateContents = await this.runTemplateHandler(

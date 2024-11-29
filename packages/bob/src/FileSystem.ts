@@ -184,32 +184,11 @@ export class FileSystem {
       return depthA > depthB ? 1 : depthA === depthB ? 0 : -1;
     });
 
-    let resolvedPrettierConfig: prettier.Options | null = null;
-
-    const deepestFilePath = keys.at(-1);
-    if (deepestFilePath) {
-      const prettierFilename = 'prettier.config.js';
-      const prettierConfigFile = FileSystem.findFile(
-        prettierFilename,
-        {
-          cwd: path.dirname(deepestFilePath),
-        },
-      );
-      const prettierFileContents = prettierConfigFile
-        ? await FileSystem.readFile(prettierConfigFile)
-        : null;
-
-      if (prettierFileContents) {
-        const { filepath: prettierTemporaryFilepath } =
-          await this.writeTempFile(
-            prettierFilename,
-            prettierFileContents,
-          );
-        resolvedPrettierConfig = await prettier.resolveConfig(
-          prettierTemporaryFilepath,
-        );
-      }
-    }
+    let defaultPrettierConfig: prettier.Options = {
+      tabWidth: 2,
+      singleQuote: true,
+      printWidth: 75,
+    };
 
     const writesAsPromises: Promise<any>[] = [];
     for (const key of keys) {
@@ -228,7 +207,7 @@ export class FileSystem {
             logger.debug(`Formatting file ${key}`);
             try {
               formattedValue = await prettier.format(value, {
-                ...resolvedPrettierConfig,
+                ...defaultPrettierConfig,
                 filepath: key,
               });
             } catch {

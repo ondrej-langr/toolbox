@@ -1,8 +1,5 @@
 import { defineTemplateFile } from '@ondrej-langr/bob';
-import {
-  Json,
-  packageJsonSchema,
-} from '@ondrej-langr/bob/schemas';
+import { packageJsonSchema } from '@ondrej-langr/bob/schemas';
 import { merge } from 'webpack-merge';
 
 export default defineTemplateFile('json', (existing) => {
@@ -15,5 +12,5 @@ export default defineTemplateFile('json', (existing) => {
     dependencies: {
       next: '^14',
     },
-  } as Partial<typeof existingValidated>) as Json;
+  } as Partial<typeof existingValidated>);
 });

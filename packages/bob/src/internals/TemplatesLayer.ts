@@ -6,14 +6,10 @@ import { TemplateFile } from './TemplateFile.js';
 import type { MaybePromise } from './types/MaybePromise.js';
 import { createEjsTemplateFile } from './utils/createEjsTemplateFile.js';
 
-const allowedTemplateExtensions = [
-  'ejs',
-  'templ.ts',
-  'templ.js',
-];
+const allowedTemplateExtensions = ['ejs', 'templ.ts', 'templ.js'];
 
 export interface LayerConstructorOptions<
-  TVariables extends Record<string, any>,
+  TVariables extends Record<string, any> | undefined = undefined,
 > {
   /**
    * Runs before current layer is executed
@@ -24,9 +20,7 @@ export interface LayerConstructorOptions<
   /**
    * Runs after current layer is executed
    */
-  onAfterRender?: (
-    this: TemplatesLayer<TVariables>,
-  ) => MaybePromise<void>;
+  onAfterRender?: (this: TemplatesLayer<TVariables>) => MaybePromise<void>;
 
   /**
    * Runs before each file that is being created
@@ -46,7 +40,7 @@ export interface LayerConstructorOptions<
 
 // TODO: this should be dumb rendering engine - find all templates and render them all. Everything other should control command
 export class TemplatesLayer<
-  TVariables extends Record<string, any> = Record<string, any>,
+  TVariables extends Record<string, any> | undefined = undefined,
 > {
   private readonly options:
     | LayerConstructorOptions<TVariables>
@@ -82,11 +76,7 @@ export class TemplatesLayer<
     globsAsPromises.push(
       glob(
         allowedTemplateExtensions.map((templateExtension) =>
-          path.join(
-            this.dirname,
-            '**',
-            `*.${templateExtension}`,
-          ),
+          path.join(this.dirname, '**', `*.${templateExtension}`),
         ),
         {
           dot: true,
@@ -106,8 +96,9 @@ export class TemplatesLayer<
 
   async renderTemplates(
     to: string,
-    variables: Record<string, any> | undefined,
+    ...other: TVariables extends undefined ? [] : [TVariables]
   ) {
+    const [variables] = other;
     const [resolvedFiles] = await Promise.all([
       this.resolveTemplates(),
       Promise.resolve(this.options?.onBeforeRender?.apply(this)),
@@ -132,28 +123,22 @@ export class TemplatesLayer<
         createdFilesAsPromises.push(
           Promise.resolve()
             .then(async () => {
-              await this.options?.onBeforeFileRender?.apply(
-                this,
-              );
+              await this.options?.onBeforeFileRender?.apply(this);
               const template: TemplateFile<any, any, any> =
                 await (templateFileLocation.endsWith('.ejs')
                   ? createEjsTemplateFile(templateFileLocation)
-                  : import(templateFileLocation).then(
-                      (module) => {
-                        if (
-                          'default' in module === false ||
-                          module.default instanceof
-                            TemplateFile ===
-                            false
-                        ) {
-                          throw new Error(
-                            `Template file at ${templateFileLocation} is incorrect. Please export return type from TemplateFile.define as default export from that file.`,
-                          );
-                        }
+                  : import(templateFileLocation).then((module) => {
+                      if (
+                        'default' in module === false ||
+                        module.default instanceof TemplateFile === false
+                      ) {
+                        throw new Error(
+                          `Template file at ${templateFileLocation} is incorrect. Please export return type from TemplateFile.define as default export from that file.`,
+                        );
+                      }
 
-                        return module.default;
-                      },
-                    ));
+                      return module.default;
+                    }));
 
               await template.writeTo(writeTemplateTo, variables);
             })
@@ -167,9 +152,7 @@ export class TemplatesLayer<
     }
 
     await Promise.all(createdFilesAsPromises);
-    await Promise.resolve(
-      this.options?.onAfterRender?.apply(this),
-    );
+    await Promise.resolve(this.options?.onAfterRender?.apply(this));
 
     return this;
   }

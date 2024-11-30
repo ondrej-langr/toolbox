@@ -20,11 +20,9 @@ export default defineCommand<{
       {
         name: 'projectLocationInWorkspace',
         type: 'list',
-        message:
-          'What project should be updated in current workspace?',
+        message: 'What project should be updated in current workspace?',
         async when() {
-          const closestProjectOrWorkspace =
-            await program.getProject();
+          const closestProjectOrWorkspace = await program.getProject();
 
           return (
             !!closestProjectOrWorkspace &&
@@ -33,17 +31,13 @@ export default defineCommand<{
         },
         async choices() {
           const workspace = await program.getProject();
-          if (
-            !workspace ||
-            workspace instanceof Workspace === false
-          ) {
+          if (!workspace || workspace instanceof Workspace === false) {
             throw new Error(
               'Cannot show choices when project is not workspace. This is a bug of @ondrej-langr/bob',
             );
           }
 
-          const workspaceProjects =
-            await workspace.getProjects();
+          const workspaceProjects = await workspace.getProjects();
 
           if (!workspaceProjects?.length) {
             throw new Error('Workspace has no projects');
@@ -89,25 +83,18 @@ export default defineCommand<{
 
     const presetTemplateFolderName = `+preset-${projectMeta.config.preset}`;
 
-    this.addTemplatesLayer(defineTemplatesLayer('templates'), {
+    await defineTemplatesLayer('templates').renderTemplates(renderTo);
+    await defineTemplatesLayer(presetTemplateFolderName).renderTemplates(
       renderTo,
-    });
-
-    this.addTemplatesLayer(
-      defineTemplatesLayer(presetTemplateFolderName),
-      { renderTo },
     );
 
     if (
       projectMeta.config.preset === 'next' &&
       projectMeta.config.features['testing-e2e']
     ) {
-      this.addTemplatesLayer(
-        defineTemplatesLayer(
-          `templates/${presetTemplateFolderName}/+feature-testing-e2e`,
-        ),
-        { renderTo },
-      );
+      await defineTemplatesLayer(
+        `templates/${presetTemplateFolderName}/+feature-testing-e2e`,
+      ).renderTemplates(renderTo);
     }
 
     for (const [featureName, enabled] of Object.entries(
@@ -128,26 +115,16 @@ export default defineCommand<{
         featureTemplateFolderName,
       );
 
-      if (
-        FileSystem.cacheless.existsSync(rootFeatureTemplatesPath)
-      ) {
-        this.addTemplatesLayer(
-          defineTemplatesLayer(featureTemplateFolderName),
-          { renderTo },
-        );
+      if (FileSystem.cacheless.existsSync(rootFeatureTemplatesPath)) {
+        await defineTemplatesLayer(
+          featureTemplateFolderName,
+        ).renderTemplates(renderTo);
       }
 
-      if (
-        FileSystem.cacheless.existsSync(
-          presetFeatureTemplatesPath,
-        )
-      ) {
-        this.addTemplatesLayer(
-          defineTemplatesLayer(
-            `templates/${presetTemplateFolderName}/${featureTemplateFolderName}`,
-          ),
-          { renderTo },
-        );
+      if (FileSystem.cacheless.existsSync(presetFeatureTemplatesPath)) {
+        await defineTemplatesLayer(
+          `templates/${presetTemplateFolderName}/${featureTemplateFolderName}`,
+        ).renderTemplates(renderTo);
       }
     }
   },

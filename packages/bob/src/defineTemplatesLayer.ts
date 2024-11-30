@@ -7,7 +7,7 @@ import {
 import { getCallerFilename } from './internals/utils/getCallerFilename.js';
 
 export const defineTemplatesLayer = <
-  TVariables extends Record<string, any>,
+  TVariables extends Record<string, any> | undefined = undefined,
 >(
   templatesRootPath: string,
   options?: LayerConstructorOptions<TVariables>,

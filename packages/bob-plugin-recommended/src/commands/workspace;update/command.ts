@@ -37,10 +37,9 @@ export default defineCommand({
         workspaceMetadataSchema,
       )
       .get();
-
-    this.addTemplatesLayer(defineTemplatesLayer('templates'), {
-      renderTo: workspace.getRoot(),
-    });
+    await defineTemplatesLayer('templates').renderTemplates(
+      workspace.getRoot(),
+    );
 
     // const metadata = await this.getMetadata();
     for (const [featureName, enabled] of Object.entries(
@@ -57,17 +56,10 @@ export default defineCommand({
         featureTemplateFolderName,
       );
 
-      if (
-        FileSystem.cacheless.existsSync(rootFeatureTemplatesPath)
-      ) {
-        this.addTemplatesLayer(
-          defineTemplatesLayer(
-            `templates/${featureTemplateFolderName}`,
-          ),
-          {
-            renderTo: workspace.getRoot(),
-          },
-        );
+      if (FileSystem.cacheless.existsSync(rootFeatureTemplatesPath)) {
+        await defineTemplatesLayer(
+          `templates/${featureTemplateFolderName}`,
+        ).renderTemplates(workspace.getRoot());
       }
     }
   },

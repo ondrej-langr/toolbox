@@ -5,12 +5,12 @@ import {
 import type { FileTypeToParsers } from './parsers/FileTypeToParsers.js';
 
 export function defineTemplateFile<
-  TParserType extends keyof FileTypeToParsers,
   TVariables extends Record<string, any>,
+  TParserType extends keyof FileTypeToParsers,
   THandler = TemplateFileHandler<TParserType, TVariables>,
 >(
   type: TParserType,
   handler: THandler,
-): TemplateFile<TParserType, TVariables, THandler> {
+): TemplateFile<TVariables, TParserType, THandler> {
   return new TemplateFile(type, handler);
 }

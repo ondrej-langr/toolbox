@@ -67,7 +67,7 @@ export class Command<
   /**
    * Safely returns answers - if there are no answers yet then we throw
    */
-  getAnswers() {
+  getAnswers(): CommandAnswers {
     if (!this.answers) {
       throw new Error('Ask questions first');
     }

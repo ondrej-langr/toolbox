@@ -15,7 +15,6 @@ const allowedTemplateExtensions = [
 export interface LayerConstructorOptions<
   TVariables extends Record<string, any>,
 > {
-  variables?: TVariables;
   /**
    * Runs before current layer is executed
    */

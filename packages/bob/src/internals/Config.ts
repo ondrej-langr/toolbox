@@ -1,6 +1,7 @@
 import { glob } from 'glob';
 
 import { BOB_FOLDER_NAME } from './constants.js';
+import { logger } from './logger.js';
 
 export type ConfigOptions = {
   /** Defines plugin package names that current project uses. If bob is executed in project inside workspace project it will inherit those configurations */
@@ -31,7 +32,17 @@ export class Config {
       return null;
     }
 
-    const plugin = await import(foundConfigFilePaths[0]);
+    const configFilepath = foundConfigFilePaths[0]!;
+
+    const plugin = await import(configFilepath).catch(
+      (error) => {
+        logger.debug(
+          `Failed to load the bob config at ${configFilepath}, because ${error}`,
+        );
+
+        return null;
+      },
+    );
     const defaultExport =
       plugin && ('default' in plugin ? plugin.default : plugin);
     const hasValidExport =

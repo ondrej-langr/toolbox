@@ -49,6 +49,8 @@ export class Program {
           'If true it enables logging debug messages',
           false,
         );
+
+      logger.debug('Initialized program');
     }
 
     return this.commanderProgram;
@@ -59,6 +61,10 @@ export class Program {
     const program = await this.getCommanderProgram();
     const { cwd } = program.opts<DefaultProgramOptions>();
     let projectOrWorkspace: Project | Workspace | null = null;
+
+    logger.debug(
+      `Getting project or workspace at current cwd "${cwd}"`,
+    );
 
     try {
       projectOrWorkspace = await Workspace.loadAt(cwd);
@@ -76,8 +82,10 @@ export class Program {
       const project = await this.getProject();
       const totalConfigPluginsOptions: ConfigOptions['plugins'] =
         [];
+      logger.debug(`Initializing plugins...`);
 
       if (project) {
+        logger.debug(`Loading project bob config...`);
         const projectBobConfig = await Config.loadAt(
           project.getRoot(),
         );
@@ -88,6 +96,7 @@ export class Program {
           );
         }
 
+        logger.debug(`Loading workspace bob config...`);
         if (project.workspace) {
           const workspaceBobConfig = await Config.loadAt(
             project.workspace.getRoot(),
@@ -100,6 +109,9 @@ export class Program {
       }
       // TODO: allow user to define plugins with cli arguments
 
+      logger.debug(
+        `Resolving plugins from workspaces and projects...`,
+      );
       const resolvedPlugins = await Promise.all(
         totalConfigPluginsOptions.map(
           async (pluginPackageName) =>
@@ -168,6 +180,9 @@ export class Program {
 
       const commandsAsPromises = commandsPathnames.map(
         async (commandPathname): Promise<Command<any>> => {
+          logger.debug(
+            `Registering command under "${commandPathname}"`,
+          );
           const command = await import(commandPathname);
           const defaultExport =
             command &&
@@ -202,6 +217,7 @@ export class Program {
     const commanderProgram = await this.getCommanderProgram();
 
     for (const command of commands) {
+      logger.debug(`Attaching command "${command.name}"`);
       commanderProgram
         .command(command.name)
         .description(command.description)
@@ -239,8 +255,11 @@ export class Program {
     // 3. SETUP COMMANDER
     // 4. ATTACH ALL COMMANDS FROM PLUGINS
     // 5. RUN
+    logger.debug('Starting bob...');
 
     await this.setupCommands();
+
+    logger.debug('Commands attached...');
 
     // Start program
     await this.commanderProgram.parseAsync();

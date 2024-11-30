@@ -5,7 +5,7 @@ import type { Json } from '../schemas/jsonSchema.js';
 const runWhenDebugEnabled =
   <T extends (...params: any[]) => any>(action: T) =>
   (...params: Parameters<T>) => {
-    if (!process.argv0.includes('--debug')) {
+    if (!process.argv.includes('--debug')) {
       return;
     }
 

@@ -2,6 +2,7 @@ import { Command as CommanderCommand } from 'commander';
 import { glob } from 'glob';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import url from 'node:url';
 
 import type { DefaultProgramOptions } from '../DefaultProgramOptions.js';
 import { FileSystem } from '../FileSystem.js';
@@ -180,10 +181,13 @@ export class Program {
 
       const commandsAsPromises = commandsPathnames.map(
         async (commandPathname): Promise<Command<any>> => {
+          const commandPathnameAsUrl = url
+            .pathToFileURL(commandPathname)
+            .toString();
           logger.debug(
-            `Registering command under "${commandPathname}"`,
+            `Registering command under "${commandPathnameAsUrl}"`,
           );
-          const command = await import(commandPathname);
+          const command = await import(commandPathnameAsUrl);
           const defaultExport =
             command &&
             ('default' in command ? command.default : command);
@@ -192,7 +196,7 @@ export class Program {
 
           if (!hasValidExport) {
             throw new Error(
-              `Command at ${commandPathname} has invalid default export. Please use defineCommand function. If it used there are multiple versions of @ondrej-langr/bob package`,
+              `Command at ${commandPathnameAsUrl} has invalid default export. Please use defineCommand function. If it used there are multiple versions of @ondrej-langr/bob package`,
             );
           }
 

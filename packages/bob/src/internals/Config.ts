@@ -1,4 +1,5 @@
 import { glob } from 'glob';
+import url from 'node:url';
 
 import { BOB_FOLDER_NAME } from './constants.js';
 import { logger } from './logger.js';
@@ -32,11 +33,13 @@ export class Config {
       return null;
     }
 
-    const configFilepath = foundConfigFilePaths[0]!;
+    const configFilepath = url
+      .pathToFileURL(foundConfigFilePaths[0]!)
+      .toString();
 
     const plugin = await import(configFilepath).catch(
       (error) => {
-        logger.debug(
+        logger.warn(
           `Failed to load the bob config at ${configFilepath}, because ${error}`,
         );
 

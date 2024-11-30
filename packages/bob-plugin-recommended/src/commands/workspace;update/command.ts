@@ -56,7 +56,9 @@ export default defineCommand({
         featureTemplateFolderName,
       );
 
-      if (FileSystem.cacheless.existsSync(rootFeatureTemplatesPath)) {
+      if (
+        FileSystem.cacheless.existsSync(rootFeatureTemplatesPath)
+      ) {
         await defineTemplatesLayer(
           `templates/${featureTemplateFolderName}`,
         ).renderTemplates(workspace.getRoot());

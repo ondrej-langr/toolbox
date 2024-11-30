@@ -20,7 +20,9 @@ export type TemplateFileHandler<
   TParserType extends keyof FileTypeToParsers,
   TVariables extends Record<string, any>,
 > = (
-  fileContext: Parameters<FileTypeToParsers[TParserType]['serialize']>[0],
+  fileContext: Parameters<
+    FileTypeToParsers[TParserType]['serialize']
+  >[0],
   context: { variables: TVariables },
 ) => MaybePromise<
   ReturnType<FileTypeToParsers[TParserType]['deserialize']>

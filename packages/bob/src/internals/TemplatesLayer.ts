@@ -6,7 +6,11 @@ import { TemplateFile } from './TemplateFile.js';
 import type { MaybePromise } from './types/MaybePromise.js';
 import { createEjsTemplateFile } from './utils/createEjsTemplateFile.js';
 
-const allowedTemplateExtensions = ['ejs', 'templ.ts', 'templ.js'];
+const allowedTemplateExtensions = [
+  'ejs',
+  'templ.ts',
+  'templ.js',
+];
 
 export interface LayerConstructorOptions<
   TVariables extends Record<string, any> | undefined = undefined,
@@ -20,7 +24,9 @@ export interface LayerConstructorOptions<
   /**
    * Runs after current layer is executed
    */
-  onAfterRender?: (this: TemplatesLayer<TVariables>) => MaybePromise<void>;
+  onAfterRender?: (
+    this: TemplatesLayer<TVariables>,
+  ) => MaybePromise<void>;
 
   /**
    * Runs before each file that is being created
@@ -76,7 +82,11 @@ export class TemplatesLayer<
     globsAsPromises.push(
       glob(
         allowedTemplateExtensions.map((templateExtension) =>
-          path.join(this.dirname, '**', `*.${templateExtension}`),
+          path.join(
+            this.dirname,
+            '**',
+            `*.${templateExtension}`,
+          ),
         ),
         {
           dot: true,
@@ -123,22 +133,28 @@ export class TemplatesLayer<
         createdFilesAsPromises.push(
           Promise.resolve()
             .then(async () => {
-              await this.options?.onBeforeFileRender?.apply(this);
+              await this.options?.onBeforeFileRender?.apply(
+                this,
+              );
               const template: TemplateFile<any, any, any> =
                 await (templateFileLocation.endsWith('.ejs')
                   ? createEjsTemplateFile(templateFileLocation)
-                  : import(templateFileLocation).then((module) => {
-                      if (
-                        'default' in module === false ||
-                        module.default instanceof TemplateFile === false
-                      ) {
-                        throw new Error(
-                          `Template file at ${templateFileLocation} is incorrect. Please export return type from TemplateFile.define as default export from that file.`,
-                        );
-                      }
+                  : import(templateFileLocation).then(
+                      (module) => {
+                        if (
+                          'default' in module === false ||
+                          module.default instanceof
+                            TemplateFile ===
+                            false
+                        ) {
+                          throw new Error(
+                            `Template file at ${templateFileLocation} is incorrect. Please export return type from TemplateFile.define as default export from that file.`,
+                          );
+                        }
 
-                      return module.default;
-                    }));
+                        return module.default;
+                      },
+                    ));
 
               await template.writeTo(writeTemplateTo, variables);
             })
@@ -152,7 +168,9 @@ export class TemplatesLayer<
     }
 
     await Promise.all(createdFilesAsPromises);
-    await Promise.resolve(this.options?.onAfterRender?.apply(this));
+    await Promise.resolve(
+      this.options?.onAfterRender?.apply(this),
+    );
 
     return this;
   }

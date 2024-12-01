@@ -1,6 +1,6 @@
 {
   "name": "@ondrej-langr/bob-plugin-recommended",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Plugin for BOB with recommended configs and commands",
   "license": "ISC",
   "author": {

@@ -1,5 +1,19 @@
 # @ondrej-langr/bob
 
+## 0.3.0
+
+### Minor Changes
+
+- [#2](https://github.com/ondrej-langr/toolbox/pull/2) [`71ad500`](https://github.com/ondrej-langr/toolbox/commit/71ad500afb02431e318d7cfd3e1027c58dabee38) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Adds capability to define variables for templates
+
+- [#2](https://github.com/ondrej-langr/toolbox/pull/2) [`71ad500`](https://github.com/ondrej-langr/toolbox/commit/71ad500afb02431e318d7cfd3e1027c58dabee38) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - BREAKING: Removes addTemplatesLayer and renderTemplateLayers methods from Command. To render template layer use renderTemplates method from TemplateLayer class instead.
+
+- [#2](https://github.com/ondrej-langr/toolbox/pull/2) [`71ad500`](https://github.com/ondrej-langr/toolbox/commit/71ad500afb02431e318d7cfd3e1027c58dabee38) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - BREAKING: Define templates layer with new defineTemplatesLayer function and register template layer into command with Command.addTemplatesFile method
+
+### Patch Changes
+
+- [#2](https://github.com/ondrej-langr/toolbox/pull/2) [`71ad500`](https://github.com/ondrej-langr/toolbox/commit/71ad500afb02431e318d7cfd3e1027c58dabee38) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Fixes exported types and definitions
+
 ## 0.2.0
 
 ### Minor Changes

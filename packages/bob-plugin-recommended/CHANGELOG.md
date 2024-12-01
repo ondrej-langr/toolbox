@@ -1,5 +1,14 @@
 # @ondrej-langr/bob
 
+## 0.2.1
+
+### Patch Changes
+
+- [#2](https://github.com/ondrej-langr/toolbox/pull/2) [`71ad500`](https://github.com/ondrej-langr/toolbox/commit/71ad500afb02431e318d7cfd3e1027c58dabee38) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Uses new updated templates layer logic
+
+- Updated dependencies [[`71ad500`](https://github.com/ondrej-langr/toolbox/commit/71ad500afb02431e318d7cfd3e1027c58dabee38), [`71ad500`](https://github.com/ondrej-langr/toolbox/commit/71ad500afb02431e318d7cfd3e1027c58dabee38), [`71ad500`](https://github.com/ondrej-langr/toolbox/commit/71ad500afb02431e318d7cfd3e1027c58dabee38), [`71ad500`](https://github.com/ondrej-langr/toolbox/commit/71ad500afb02431e318d7cfd3e1027c58dabee38)]:
+  - @ondrej-langr/bob@0.3.0
+
 ## 0.2.0
 
 ### Minor Changes

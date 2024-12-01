@@ -34,7 +34,6 @@ Templates can be described by two types:
   - ✅ Template always gets current file contents which lets it merge over existing contents of file
   - ✅ Each file type has its own parser. All parsing from or back to file handles the parser itself
 
-
 ## Types Of Programatically defined templates
 
 Templates have multiple teplate types.
@@ -49,6 +48,7 @@ Reads file as is which allows for highest flexibility.
 
 - With `<result-file-name-with-extension>.ejs` it is simple as it cannot hold any special logic with inputs
 - With `<result-file-name-with-extension>.templ.ts` is the best for complex logic with variables
+
   ```js
   import { defineTemplateFile } from '@ondrej-langr/bob';
 
@@ -65,6 +65,7 @@ Parses file contents into POJOs. It is recommended to valide its value with sche
 #### Usage
 
 - With `<result-file-name-with-extension>.templ.ts` is the best for complex logic with variables
+
   ```js
   import { defineTemplateFile } from '@ondrej-langr/bob';
 
@@ -81,12 +82,13 @@ Parses YAML files contents into POJOs with [yaml](https://www.npmjs.com/package/
 #### Usage
 
 - With `<result-file-name-with-extension>.templ.ts` is the best for complex logic with variables
+
   ```js
   import { defineTemplateFile } from '@ondrej-langr/bob';
-  import { z } from 'zod';
+  import { z } from 'zod';
 
   const schema = z.object({
-    key: z.string()
+    key: z.string(),
   });
 
   export default defineTemplateFile('yaml', (existing) => {
@@ -106,6 +108,7 @@ Using ASTs is most powerfull, but most intimidating at first glance. Don't let i
 #### Usage
 
 - With `<result-file-name-with-extension>.templ.ts` is the best for complex logic with variables
+
   ```js
   import { defineTemplateFile } from '@ondrej-langr/bob';
   import { getAstFromString } from '@ondrej-langr/bob/ast/js-ts';
@@ -113,7 +116,7 @@ Using ASTs is most powerfull, but most intimidating at first glance. Don't let i
 
   export default defineTemplateFile('ts', (existing) => {
     // Ts factory methods are now usable
-    existing.getFirstToken()
+    existing.getFirstToken();
 
     // Bob also exposes some helpful tools
     return getAstFromString('export const test = () => {};');

@@ -17,8 +17,13 @@ export default defineTemplateFile(
     result = upsertObjectCjsExport(result, (statements) => {
       const identifierNameToIndex = new Map(
         statements
-          .filter((statement) => ts.isPropertyAssignment(statement))
-          .map((statement) => [statement.name.getText(), ''] as const),
+          .filter((statement) =>
+            ts.isPropertyAssignment(statement),
+          )
+          .map(
+            (statement) =>
+              [statement.name.getText(), ''] as const,
+          ),
       );
 
       return [...statements];
@@ -71,7 +76,9 @@ factory.createObjectLiteralExpression(
                     factory.createStringLiteral('**/*.e2e.tsx'),
                     factory.createStringLiteral('**/*.test.ts'),
                     factory.createStringLiteral('**/*.test.tsx'),
-                    factory.createStringLiteral('playwright.config.ts'),
+                    factory.createStringLiteral(
+                      'playwright.config.ts',
+                    ),
                   ],
                   true,
                 ),

@@ -14,8 +14,8 @@ The benefits this tool can bring mainly depends on how you, as a developer, appr
 ### Prerequisities
 
 - Supported engines
-    - Node.js >= 20
-    - PNPM >= 8
+  - Node.js >= 20
+  - PNPM >= 8
 
 ### Installing @ondrej-langr/bob
 
@@ -84,38 +84,43 @@ Managing plugins is essential to using bob, because it allows sharing your comma
 The more projects you use bob on the more you benefit from it, because it allows you to quickly manage your projects and centralize resposiblity.
 
 - Prepare a Node.js project
-    - Create a folder for your project
-    - Run `npm --init` and answer the questions. Before choosing a name please see our [naming conventions](./docs/naming-conventions.md) and follow them to keep our ecosystem clean.
+  - Create a folder for your project
+  - Run `npm --init` and answer the questions. Before choosing a name please see our [naming conventions](./docs/naming-conventions.md) and follow them to keep our ecosystem clean.
 - Install bob in this new project
-    ```bash
-    npm i @ondrej-langr/bob
-    ```
+  ```bash
+  npm i @ondrej-langr/bob
+  ```
 - Create a folder `dist` and place `index.js` in your newly created project
 - In newly created file define your plugin entrypoint
-    ```js
-    import { definePlugin } from '@ondrej-langr/bob';
 
-    // At this point bob will mark this plugin package as valid
-    export default definePlugin({});
-    ```
+  ```js
+  import { definePlugin } from '@ondrej-langr/bob';
+
+  // At this point bob will mark this plugin package as valid
+  export default definePlugin({});
+  ```
+
 - Create the first command for your plugin (💡 Routing of bob commands is controller with file system)
-    - create a folder `commands` in the same folder as you created a `index.js` file
-    - in newly created folder create a folder with the name of your command. For example `my-command`
-    - and lastly create a `command.js` file in your command folder and add it content:
-        ```js
-        import { defineCommand } from '@ondrej-langr/bob';
 
-        // The defineCommand tells bob where it was called and registers it under that folder name. In this case its `my-command`
-        export default defineCommand({
-          // Give it some description
-          description: 'This is my first command',
-          // And define your logic for this command (be it sync or async)
-          handler() {
-            // "this" references to an actual Command instance which holds necessary information about the command, running program, project for which this command was executed (if any) and much more
-            this.logger.success('hello world!');
-          },
-        });
-        ```
+  - create a folder `commands` in the same folder as you created a `index.js` file
+  - in newly created folder create a folder with the name of your command. For example `my-command`
+  - and lastly create a `command.js` file in your command folder and add it content:
+
+    ```js
+    import { defineCommand } from '@ondrej-langr/bob';
+
+    // The defineCommand tells bob where it was called and registers it under that folder name. In this case its `my-command`
+    export default defineCommand({
+      // Give it some description
+      description: 'This is my first command',
+      // And define your logic for this command (be it sync or async)
+      handler() {
+        // "this" references to an actual Command instance which holds necessary information about the command, running program, project for which this command was executed (if any) and much more
+        this.logger.success('hello world!');
+      },
+    });
+    ```
+
 - Now add "exports" field to package.json pointing to our plugin entrypoint `./dist/index.js` (💡 usually user would define "main" field, but we are creating an ESM package instead)
   ```json
   // ...other package.json fields
@@ -134,23 +139,25 @@ The more projects you use bob on the more you benefit from it, because it allows
   ```
 - Now release this package onto `npmjs.com` or any other Node.js package registry
 - Install this newly released package in the project you want to use that plugin
-    ```bash
-    npm i <here-put-your-package-name> --save-dev
-    ```
+  ```bash
+  npm i <here-put-your-package-name> --save-dev
+  ```
 - Now install bob also, but as a dev dependency
-    ```bash
-    npm i @ondrej-langr/bob --save-dev
-    ```
+  ```bash
+  npm i @ondrej-langr/bob --save-dev
+  ```
 - Create a `.bob` folder with `config.js` file in current project
 - Define your config in `config.js` and add there the name of your plugin
-    ```js
-    import { defineConfig } from '@ondrej-langr/bob';
 
-    export default defineConfig({
-      // Adding package name to plugins is essential othervise bob wont use that plugin
-      plugins: ['<here-put-your-package-name>'],
-    });
-    ```
+  ```js
+  import { defineConfig } from '@ondrej-langr/bob';
+
+  export default defineConfig({
+    // Adding package name to plugins is essential othervise bob wont use that plugin
+    plugins: ['<here-put-your-package-name>'],
+  });
+  ```
+
 - Profit 😁✌️
 
 ### Default Global Arguments

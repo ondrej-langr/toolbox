@@ -14,44 +14,6 @@ Here is a list of main third party libraries that make this project work:
 - `zod` - validating objects and JSON contents
 - `cosmiconfig` - manages importing and resolving configurations
 
-## Project structure
-
-This project is build upon some rules that every developer of this project must follow:
-
-- commands
-  - Where commands are defined
-  - Command name is the same as the folder name in `commands` folder
-  - For command to be valid there must be a `command.ts` file in command folder with [`Command`](../src/Command.ts) class instance as the default export
-- metadata-types
-  - Includes metadata types definition ands schemas
-  - Each project and workspace could have its own metadata
-  - Metadata are usually configurations and combinations that project has
-- schemas
-  - All the other schemas
-- types
-  - Stored type definitions
-- utils
-  - Global utility functions
-- [Command.ts](../src/Command.ts)
-  - Class which defines logic tied to commands it self
-  - Also includes rendering helpers connected to the [TemplatesLayer.ts](../src/TemplatesLayer.ts)
-- [FileSystem.ts](../src/FileSystem.ts)
-  - Custom filesystem that batches any type of work into one method
-- [program.ts](../src/program.ts)
-  - Where the `commander` program itself is defined
-- [Project.ts](../src/Project.ts)
-  - Class that loads currently defined Node.js projects into memory
-  - Exposes methods to mutate or inspect such projects
-- [run.ts](../src/run.ts)
-  - Main entry file that is executed first where the `@ondrej-langr/bob` is called
-- [TemplateFile.ts](../src/TemplateFile.ts)
-  - Defines template rendering for a file
-  - Can be used to define templates programaticaly (See [About types of templates](#about-types-of-templates) for more info)
-- [TemplatesLayer.ts](../src/TemplatesLayer.ts)
-  - Handles the execution of multiple [TemplateFile.ts](../src/TemplateFile.ts) in one [layer](#template-layers)
-- [Workspace.ts](../src/Workspace.ts)
-  - Is built on [Project.ts](../src/Project.ts) with functionality geared towards Node.js workspaces
-
 ## Commands
 
 This section will teach you how are commands created

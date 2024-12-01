@@ -11,9 +11,7 @@ function testingFunction() {
 describe('getCallerFilename', () => {
   it('should correctly resolve caller in function', () => {
     expect(
-      testingFunction().endsWith(
-        'getCallerFilename.test.ts',
-      ),
+      testingFunction().endsWith('getCallerFilename.test.ts'),
     ).to.be.true;
   });
 });

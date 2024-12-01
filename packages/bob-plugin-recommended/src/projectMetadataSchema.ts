@@ -36,12 +36,10 @@ export const projectMetadataSchema = z.object({
       z.object({
         features: z.object(
           Object.fromEntries(
-            projectMetadataConfigFeatures.map(
-              (key) => [
-                key,
-                z.boolean().default(false),
-              ],
-            ),
+            projectMetadataConfigFeatures.map((key) => [
+              key,
+              z.boolean().default(false),
+            ]),
           ) as {
             [key in (typeof projectMetadataConfigFeatures)[number]]: z.ZodDefault<z.ZodBoolean>;
           },

@@ -1,18 +1,14 @@
 import { defineTemplateFile } from '@ondrej-langr/bob';
 import { packageJsonSchema } from '@ondrej-langr/bob/schemas';
 
-export default defineTemplateFile(
-  'json',
-  (existing) => {
-    const existingValidated =
-      packageJsonSchema.parse(existing);
+export default defineTemplateFile('json', (existing) => {
+  const existingValidated = packageJsonSchema.parse(existing);
 
-    return {
-      ...existingValidated,
-      scripts: {
-        ...existingValidated.scripts,
-        lint: 'turbo run lint',
-      },
-    };
-  },
-);
+  return {
+    ...existingValidated,
+    scripts: {
+      ...existingValidated.scripts,
+      lint: 'turbo run lint',
+    },
+  };
+});

@@ -14,44 +14,6 @@ Here is a list of main third party libraries that make this project work:
 - `zod` - validating objects and JSON contents
 - `cosmiconfig` - manages importing and resolving configurations
 
-## Project structure
-
-This project is build upon some rules that every developer of this project must follow:
-
-- commands
-  - Where commands are defined
-  - Command name is the same as the folder name in `commands` folder
-  - For command to be valid there must be a `command.ts` file in command folder with [`Command`](../src/Command.ts) class instance as the default export
-- metadata-types
-  - Includes metadata types definition ands schemas
-  - Each project and workspace could have its own metadata
-  - Metadata are usually configurations and combinations that project has
-- schemas
-  - All the other schemas
-- types
-  - Stored type definitions
-- utils
-  - Global utility functions
-- [Command.ts](../src/Command.ts)
-  - Class which defines logic tied to commands it self
-  - Also includes rendering helpers connected to the [TemplateLayer.ts](../src/TemplateLayer.ts)
-- [FileSystem.ts](../src/FileSystem.ts)
-  - Custom filesystem that batches any type of work into one method
-- [program.ts](../src/program.ts)
-  - Where the `commander` program itself is defined
-- [Project.ts](../src/Project.ts)
-  - Class that loads currently defined Node.js projects into memory
-  - Exposes methods to mutate or inspect such projects
-- [run.ts](../src/run.ts)
-  - Main entry file that is executed first where the `@ondrej-langr/bob` is called
-- [TemplateFile.ts](../src/TemplateFile.ts)
-  - Defines template rendering for a file
-  - Can be used to define templates programaticaly (See [About types of templates](#about-types-of-templates) for more info)
-- [TemplateLayer.ts](../src/TemplateLayer.ts)
-  - Handles the execution of multiple [TemplateFile.ts](../src/TemplateFile.ts) in one [layer](#template-layers)
-- [Workspace.ts](../src/Workspace.ts)
-  - Is built on [Project.ts](../src/Project.ts) with functionality geared towards Node.js workspaces
-
 ## Commands
 
 This section will teach you how are commands created
@@ -150,17 +112,14 @@ Templates can be described by two types:
       ```ts
       import { TemplateFile } from '~/TemplateFile.js';
 
-      export default TemplateFile.define(
-        'json',
-        (existing) => {
-          // do magic (validation, fetching, etc...)
-          // And now return what should be in the file after the template is done generating
-          return {
-            ...existing,
-            override: 'this',
-          };
-        },
-      );
+      export default TemplateFile.define('json', (existing) => {
+        // do magic (validation, fetching, etc...)
+        // And now return what should be in the file after the template is done generating
+        return {
+          ...existing,
+          override: 'this',
+        };
+      });
       ```
 
   - ✅ Type inference
@@ -182,19 +141,19 @@ Required mentality around template layers is pretty simple. The whole idea is ju
 To put it simply: "Template Layers" is just fancy work for "folder structure rules"
 
 To start with layers user needs to define one root folder that will serve as the root layer where user will put the files that will render.
-To render files user will create a folder in which templates will reside. Path to this folder is then passed to the [TemplateLayer.ts](../src/TemplateLayer.ts) constructor itself.
-Adding sublayers (layers that share common file structure, but differ in some files) is as easy as creating a new folder with the name having a `+` sign at the start. This tells the rendering engine ([TemplateLayer.ts](../src/TemplateLayer.ts)) to not go further when rendering the upper template layer.
+To render files user will create a folder in which templates will reside. Path to this folder is then passed to the [TemplatesLayer.ts](../src/TemplatesLayer.ts) constructor itself.
+Adding sublayers (layers that share common file structure, but differ in some files) is as easy as creating a new folder with the name having a `+` sign at the start. This tells the rendering engine ([TemplatesLayer.ts](../src/TemplatesLayer.ts)) to not go further when rendering the upper template layer.
 
 In case of commands - commands have one simple rule since binding template layer is done through Command interface itself: top layer is `templates` folder created at the root of the command folder.
 
 ### Rendering
 
 Template Layer should be used for rendering.
-To get started user needs to use the [TemplateLayer.ts](../src/TemplateLayer.ts) class to mark where the template layer resides and then run `renderTemplates(...)` method to actually render the files.
+To get started user needs to use the [TemplatesLayer.ts](../src/TemplatesLayer.ts) class to mark where the template layer resides and then run `renderTemplates(...)` method to actually render the files.
 
 ```ts
-import { TemplateLayer } from './TemplateLayer.js';
-const templateLayer = new TemplateLayer(
+import { TemplatesLayer } from './TemplatesLayer.js';
+const templateLayer = new TemplatesLayer(
   "/my/absolute/path/to/templates",
   options: {
     onBeforeRender() {
@@ -218,8 +177,7 @@ export default Command.define({
   questions: [],
   async handler() {
     const { cwd } = getProgramOptions();
-    const workspace =
-      await Workspace.loadNearest(cwd);
+    const workspace = await Workspace.loadNearest(cwd);
 
     if (!workspace) {
       throw new Error(

@@ -11,10 +11,7 @@ import type { JsonPartial } from './schemas/jsonSchema.js';
 Wrapper around fs-extra that batches update of files until they are committed
 */
 export class FileSystem {
-  private static cache = new Map<
-    string,
-    string
-  >();
+  private static cache = new Map<string, string>();
 
   static readonly cacheless = fs;
 
@@ -28,10 +25,7 @@ export class FileSystem {
       return result;
     }
 
-    if (
-      (await fs.exists(absoluteFilePath)) ===
-      false
-    ) {
+    if ((await fs.exists(absoluteFilePath)) === false) {
       return undefined;
     }
 
@@ -43,29 +37,17 @@ export class FileSystem {
     return result;
   }
 
-  static findFile(
-    filename: string,
-    options: { cwd: string },
-  ) {
+  static findFile(filename: string, options: { cwd: string }) {
     if (!filename) {
       return null;
     }
 
-    const test = (
-      folderName: string,
-    ): string | undefined => {
-      const filepath = path.join(
-        folderName,
-        filename,
-      );
-      const absoluteFilepath = path.isAbsolute(
-        filepath,
-      )
+    const test = (folderName: string): string | undefined => {
+      const filepath = path.join(folderName, filename);
+      const absoluteFilepath = path.isAbsolute(filepath)
         ? filepath
         : path.join('/', filepath);
-      const exists = this.existsSync(
-        absoluteFilepath,
-      );
+      const exists = this.existsSync(absoluteFilepath);
 
       if (!exists) {
         return undefined;
@@ -74,14 +56,12 @@ export class FileSystem {
       return filepath;
     };
 
-    const cwdAsArray = (
-      options.cwd ?? process.cwd()
-    ).split(path.sep);
+    const cwdAsArray = (options.cwd ?? process.cwd()).split(
+      path.sep,
+    );
     let index = cwdAsArray.length;
     while (index--) {
-      const filePath = test(
-        cwdAsArray.join(path.sep),
-      );
+      const filePath = test(cwdAsArray.join(path.sep));
 
       if (filePath) {
         return filePath;
@@ -102,9 +82,7 @@ export class FileSystem {
       schema: S;
     },
   ): Promise<z.output<S> | undefined> {
-    const content = await this.readFile(
-      absoluteFilePath,
-    );
+    const content = await this.readFile(absoluteFilePath);
 
     if (!content) {
       return undefined;
@@ -112,10 +90,7 @@ export class FileSystem {
 
     let result;
     try {
-      result = JSON.parse(
-        content,
-        options.reviver,
-      );
+      result = JSON.parse(content, options.reviver);
     } catch (error) {
       if (error instanceof Error) {
         error.message = `Failed to parse JSON file ${absoluteFilePath}: ${error.message}`;
@@ -147,10 +122,7 @@ export class FileSystem {
     return exists;
   }
 
-  static writeFile(
-    absoluteFilePath: string,
-    value: string,
-  ) {
+  static writeFile(absoluteFilePath: string, value: string) {
     logger.debug(
       `Registering text file for write ${absoluteFilePath}`,
     );
@@ -167,10 +139,7 @@ export class FileSystem {
     );
   }
 
-  static async writeTempFile(
-    fileName: string,
-    value: string,
-  ) {
+  static async writeTempFile(fileName: string, value: string) {
     const temporaryDirectory = path.resolve(
       await fs.realpath(os.tmpdir()),
     );
@@ -200,9 +169,7 @@ export class FileSystem {
   */
   static commit(): Promise<void>;
 
-  static async commit(
-    pathOrPaths?: string[] | string,
-  ) {
+  static async commit(pathOrPaths?: string[] | string) {
     logger.debug('Commiting files from memory');
     const keys = [
       ...(Array.isArray(pathOrPaths)
@@ -214,44 +181,14 @@ export class FileSystem {
       const depthA = a.split(path.sep).length;
       const depthB = b.split(path.sep).length;
 
-      return depthA > depthB
-        ? 1
-        : depthA === depthB
-          ? 0
-          : -1;
+      return depthA > depthB ? 1 : depthA === depthB ? 0 : -1;
     });
 
-    let resolvedPrettierConfig: prettier.Options | null =
-      null;
-
-    const deepestFilePath = keys.at(-1);
-    if (deepestFilePath) {
-      const prettierFilename =
-        'prettier.config.js';
-      const prettierConfigFile =
-        FileSystem.findFile(prettierFilename, {
-          cwd: path.dirname(deepestFilePath),
-        });
-      const prettierFileContents =
-        prettierConfigFile
-          ? await FileSystem.readFile(
-              prettierConfigFile,
-            )
-          : null;
-
-      if (prettierFileContents) {
-        const {
-          filepath: prettierTemporaryFilepath,
-        } = await this.writeTempFile(
-          prettierFilename,
-          prettierFileContents,
-        );
-        resolvedPrettierConfig =
-          await prettier.resolveConfig(
-            prettierTemporaryFilepath,
-          );
-      }
-    }
+    let defaultPrettierConfig: prettier.Options = {
+      tabWidth: 2,
+      singleQuote: true,
+      printWidth: 75,
+    };
 
     const writesAsPromises: Promise<any>[] = [];
     for (const key of keys) {
@@ -266,32 +203,22 @@ export class FileSystem {
           let formattedValue = value;
 
           // Ignore initial prettierignore that does not need to be formatted
-          if (
-            path.basename(key) !==
-            '.prettierignore'
-          ) {
-            logger.debug(
-              `Formatting file ${key}`,
-            );
+          if (path.basename(key) !== '.prettierignore') {
+            logger.debug(`Formatting file ${key}`);
             try {
-              formattedValue =
-                await prettier.format(value, {
-                  ...resolvedPrettierConfig,
-                  filepath: key,
-                });
+              formattedValue = await prettier.format(value, {
+                ...defaultPrettierConfig,
+                filepath: key,
+              });
             } catch {
-              logger.debug(
-                `Failed to format ${key}`,
-              );
+              logger.debug(`Failed to format ${key}`);
             }
           }
 
           logger.debug(`Writing file ${key}`);
-          await fs.outputFile(
-            key,
-            formattedValue,
-            { encoding: 'utf8' },
-          );
+          await fs.outputFile(key, formattedValue, {
+            encoding: 'utf8',
+          });
 
           this.cache.delete(key);
         })(),

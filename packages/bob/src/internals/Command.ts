@@ -1,79 +1,69 @@
-import type {
-  DistinctQuestion,
-  Answers as InquirerQuestionAnswers,
-} from 'inquirer';
 import inquirer from 'inquirer';
-import path from 'node:path';
+import type { DistinctQuestion as InquirerQuestion } from 'inquirer';
 
+import type { DefaultCommandAnswers } from '../DefaultCommandAnswers.js';
 import type { Json } from '../schemas/jsonSchema.js';
 
 import { logger } from './logger.js';
 import type { Program } from './Program.js';
-import {
-  type LayerConstructorOptions,
-  TemplateLayer,
-} from './TemplateLayer.js';
 import type { MaybeArray } from './types/MaybeArray.js';
 import type { MaybePromise } from './types/MaybePromise.js';
 
-export interface CommandOptions<
-  QuestionAnswers extends InquirerQuestionAnswers,
-  Question = DistinctQuestion<QuestionAnswers> & {
-    name: keyof QuestionAnswers;
-  },
-> {
+export type CommandQuestion<
+  CommandAnswers extends DefaultCommandAnswers,
+> = InquirerQuestion<CommandAnswers> & {
+  name: keyof CommandAnswers;
+};
+
+export type CommandOptions<
+  CommandAnswers extends DefaultCommandAnswers,
+> = {
   templatesRoot?: string | undefined;
 
   /**
    * {@link https://github.com/SBoudrias/Inquirer.js Inquirer.js} questions as array, each array item could be function which will return question or null
    */
   questions:
-    | Array<Question>
+    | Array<CommandQuestion<CommandAnswers>>
     | ((
-        this: Command<QuestionAnswers>,
-      ) => MaybePromise<Array<Question>>);
+        this: Command<CommandAnswers>,
+      ) => MaybePromise<Array<CommandQuestion<CommandAnswers>>>);
 
   /**
    * Runs before current layer is executed
    */
   handler?: // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   | ((
-        this: Command<QuestionAnswers>,
-      ) => MaybePromise<MaybeArray<
-        Command<any>
-      > | void>)
+        this: Command<CommandAnswers>,
+      ) => MaybePromise<MaybeArray<Command<any>> | void>)
     | undefined;
-}
+};
 
 export class Command<
-  QuestionAnswers extends InquirerQuestionAnswers,
+  CommandAnswers extends DefaultCommandAnswers,
 > {
-  readonly options: CommandOptions<QuestionAnswers>;
+  readonly options: CommandOptions<CommandAnswers>;
   readonly name: string;
   readonly description: string;
-  private answers: QuestionAnswers | undefined;
+  readonly logger: typeof logger;
+  private answers: CommandAnswers | undefined;
   private program: Omit<Program, 'run'>;
-
-  private templateLayers: Array<{
-    templatePathRelative: string;
-    renderTo: string;
-    readonly layer: TemplateLayer;
-  }> = [];
 
   constructor(
     name: string,
     description: string,
-    options: CommandOptions<QuestionAnswers>,
+    options: CommandOptions<CommandAnswers>,
   ) {
     this.name = name;
     this.description = description;
     this.options = options;
+    this.logger = logger;
   }
 
   /**
    * Safely returns answers - if there are no answers yet then we throw
    */
-  getAnswers() {
+  getAnswers(): CommandAnswers {
     if (!this.answers) {
       throw new Error('Ask questions first');
     }
@@ -82,7 +72,7 @@ export class Command<
   }
 
   private async askQuestions(
-    initialAnswers?: Partial<QuestionAnswers>,
+    initialAnswers?: Partial<CommandAnswers>,
   ) {
     if (!this.options.questions) {
       return this;
@@ -96,11 +86,10 @@ export class Command<
           this.options.questions.apply(this),
         );
 
-    this.answers =
-      await inquirer.prompt<QuestionAnswers>(
-        resolvedQuestions,
-        initialAnswers,
-      );
+    this.answers = await inquirer.prompt<CommandAnswers>(
+      resolvedQuestions,
+      initialAnswers,
+    );
 
     return this;
   }
@@ -113,68 +102,15 @@ export class Command<
 
   getProgram() {
     if (typeof this.program === 'undefined') {
-      throw new Error(
-        'Command does not belong to any program',
-      );
+      throw new Error('Command does not belong to any program');
     }
 
     return this.program;
   }
 
-  bindTemplatesLayer(
-    relativeTemplatesPath: string,
-    options: LayerConstructorOptions<QuestionAnswers> & {
-      renderTo: string;
-    },
-  ) {
-    if (
-      path.isAbsolute(relativeTemplatesPath) &&
-      relativeTemplatesPath !== '/'
-    ) {
-      throw new Error(
-        `Templates layer path "${relativeTemplatesPath}" must be relative`,
-      );
-    }
-
-    if (!this.options.templatesRoot) {
-      throw new Error(
-        'Cannot register template when no templatesRoot option has been provided',
-      );
-    }
-
-    const { renderTo, ...layerOptions } = options;
-
-    this.templateLayers.push({
-      templatePathRelative: relativeTemplatesPath,
-      renderTo,
-      layer: new TemplateLayer(
-        path.join(
-          this.options.templatesRoot,
-          relativeTemplatesPath === '/'
-            ? ''
-            : relativeTemplatesPath,
-        ),
-        layerOptions,
-      ),
-    });
-
-    return this;
-  }
-
-  async renderTemplateLayers() {
-    for (const { layer, renderTo } of this
-      .templateLayers) {
-      // eslint-disable-next-line no-await-in-loop -- intended
-      await layer.renderTemplates(
-        renderTo,
-        this.answers,
-      );
-    }
-  }
-
+  // TODO: through params override program options
   async execute() {
-    const options =
-      this.getProgram().getOptions();
+    const options = this.getProgram().getOptions();
 
     logger.debug('Running command', {
       name: this.name,
@@ -183,10 +119,7 @@ export class Command<
 
     await this.askQuestions();
 
-    await Promise.resolve(
-      this.options?.handler?.apply(this),
-    );
-    await this.renderTemplateLayers();
+    await Promise.resolve(this.options?.handler?.apply(this));
   }
 
   getAsKey() {

@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import path from 'node:path';
-import { Project } from '~/Project.js';
+
+import { Project } from '../Project.js';
 
 import { PACKAGE_RUNTIME_ROOT } from './constants.js';
 
@@ -9,8 +10,7 @@ export async function setupProgram() {
   const bobPackage = await Project.loadAt(
     path.join(PACKAGE_RUNTIME_ROOT, '..'),
   );
-  const bobPackageJson =
-    bobPackage.getPackageInfo();
+  const bobPackageJson = bobPackage.getPackageInfo();
 
   program
     .name(bobPackageJson.name)

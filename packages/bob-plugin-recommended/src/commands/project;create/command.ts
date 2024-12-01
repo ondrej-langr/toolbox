@@ -1,6 +1,6 @@
 import {
-  BOB_FOLDER_NAME,
   defineCommand,
+  defineTemplatesLayer,
   FileSystem,
   Project,
   Workspace,
@@ -27,18 +27,16 @@ import { presetNextRouterChoices } from './presetNextRouterChoices.js';
 
 let _forWorkspace: Workspace | null = null;
 const getWorkspace = async (cwd: string) => {
-  _forWorkspace ??=
-    await Workspace.loadNearest(cwd);
+  _forWorkspace ??= await Workspace.loadNearest(cwd);
   return _forWorkspace;
 };
 
 const enabledWhenInWorkspace: AsyncDynamicQuestionProperty<
   boolean,
   any
-> = async (cwd: string) =>
-  !!(await getWorkspace(cwd));
+> = async (cwd: string) => !!(await getWorkspace(cwd));
 
-export default defineCommand<{
+type CommandAnswers = {
   name: string;
   description: string;
   preset: (typeof projectPresets)[number];
@@ -47,7 +45,9 @@ export default defineCommand<{
     typeof presetNextRouterChoices
   >;
   selectedFeatures: typeof projectMetadataConfigFeatures;
-}>({
+};
+
+export default defineCommand<CommandAnswers>({
   description: 'Create project',
   questions() {
     const program = this.getProgram();
@@ -58,13 +58,10 @@ export default defineCommand<{
         type: 'input',
         message: 'Whats the project name?',
         validate(input) {
-          const zodOutput =
-            projectNameSchema.safeParse(input);
+          const zodOutput = projectNameSchema.safeParse(input);
 
           if (zodOutput.error) {
-            return zodOutput.error
-              .format()
-              ._errors.join(', ');
+            return zodOutput.error.format()._errors.join(', ');
           }
 
           return true;
@@ -73,8 +70,7 @@ export default defineCommand<{
       {
         name: 'description',
         type: 'input',
-        message:
-          "What's the workspace description?",
+        message: "What's the workspace description?",
       },
       {
         name: 'preset',
@@ -88,13 +84,9 @@ export default defineCommand<{
         message: 'Select router type',
         when: ({ preset }) => preset === 'next',
         default: Object.values(
-          presetNextRouterChoices.enum[
-            'app-router'
-          ],
+          presetNextRouterChoices.enum['app-router'],
         ),
-        choices: Object.values(
-          presetNextRouterChoices.enum,
-        ),
+        choices: Object.values(presetNextRouterChoices.enum),
       },
       {
         name: 'selectedFeatures',
@@ -102,11 +94,8 @@ export default defineCommand<{
         message: 'Select features',
         default: projectMetadataConfigFeatures,
         async choices(answers) {
-          let result = [
-            ...projectMetadataConfigFeatures,
-          ];
-          const options =
-            await program.getOptions();
+          let result = [...projectMetadataConfigFeatures];
+          const options = await program.getOptions();
 
           if (await getWorkspace(options.cwd)) {
             // Prettier configuration is taken from workspace
@@ -132,8 +121,7 @@ export default defineCommand<{
           'What will be the project location inside current workspace?',
         when: enabledWhenInWorkspace,
         async choices(answers) {
-          const options =
-            await program.getOptions();
+          const options = await program.getOptions();
           const workspaces = await (
             await getWorkspace(options.cwd)
           )?.getProjectsPathsRaw();
@@ -171,10 +159,7 @@ export default defineCommand<{
           (await getWorkspace(cwd))!.getRoot(),
           projectLocationInWorkspace,
         )
-      : path.join(
-          cwd,
-          name.replace('@', '').replace('/', '-'),
-        );
+      : path.join(cwd, name.replace('@', '').replace('/', '-'));
 
     FileSystem.writeJson(
       path.join(projectPath, 'package.json'),
@@ -185,13 +170,10 @@ export default defineCommand<{
         ...(preset !== 'next' && {
           private: true,
         }),
-      } satisfies z.input<
-        typeof packageJsonSchema
-      >,
+      } satisfies z.input<typeof packageJsonSchema>,
     );
 
-    const newProject =
-      await Project.loadAt(projectPath);
+    const newProject = await Project.loadAt(projectPath);
     const features = Object.fromEntries(
       projectMetadataConfigFeatures.map((key) => [
         key,
@@ -211,8 +193,7 @@ export default defineCommand<{
           preset === 'next'
             ? {
                 preset,
-                routerPreset:
-                  presetNextRouterPreset!,
+                routerPreset: presetNextRouterPreset!,
                 features,
               }
             : {
@@ -222,16 +203,14 @@ export default defineCommand<{
       });
 
     // Create initial files on create
-    this.bindTemplatesLayer(`+preset-${preset}`, {
-      renderTo: projectPath,
-    });
+    await defineTemplatesLayer(
+      `templates/+preset-${preset}`,
+    ).renderTemplates(projectPath);
+
     if (preset === 'next') {
-      this.bindTemplatesLayer(
+      await defineTemplatesLayer(
         `+preset-next/+preset-${presetNextRouterPreset}`,
-        {
-          renderTo: projectPath,
-        },
-      );
+      ).renderTemplates(projectPath);
     }
 
     // Prepare cwd for project:update command

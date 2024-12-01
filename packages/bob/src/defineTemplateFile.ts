@@ -1,11 +1,16 @@
 import {
   TemplateFile,
-  type TemplateHandlerTypeToHandler,
+  type TemplateFileHandler,
 } from './internals/TemplateFile.js';
+import type { FileTypeToParsers } from './parsers/FileTypeToParsers.js';
 
 export function defineTemplateFile<
-  K extends keyof TemplateHandlerTypeToHandler,
-  H extends TemplateHandlerTypeToHandler[K],
->(type: K, handler: H) {
+  TVariables extends Record<string, any>,
+  TParserType extends keyof FileTypeToParsers,
+  THandler = TemplateFileHandler<TParserType, TVariables>,
+>(
+  type: TParserType,
+  handler: THandler,
+): TemplateFile<TVariables, TParserType, THandler> {
   return new TemplateFile(type, handler);
 }

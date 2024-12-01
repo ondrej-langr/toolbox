@@ -1,6 +1,6 @@
-import type { Answers as InquirerQuestionAnswers } from 'inquirer';
 import path from 'node:path';
 
+import type { DefaultCommandAnswers } from './DefaultCommandAnswers.js';
 import {
   Command,
   type CommandOptions,
@@ -8,27 +8,27 @@ import {
 import { logger } from './internals/logger.js';
 import { getCallerFilename } from './internals/utils/getCallerFilename.js';
 
+export type DefineCommandOptions<
+  CommandAnswers extends DefaultCommandAnswers,
+> = Omit<
+  CommandOptions<CommandAnswers>,
+  'templatesRoot' | 'schema'
+> & {
+  description: string;
+};
+
 export function defineCommand<
-  QuestionAnswers extends InquirerQuestionAnswers,
+  CommandAnswers extends DefaultCommandAnswers,
 >(
-  options: Omit<
-    CommandOptions<QuestionAnswers>,
-    'templatesRoot' | 'schema'
-  > & {
-    description: string;
-  },
-): Command<QuestionAnswers> {
+  options: DefineCommandOptions<CommandAnswers>,
+): Command<CommandAnswers> {
   const filepath = getCallerFilename();
-  const { description, ...commandOptions } =
-    options;
+  const { description, ...commandOptions } = options;
   const filename = path.basename(filepath);
   const commandRoot = path.dirname(filepath);
   let commandName = path.basename(commandRoot);
 
-  if (
-    filename !== 'command.js' &&
-    filename !== 'command.ts'
-  ) {
+  if (filename !== 'command.js' && filename !== 'command.ts') {
     throw new Error(
       `File where Command.define is called must be named command.ts. Got ${filename}`,
     );
@@ -42,23 +42,13 @@ export function defineCommand<
   }
 
   if (commandName.includes(';')) {
-    commandName = commandName.replaceAll(
-      ';',
-      ':',
-    );
+    commandName = commandName.replaceAll(';', ':');
   }
 
-  const command = new Command(
-    commandName,
-    description,
-    {
-      ...commandOptions,
-      templatesRoot: path.join(
-        commandRoot,
-        'templates',
-      ),
-    },
-  );
+  const command = new Command(commandName, description, {
+    ...commandOptions,
+    templatesRoot: path.join(commandRoot, 'templates'),
+  });
 
   logger.debug(`Defined command ${commandName}`);
 

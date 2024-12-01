@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- ok for this cases */
 import path from 'node:path';
 import type { z } from 'zod';
-import { FileSystem } from '~/FileSystem.js';
-import { Project } from '~/Project.js';
+
+import { FileSystem } from '../../FileSystem.js';
+import { Project } from '../../Project.js';
 
 type ProjectMetaValueSchema = z.ZodObject<{
   config:
@@ -33,46 +34,26 @@ export function defineProjectMeta<
   V extends z.output<S> = z.output<S>,
 >(schema: S) {
   return {
-    writeForProject(
-      project: Project,
-      metadata: V,
-    ) {
-      const snapshotPath = createSnapshotPath(
-        project.getRoot(),
-      );
+    writeForProject(project: Project, metadata: V) {
+      const snapshotPath = createSnapshotPath(project.getRoot());
 
-      FileSystem.writeJson(
-        snapshotPath,
-        metadata,
-      );
+      FileSystem.writeJson(snapshotPath, metadata);
     },
-    async getForProject(
-      project: Project,
-      initialState?: V,
-    ) {
+    async getForProject(project: Project, initialState?: V) {
       // eslint-disable-next-line unicorn/no-this-assignment, @typescript-eslint/no-this-alias
       const that = this;
-      const rawMetadata = await loadSnapshot(
-        project.getRoot(),
-      );
+      const rawMetadata = await loadSnapshot(project.getRoot());
       const metadata = schema.parse(
-        rawMetadata
-          ? JSON.parse(rawMetadata)
-          : initialState,
+        rawMetadata ? JSON.parse(rawMetadata) : initialState,
       );
 
       return {
         save() {
-          that.writeForProject(
-            project,
-            metadata as V,
-          );
+          that.writeForProject(project, metadata as V);
 
           return this;
         },
-        setConfig(
-          config: NonNullable<V['config']>,
-        ) {
+        setConfig(config: NonNullable<V['config']>) {
           metadata.config = config;
           this.save();
 

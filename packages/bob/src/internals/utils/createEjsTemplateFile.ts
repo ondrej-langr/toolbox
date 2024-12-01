@@ -1,5 +1,4 @@
-import { FileSystem } from '~/FileSystem.js';
-
+import { FileSystem } from '../../FileSystem.js';
 import { TemplateFile } from '../TemplateFile.js';
 
 const ENCODING: BufferEncoding = 'utf8';
@@ -7,13 +6,12 @@ const ENCODING: BufferEncoding = 'utf8';
 export const createEjsTemplateFile = async (
   templateLocation: string,
 ) => {
-  const templateContents =
-    await FileSystem.cacheless.readFile(
-      templateLocation,
-      {
-        encoding: ENCODING,
-      },
-    );
+  const templateContents = await FileSystem.cacheless.readFile(
+    templateLocation,
+    {
+      encoding: ENCODING,
+    },
+  );
 
   return new TemplateFile(
     'text',

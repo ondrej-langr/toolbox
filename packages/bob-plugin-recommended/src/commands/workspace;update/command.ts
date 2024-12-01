@@ -1,7 +1,7 @@
 import {
   defineCommand,
+  defineTemplatesLayer,
   FileSystem,
-  Project,
   Workspace,
 } from '@ondrej-langr/bob';
 import path from 'node:path';
@@ -15,14 +15,11 @@ export default defineCommand({
     const program = this.getProgram();
     const options = await program.getOptions();
     const { cwd } = options;
-    const workspaceOrProject:
-      | Project
-      | Workspace = await program.getProject();
+    const workspaceOrProject = await program.getProject();
 
     if (
       !workspaceOrProject ||
-      (workspaceOrProject instanceof Workspace ===
-        false &&
+      (workspaceOrProject instanceof Workspace === false &&
         !workspaceOrProject.workspace)
     ) {
       throw new Error(
@@ -40,16 +37,12 @@ export default defineCommand({
         workspaceMetadataSchema,
       )
       .get();
-
-    this.bindTemplatesLayer('/', {
-      renderTo: workspace.getRoot(),
-    });
+    await defineTemplatesLayer('templates').renderTemplates(
+      workspace.getRoot(),
+    );
 
     // const metadata = await this.getMetadata();
-    for (const [
-      featureName,
-      enabled,
-    ] of Object.entries(
+    for (const [featureName, enabled] of Object.entries(
       definedMetadata.config.features,
     )) {
       if (!enabled) {
@@ -64,16 +57,11 @@ export default defineCommand({
       );
 
       if (
-        FileSystem.cacheless.existsSync(
-          rootFeatureTemplatesPath,
-        )
+        FileSystem.cacheless.existsSync(rootFeatureTemplatesPath)
       ) {
-        this.bindTemplatesLayer(
-          featureTemplateFolderName,
-          {
-            renderTo: workspace.getRoot(),
-          },
-        );
+        await defineTemplatesLayer(
+          `templates/${featureTemplateFolderName}`,
+        ).renderTemplates(workspace.getRoot());
       }
     }
   },

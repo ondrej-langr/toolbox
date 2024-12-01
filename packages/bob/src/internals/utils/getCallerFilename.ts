@@ -8,8 +8,7 @@ export function getCallerFilename() {
 
   Error.prepareStackTrace = (_, stack) => stack;
 
-  const stack =
-    error.stack as unknown as NodeJS.CallSite[];
+  const stack = error.stack as unknown as NodeJS.CallSite[];
 
   Error.prepareStackTrace = undefined;
 

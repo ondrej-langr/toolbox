@@ -1,5 +1,6 @@
 import {
   defineCommand,
+  defineTemplatesLayer,
   FileSystem,
   Project,
   Workspace,
@@ -26,18 +27,15 @@ export default defineCommand<{
             await program.getProject();
 
           return (
-            closestProjectOrWorkspace &&
-            closestProjectOrWorkspace instanceof
-              Workspace
+            !!closestProjectOrWorkspace &&
+            closestProjectOrWorkspace instanceof Workspace
           );
         },
         async choices() {
-          const workspace =
-            await program.getProject();
+          const workspace = await program.getProject();
           if (
             !workspace ||
-            workspace instanceof Workspace ===
-              false
+            workspace instanceof Workspace === false
           ) {
             throw new Error(
               'Cannot show choices when project is not workspace. This is a bug of @ondrej-langr/bob',
@@ -48,16 +46,11 @@ export default defineCommand<{
             await workspace.getProjects();
 
           if (!workspaceProjects?.length) {
-            throw new Error(
-              'Workspace has no projects',
-            );
+            throw new Error('Workspace has no projects');
           }
 
-          return workspaceProjects.map(
-            (project) =>
-              project
-                .getRoot()
-                .replace(workspace.getRoot(), ''),
+          return workspaceProjects.map((project) =>
+            project.getRoot().replace(workspace.getRoot(), ''),
           );
         },
       },
@@ -66,8 +59,7 @@ export default defineCommand<{
   async handler() {
     const program = this.getProgram();
     const options = await program.getOptions();
-    const closestProjectOrWorkspace =
-      await program.getProject();
+    const closestProjectOrWorkspace = await program.getProject();
     const { cwd } = options;
 
     if (!closestProjectOrWorkspace) {
@@ -77,18 +69,16 @@ export default defineCommand<{
     }
 
     const answers = this.getAnswers();
-    const renderTo =
-      answers.projectLocationInWorkspace
-        ? path.join(
-            closestProjectOrWorkspace.getRoot(),
-            answers.projectLocationInWorkspace,
-          )
-        : closestProjectOrWorkspace.getRoot();
+    const renderTo = answers.projectLocationInWorkspace
+      ? path.join(
+          closestProjectOrWorkspace.getRoot(),
+          answers.projectLocationInWorkspace,
+        )
+      : closestProjectOrWorkspace.getRoot();
 
-    const project =
-      answers.projectLocationInWorkspace
-        ? await Project.loadAt(renderTo)
-        : (closestProjectOrWorkspace as Project);
+    const project = answers.projectLocationInWorkspace
+      ? await Project.loadAt(renderTo)
+      : (closestProjectOrWorkspace as Project);
 
     const projectMeta = await project
       .getMetadataNamespace(
@@ -99,28 +89,23 @@ export default defineCommand<{
 
     const presetTemplateFolderName = `+preset-${projectMeta.config.preset}`;
 
-    this.bindTemplatesLayer('/', { renderTo });
-    this.bindTemplatesLayer(
-      presetTemplateFolderName,
-      { renderTo },
+    await defineTemplatesLayer('templates').renderTemplates(
+      renderTo,
     );
+    await defineTemplatesLayer(
+      presetTemplateFolderName,
+    ).renderTemplates(renderTo);
 
     if (
       projectMeta.config.preset === 'next' &&
       projectMeta.config.features['testing-e2e']
     ) {
-      this.bindTemplatesLayer(
-        `${presetTemplateFolderName}/+feature-testing-e2e`,
-        {
-          renderTo,
-        },
-      );
+      await defineTemplatesLayer(
+        `templates/${presetTemplateFolderName}/+feature-testing-e2e`,
+      ).renderTemplates(renderTo);
     }
 
-    for (const [
-      featureName,
-      enabled,
-    ] of Object.entries(
+    for (const [featureName, enabled] of Object.entries(
       projectMeta.config.features,
     )) {
       if (!enabled) {
@@ -132,22 +117,18 @@ export default defineCommand<{
         this.options.templatesRoot!,
         featureTemplateFolderName,
       );
-      const presetFeatureTemplatesPath =
-        path.join(
-          this.options.templatesRoot!,
-          presetTemplateFolderName,
-          featureTemplateFolderName,
-        );
+      const presetFeatureTemplatesPath = path.join(
+        this.options.templatesRoot!,
+        presetTemplateFolderName,
+        featureTemplateFolderName,
+      );
 
       if (
-        FileSystem.cacheless.existsSync(
-          rootFeatureTemplatesPath,
-        )
+        FileSystem.cacheless.existsSync(rootFeatureTemplatesPath)
       ) {
-        this.bindTemplatesLayer(
+        await defineTemplatesLayer(
           featureTemplateFolderName,
-          { renderTo },
-        );
+        ).renderTemplates(renderTo);
       }
 
       if (
@@ -155,10 +136,9 @@ export default defineCommand<{
           presetFeatureTemplatesPath,
         )
       ) {
-        this.bindTemplatesLayer(
-          `${presetTemplateFolderName}/${featureTemplateFolderName}`,
-          { renderTo },
-        );
+        await defineTemplatesLayer(
+          `templates/${presetTemplateFolderName}/${featureTemplateFolderName}`,
+        ).renderTemplates(renderTo);
       }
     }
   },

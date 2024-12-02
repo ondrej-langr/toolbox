@@ -3,6 +3,7 @@ import { glob } from 'glob';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import url from 'node:url';
+import { z } from 'zod';
 
 import type { DefaultProgramOptions } from '../DefaultProgramOptions.js';
 import { FileSystem } from '../FileSystem.js';
@@ -69,10 +70,24 @@ export class Program {
 
     try {
       projectOrWorkspace = await Workspace.loadAt(cwd);
-    } catch {
-      projectOrWorkspace = await Project.loadAt(cwd).catch(
-        () => null,
-      );
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error(
+          `Workspace at cwd ${cwd} has invalid package.json`,
+        );
+        throw error;
+      }
+
+      try {
+        projectOrWorkspace = await Project.loadAt(cwd);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          console.error(
+            `Project at cwd ${cwd} has invalid package.json`,
+          );
+          throw error;
+        }
+      }
     }
 
     return projectOrWorkspace;
@@ -98,9 +113,12 @@ export class Program {
         }
 
         logger.debug(`Loading workspace bob config...`);
-        if (project.workspace) {
+        const projectWorkspace = await Workspace.loadNearest(
+          project.getRoot(),
+        );
+        if (projectWorkspace) {
           const workspaceBobConfig = await Config.loadAt(
-            project.workspace.getRoot(),
+            projectWorkspace.getRoot(),
           );
 
           totalConfigPluginsOptions.push(
@@ -161,17 +179,20 @@ export class Program {
         );
 
         // Find commands in workspace if its there
-        if (
-          project instanceof Workspace === false &&
-          project.workspace
-        ) {
-          commandsGlobMatches.push(
-            path.join(
-              project.workspace.getRoot(),
-              BOB_FOLDER_NAME,
-              COMMANDS_FILE_MATCH,
-            ),
+        if (project instanceof Workspace === false) {
+          const projectWorkspace = await Workspace.loadNearest(
+            project.getRoot(),
           );
+
+          if (projectWorkspace) {
+            commandsGlobMatches.push(
+              path.join(
+                projectWorkspace.getRoot(),
+                BOB_FOLDER_NAME,
+                COMMANDS_FILE_MATCH,
+              ),
+            );
+          }
         }
       }
 

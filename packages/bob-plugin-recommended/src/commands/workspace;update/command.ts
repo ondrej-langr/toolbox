@@ -20,7 +20,9 @@ export default defineCommand({
     if (
       !workspaceOrProject ||
       (workspaceOrProject instanceof Workspace === false &&
-        !workspaceOrProject.workspace)
+        (await Workspace.loadNearest(
+          workspaceOrProject.getRoot(),
+        )) === null)
     ) {
       throw new Error(
         `No workspace has been found on ${cwd} or anywhere up in the file system`,
@@ -29,7 +31,9 @@ export default defineCommand({
     const workspace =
       workspaceOrProject instanceof Workspace
         ? workspaceOrProject
-        : workspaceOrProject.workspace!;
+        : (await Workspace.loadNearest(
+            workspaceOrProject.getRoot(),
+          ))!;
 
     const definedMetadata = await workspace
       .getMetadataNamespace(

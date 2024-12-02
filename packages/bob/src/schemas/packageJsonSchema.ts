@@ -32,7 +32,10 @@ export const packageJsonSchema = z
       })
       .optional(),
     config: z
-      .record(z.string(), z.string().or(z.number()))
+      .record(
+        z.string(),
+        z.string().or(z.number()).or(z.record(z.string())),
+      )
       .describe(
         'Config parameters which will Node traslate into environment variables. Each variable can be accessible under this key "npm_package_config_<key>"',
       )
@@ -50,10 +53,9 @@ export const packageJsonSchema = z
       .or(z.record(z.literal('pnpm'), dependencySchema))
       .optional(),
     private: z.boolean().optional(),
-    engines: z.record(
-      z.literal('node').or(z.string()),
-      z.string(),
-    ),
+    engines: z
+      .record(z.literal('node').or(z.string()), z.string())
+      .default({}),
     packageManager: z.string().optional(),
     exports: z
       .record(

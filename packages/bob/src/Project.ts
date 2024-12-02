@@ -10,7 +10,6 @@ import {
 import { logger } from './internals/logger.js';
 import type { PackageJson } from './schemas/packageJsonSchema.js';
 import { packageJsonSchema } from './schemas/packageJsonSchema.js';
-import type { Workspace } from './Workspace.js';
 
 const METADATA_PATH_IN_PROJECT = path.join(
   BOB_FOLDER_NAME,
@@ -50,12 +49,6 @@ export class Project {
    */
   private readonly root: string;
 
-  // TODO: load workspace through function and do not save
-  /**
-   * Workspace of this package
-   */
-  readonly workspace: Workspace | null = null;
-
   /**
    * Loaded and parsed package.json contents
    */
@@ -64,18 +57,16 @@ export class Project {
   constructor(
     packageRoot: string,
     packageJsonContents: PackageJson,
-    workspace: Workspace | null = null,
   ) {
     this.root = packageRoot;
     this.packageJsonContents = packageJsonContents;
-    this.workspace = workspace;
   }
 
   // TODO: this should load from our filesystem
   /**
    * Loads necessary info and returns new instance
    */
-  static async loadAt(at: string, workspace?: Workspace) {
+  static async loadAt(at: string) {
     const packageJsonPath = path.join(at, PACKAGE_JSON);
     const packageJsonContent = await FileSystem.readJson(
       packageJsonPath,
@@ -90,7 +81,7 @@ export class Project {
       );
     }
 
-    return new Project(at, packageJsonContent, workspace);
+    return new Project(at, packageJsonContent);
   }
 
   /**
@@ -177,7 +168,7 @@ export class Project {
   }
 
   /**
-   * Gets root of this package
+   * Gets the root of this package
    */
   getRoot() {
     return this.root;

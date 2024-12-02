@@ -1,5 +1,11 @@
 # @ondrej-langr/bob
 
+## 0.4.1
+
+### Patch Changes
+
+- [`2346bde`](https://github.com/ondrej-langr/toolbox/commit/2346bde0542c1d8230498ddb1147cea699f86fd0) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Updates logging and prints help when user does not run any command
+
 ## 0.4.0
 
 ### Minor Changes

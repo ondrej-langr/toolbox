@@ -1,5 +1,12 @@
 # @ondrej-langr/bob
 
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [[`2346bde`](https://github.com/ondrej-langr/toolbox/commit/2346bde0542c1d8230498ddb1147cea699f86fd0)]:
+  - @ondrej-langr/bob@0.4.1
+
 ## 0.2.2
 
 ### Patch Changes

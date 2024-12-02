@@ -1,5 +1,13 @@
 # @ondrej-langr/bob
 
+## 0.4.0
+
+### Minor Changes
+
+- [#3](https://github.com/ondrej-langr/toolbox/pull/3) [`2db1e18`](https://github.com/ondrej-langr/toolbox/commit/2db1e18adf2dbfab43438cecf2ff873b1b15183c) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Allows packageJson to pass through the config one object level deep
+
+- [#3](https://github.com/ondrej-langr/toolbox/pull/3) [`2db1e18`](https://github.com/ondrej-langr/toolbox/commit/2db1e18adf2dbfab43438cecf2ff873b1b15183c) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - BREAKING: Workspace of a package can no longer be accessed through static property of a Project instance. Instead please use async method `Workspace.loadNearest()` which tries to find the nearest workspace for current provided directory.
+
 ## 0.3.0
 
 ### Minor Changes

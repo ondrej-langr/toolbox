@@ -47,7 +47,9 @@ export const packageJsonSchema = z
       .or(z.record(z.literal('pnpm'), dependencySchema))
       .optional(),
     private: z.boolean().optional(),
-    engines: z.record(z.literal('node').or(z.string()), z.string()),
+    engines: z
+      .record(z.literal('node').or(z.string()), z.string())
+      .default({}),
     packageManager: z.string().optional(),
     exports: z
       .record(

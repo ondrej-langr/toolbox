@@ -10,7 +10,6 @@ import {
 import { logger } from './internals/logger.js';
 import type { PackageJson } from './schemas/packageJsonSchema.js';
 import { packageJsonSchema } from './schemas/packageJsonSchema.js';
-import type { Workspace } from './Workspace.js';
 
 const METADATA_PATH_IN_PROJECT = path.join(
   BOB_FOLDER_NAME,
@@ -50,39 +49,25 @@ export class Project {
    */
   private readonly root: string;
 
-  // TODO: load workspace through function and do not save
-  /**
-   * Workspace of this package
-   */
-  readonly workspace: Workspace | null = null;
-
   /**
    * Loaded and parsed package.json contents
    */
   private packageJsonContents: PackageJson;
 
-  constructor(
-    packageRoot: string,
-    packageJsonContents: PackageJson,
-    workspace: Workspace | null = null,
-  ) {
+  constructor(packageRoot: string, packageJsonContents: PackageJson) {
     this.root = packageRoot;
     this.packageJsonContents = packageJsonContents;
-    this.workspace = workspace;
   }
 
   // TODO: this should load from our filesystem
   /**
    * Loads necessary info and returns new instance
    */
-  static async loadAt(at: string, workspace?: Workspace) {
+  static async loadAt(at: string) {
     const packageJsonPath = path.join(at, PACKAGE_JSON);
-    const packageJsonContent = await FileSystem.readJson(
-      packageJsonPath,
-      {
-        schema: packageJsonSchema,
-      },
-    );
+    const packageJsonContent = await FileSystem.readJson(packageJsonPath, {
+      schema: packageJsonSchema,
+    });
 
     if (!packageJsonContent) {
       throw new Error(
@@ -90,7 +75,7 @@ export class Project {
       );
     }
 
-    return new Project(at, packageJsonContent, workspace);
+    return new Project(at, packageJsonContent);
   }
 
   /**
@@ -118,25 +103,18 @@ export class Project {
       this.getRoot(),
       METADATA_PATH_IN_PROJECT,
     );
-    let metadataFromFile: Record<
-      string,
-      Record<string, any>
-    > = {};
+    let metadataFromFile: Record<string, Record<string, any>> = {};
 
     if (FileSystem.existsSync(metadataJsonFilepath)) {
-      metadataFromFile = await FileSystem.readJson(
-        metadataJsonFilepath,
-        {
-          // Make sure that its an object
-          schema: z.record(z.string(), z.record(z.any())),
-        },
-      )
+      metadataFromFile = await FileSystem.readJson(metadataJsonFilepath, {
+        // Make sure that its an object
+        schema: z.record(z.string(), z.record(z.any())),
+      })
         .catch((error) => {
           logger.warn(
             `Failed to read or parse the ${METADATA_PATH_IN_PROJECT}`,
             {
-              errorMessage:
-                error instanceof Error ? error.message : error,
+              errorMessage: error instanceof Error ? error.message : error,
               metadataJsonFilepath,
             },
           );
@@ -157,8 +135,7 @@ export class Project {
       /** Gets metadata for current project, validated according to @{link schema} */
       get: async (): Promise<z.output<TMetadataSchema>> => {
         const metadataFromFile = await this.readMetadataFile();
-        const metadataUnderNamespace =
-          metadataFromFile[namespace] ?? {};
+        const metadataUnderNamespace = metadataFromFile[namespace] ?? {};
 
         return await schema.parseAsync(metadataUnderNamespace);
       },
@@ -177,7 +154,7 @@ export class Project {
   }
 
   /**
-   * Gets root of this package
+   * Gets the root of this package
    */
   getRoot() {
     return this.root;

@@ -126,7 +126,7 @@ export class Workspace extends Project {
     const projectsPaths = await this.getProjectsPaths();
     const projectsAsPromises: Promise<Project>[] = [];
     for (const packageRoot of projectsPaths) {
-      projectsAsPromises.push(Project.loadAt(packageRoot, this));
+      projectsAsPromises.push(Project.loadAt(packageRoot));
     }
 
     this.projects = await Promise.all(projectsAsPromises);

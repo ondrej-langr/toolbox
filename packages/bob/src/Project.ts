@@ -68,12 +68,19 @@ export class Project {
    */
   static async loadAt(at: string) {
     const packageJsonPath = path.join(at, PACKAGE_JSON);
+    // TODO: notify user here on invalid package.json
     const packageJsonContent = await FileSystem.readJson(
       packageJsonPath,
       {
         schema: packageJsonSchema,
       },
-    );
+    ).catch((error) => {
+      if (error instanceof z.ZodError) {
+        logger.warn(`Package.json at ${at} is not valid`);
+      }
+
+      throw error;
+    });
 
     if (!packageJsonContent) {
       throw new Error(

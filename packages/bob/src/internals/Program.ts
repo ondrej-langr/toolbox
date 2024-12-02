@@ -72,9 +72,6 @@ export class Program {
       projectOrWorkspace = await Workspace.loadAt(cwd);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        console.error(
-          `Workspace at cwd ${cwd} has invalid package.json`,
-        );
         throw error;
       }
 
@@ -82,9 +79,6 @@ export class Program {
         projectOrWorkspace = await Project.loadAt(cwd);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error(
-            `Project at cwd ${cwd} has invalid package.json`,
-          );
           throw error;
         }
       }
@@ -286,14 +280,21 @@ export class Program {
 
     logger.debug('Commands attached...');
 
+    logger.debug('Parsing commands and running...');
     // Start program
     await this.commanderProgram.parseAsync();
 
-    logger.info('Success, writing files...');
+    // Exit
+    if (!this.commanderProgram.args.length) {
+      logger.debug('No command has been provided, exitting...');
+      this.commanderProgram.help();
+    }
+
+    logger.debug('Everything ok, writing updated files...');
     // TODO: create a local pull request for written files when appropriate action turns that on
     // Commit all files in one go
     await FileSystem.commit();
 
-    logger.success('All finished!');
+    logger.success("Bob finished all it's work! Bye");
   }
 }

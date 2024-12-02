@@ -20,7 +20,10 @@ export const packageJsonSchema = z
     contributors: z.array(packageJsonPersonSchema).optional(),
     files: z.array(z.string()).optional(),
     browser: z.string().optional(),
-    bin: z.string().or(z.record(z.string(), z.string())).optional(),
+    bin: z
+      .string()
+      .or(z.record(z.string(), z.string()))
+      .optional(),
     repository: z
       .object({
         type: z.literal('git'),
@@ -41,7 +44,10 @@ export const packageJsonSchema = z
     devDependencies: dependencySchema.optional(),
     peerDependencies: dependencySchema.optional(),
     peerDependenciesMeta: z
-      .record(z.string(), z.record(z.literal('optional'), z.boolean()))
+      .record(
+        z.string(),
+        z.record(z.literal('optional'), z.boolean()),
+      )
       .optional(),
     overrides: dependencySchema
       .or(z.record(z.literal('pnpm'), dependencySchema))

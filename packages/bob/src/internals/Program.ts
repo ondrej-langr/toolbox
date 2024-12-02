@@ -12,7 +12,10 @@ import { Workspace } from '../Workspace.js';
 
 import { Command } from './Command.js';
 import { Config, type ConfigOptions } from './Config.js';
-import { BOB_FOLDER_NAME, PACKAGE_RUNTIME_ROOT } from './constants.js';
+import {
+  BOB_FOLDER_NAME,
+  PACKAGE_RUNTIME_ROOT,
+} from './constants.js';
 import { logger } from './logger.js';
 import { Plugin } from './Plugin.js';
 
@@ -61,13 +64,17 @@ export class Program {
     const { cwd } = program.opts<DefaultProgramOptions>();
     let projectOrWorkspace: Project | Workspace | null = null;
 
-    logger.debug(`Getting project or workspace at current cwd "${cwd}"`);
+    logger.debug(
+      `Getting project or workspace at current cwd "${cwd}"`,
+    );
 
     try {
       projectOrWorkspace = await Workspace.loadAt(cwd);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        console.error(`Workspace at cwd ${cwd} has invalid package.json`);
+        console.error(
+          `Workspace at cwd ${cwd} has invalid package.json`,
+        );
         throw error;
       }
 
@@ -75,7 +82,9 @@ export class Program {
         projectOrWorkspace = await Project.loadAt(cwd);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          console.error(`Project at cwd ${cwd} has invalid package.json`);
+          console.error(
+            `Project at cwd ${cwd} has invalid package.json`,
+          );
           throw error;
         }
       }
@@ -87,12 +96,15 @@ export class Program {
   private async getPlugins() {
     if (typeof this.plugins === 'undefined') {
       const project = await this.getProject();
-      const totalConfigPluginsOptions: ConfigOptions['plugins'] = [];
+      const totalConfigPluginsOptions: ConfigOptions['plugins'] =
+        [];
       logger.debug(`Initializing plugins...`);
 
       if (project) {
         logger.debug(`Loading project bob config...`);
-        const projectBobConfig = await Config.loadAt(project.getRoot());
+        const projectBobConfig = await Config.loadAt(
+          project.getRoot(),
+        );
 
         if (projectBobConfig) {
           totalConfigPluginsOptions.push(
@@ -116,7 +128,9 @@ export class Program {
       }
       // TODO: allow user to define plugins with cli arguments
 
-      logger.debug(`Resolving plugins from workspaces and projects...`);
+      logger.debug(
+        `Resolving plugins from workspaces and projects...`,
+      );
       const resolvedPlugins = await Promise.all(
         totalConfigPluginsOptions.map(
           async (pluginPackageName) =>
@@ -142,10 +156,15 @@ export class Program {
         // Find commands in plugins
         ...[...plugins.entries()].map(([pluginPackageName]) => {
           const pluginPackageSrcRoot = path.dirname(
-            fileURLToPath(import.meta.resolve(pluginPackageName)),
+            fileURLToPath(
+              import.meta.resolve(pluginPackageName),
+            ),
           );
 
-          return path.join(pluginPackageSrcRoot, COMMANDS_FILE_MATCH);
+          return path.join(
+            pluginPackageSrcRoot,
+            COMMANDS_FILE_MATCH,
+          );
         }),
       ];
 
@@ -191,7 +210,8 @@ export class Program {
           );
           const command = await import(commandPathnameAsUrl);
           const defaultExport =
-            command && ('default' in command ? command.default : command);
+            command &&
+            ('default' in command ? command.default : command);
           const hasValidExport =
             defaultExport && defaultExport instanceof Command;
 
@@ -206,7 +226,9 @@ export class Program {
           return defaultExport;
         },
       );
-      const resolvedCommands = await Promise.all(commandsAsPromises);
+      const resolvedCommands = await Promise.all(
+        commandsAsPromises,
+      );
       this.commands = new Set(
         resolvedCommands.flatMap((commands) => commands),
       );

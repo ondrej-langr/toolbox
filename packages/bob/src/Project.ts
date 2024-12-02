@@ -54,7 +54,10 @@ export class Project {
    */
   private packageJsonContents: PackageJson;
 
-  constructor(packageRoot: string, packageJsonContents: PackageJson) {
+  constructor(
+    packageRoot: string,
+    packageJsonContents: PackageJson,
+  ) {
     this.root = packageRoot;
     this.packageJsonContents = packageJsonContents;
   }
@@ -65,9 +68,12 @@ export class Project {
    */
   static async loadAt(at: string) {
     const packageJsonPath = path.join(at, PACKAGE_JSON);
-    const packageJsonContent = await FileSystem.readJson(packageJsonPath, {
-      schema: packageJsonSchema,
-    });
+    const packageJsonContent = await FileSystem.readJson(
+      packageJsonPath,
+      {
+        schema: packageJsonSchema,
+      },
+    );
 
     if (!packageJsonContent) {
       throw new Error(
@@ -103,18 +109,25 @@ export class Project {
       this.getRoot(),
       METADATA_PATH_IN_PROJECT,
     );
-    let metadataFromFile: Record<string, Record<string, any>> = {};
+    let metadataFromFile: Record<
+      string,
+      Record<string, any>
+    > = {};
 
     if (FileSystem.existsSync(metadataJsonFilepath)) {
-      metadataFromFile = await FileSystem.readJson(metadataJsonFilepath, {
-        // Make sure that its an object
-        schema: z.record(z.string(), z.record(z.any())),
-      })
+      metadataFromFile = await FileSystem.readJson(
+        metadataJsonFilepath,
+        {
+          // Make sure that its an object
+          schema: z.record(z.string(), z.record(z.any())),
+        },
+      )
         .catch((error) => {
           logger.warn(
             `Failed to read or parse the ${METADATA_PATH_IN_PROJECT}`,
             {
-              errorMessage: error instanceof Error ? error.message : error,
+              errorMessage:
+                error instanceof Error ? error.message : error,
               metadataJsonFilepath,
             },
           );
@@ -135,7 +148,8 @@ export class Project {
       /** Gets metadata for current project, validated according to @{link schema} */
       get: async (): Promise<z.output<TMetadataSchema>> => {
         const metadataFromFile = await this.readMetadataFile();
-        const metadataUnderNamespace = metadataFromFile[namespace] ?? {};
+        const metadataUnderNamespace =
+          metadataFromFile[namespace] ?? {};
 
         return await schema.parseAsync(metadataUnderNamespace);
       },

@@ -1,6 +1,6 @@
 // @ts-check
-import { defineConfig } from '@ondrej-langr/bob';
+import { defineConfig } from 'tsuru';
 
 export default defineConfig({
-  plugins: ['@ondrej-langr/bob-plugin-recommended'],
+  plugins: ['tsuru-plugin-recommended'],
 });

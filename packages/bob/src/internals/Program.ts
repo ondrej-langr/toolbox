@@ -95,7 +95,7 @@ export class Program {
       logger.debug(`Initializing plugins...`);
 
       if (project) {
-        logger.debug(`Loading project bob config...`);
+        logger.debug(`Loading project Tsuru config...`);
         const projectBobConfig = await Config.loadAt(
           project.getRoot(),
         );
@@ -106,7 +106,7 @@ export class Program {
           );
         }
 
-        logger.debug(`Loading workspace bob config...`);
+        logger.debug(`Loading workspace Tsuru config...`);
         const projectWorkspace = await Workspace.loadNearest(
           project.getRoot(),
         );
@@ -211,7 +211,7 @@ export class Program {
 
           if (!hasValidExport) {
             throw new Error(
-              `Command at ${commandPathnameAsUrl} has invalid default export. Please use defineCommand function. If it used there are multiple versions of @ondrej-langr/bob package`,
+              `Command at ${commandPathnameAsUrl} has invalid default export. Please use defineCommand function. If it used there are multiple versions of tsuru package`,
             );
           }
 
@@ -274,7 +274,7 @@ export class Program {
     // 3. SETUP COMMANDER
     // 4. ATTACH ALL COMMANDS FROM PLUGINS
     // 5. RUN
-    logger.debug('Starting bob...');
+    logger.debug('Starting tsuru...');
 
     await this.setupCommands();
 
@@ -295,6 +295,6 @@ export class Program {
     // Commit all files in one go
     await FileSystem.commit();
 
-    logger.success("Bob finished all it's work! Bye");
+    logger.success("Tsuru finished all it's work! Bye");
   }
 }

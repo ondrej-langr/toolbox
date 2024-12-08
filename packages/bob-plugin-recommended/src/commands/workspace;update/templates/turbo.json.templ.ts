@@ -1,4 +1,4 @@
-import { defineTemplateFile } from '@ondrej-langr/bob';
+import { defineTemplateFile } from 'tsuru';
 import { turboJsonSchema } from '~/turboJsonSchema.js';
 
 const mergeWithoutDuplicates = <

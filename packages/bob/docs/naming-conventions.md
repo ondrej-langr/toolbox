@@ -3,11 +3,11 @@
 Bob has some naming that its better to follow
 
 - Plugin naming
-  - Please make sure that `bob-plugin` is mentioned somewhere in the package name
+  - Please make sure that `tsuru-plugin` is mentioned somewhere in the package name
   - Examples
-    - `@acme/bob-plugin`
-    - `acme-bob-plugin`
-    - `my-bob-plugin`
+    - `@acme/tsuru-plugin`
+    - `acme-tsuru-plugin`
+    - `my-tsuru-plugin`
 - Commands naming
   - Some systems do not like it when you have special characters in the folder name. Something like ":" is not allowed
   - Example of correct commands and its folders

@@ -1,4 +1,4 @@
-import { packageJsonSchema } from '@ondrej-langr/bob/schemas';
+import { packageJsonSchema } from 'tsuru/schemas';
 import type { z } from 'zod';
 
 export const getPackageJsonDefaults = () =>

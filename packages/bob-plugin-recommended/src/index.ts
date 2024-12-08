@@ -1,3 +1,3 @@
-import { definePlugin } from '@ondrej-langr/bob';
+import { definePlugin } from 'tsuru';
 
 export default definePlugin({});

@@ -3,7 +3,7 @@
 > [!IMPORTANT]
 > This documentation is work in progress and may miss some things
 
-Welcome to the contribution guide to @ondrej-langr/bob!
+Welcome to the contribution guide to the tsuru!
 
 ## What it uses
 
@@ -129,7 +129,7 @@ Templates can be described by two types:
     - **Text** - reads file as is which allows for highest flexibility
     - **YAML** - parses yaml file contents into POJO
     - **Typescript/Javascript** - parses file contents into AST
-    - **<insert-language-name>** - @ondrej-langr/bob can practically parse and manage virtually any language as long as it can be reasonably parsed with tools like AST
+    - **<insert-language-name>** - tsuru can practically parse and manage virtually any language as long as it can be reasonably parsed with tools like AST
 
 Its up to user which template serves the purpose the best.
 

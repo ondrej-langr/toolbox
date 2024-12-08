@@ -1,11 +1,11 @@
+import path from 'node:path';
 import {
   defineCommand,
   defineTemplatesLayer,
   FileSystem,
   Project,
   Workspace,
-} from '@ondrej-langr/bob';
-import path from 'node:path';
+} from 'tsuru';
 import { PROJECT_METADATA_PROJECT_NAMESPACE } from '~/constants.js';
 import { projectMetadataSchema } from '~/projectMetadataSchema.js';
 
@@ -38,7 +38,7 @@ export default defineCommand<{
             workspace instanceof Workspace === false
           ) {
             throw new Error(
-              'Cannot show choices when project is not workspace. This is a bug of @ondrej-langr/bob',
+              'Cannot show choices when project is not workspace. This is a bug of tsuru',
             );
           }
 

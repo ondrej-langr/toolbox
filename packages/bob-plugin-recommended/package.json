@@ -1,7 +1,7 @@
 {
-  "name": "@ondrej-langr/bob-plugin-recommended",
+  "name": "@tsuru/plugin-recommended",
   "version": "0.2.3",
-  "description": "Plugin for BOB with recommended configs and commands",
+  "description": "Plugin for Tsuru with recommended configs and commands",
   "license": "ISC",
   "author": {
     "name": "Ondřej Langr",
@@ -30,14 +30,14 @@
     "build": "pnpm build:transpile && pnpm build:types",
     "build:transpile": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths",
     "build:types": "tsc --project tsconfig.build.json",
-    "start": "pnpm run prebuild && pnpm run build && node .bin/run-bob.js --cwd=\"./.temp\"",
+    "start": "pnpm run prebuild && pnpm run build && node .bin/run-tsuru.js --cwd=\"./.temp\"",
     "test": "pnpm test:unit && pnpm test:types",
     "test:types": "tsc --noEmit",
     "test:unit": "vitest --watch false --passWithNoTests"
   },
   "dependencies": {
-    "@ondrej-langr/bob": "workspace:*",
     "inquirer": "9.2.23",
+    "tsuru": "workspace:*",
     "webpack-merge": "^6.0.1",
     "zod": "^3.23.8"
   },

@@ -5,7 +5,7 @@ import { BOB_FOLDER_NAME } from './constants.js';
 import { logger } from './logger.js';
 
 export type ConfigOptions = {
-  /** Defines plugin package names that current project uses. If bob is executed in project inside workspace project it will inherit those configurations */
+  /** Defines plugin package names that current project uses. If Tsuru is executed in project inside workspace project it will inherit those configurations */
   plugins?: string[] | undefined;
 };
 
@@ -40,7 +40,7 @@ export class Config {
     const plugin = await import(configFilepath).catch(
       (error) => {
         logger.warn(
-          `Failed to load the bob config at ${configFilepath}, because ${error}`,
+          `Failed to load the Tsuru config at ${configFilepath}, because ${error}`,
         );
 
         return null;

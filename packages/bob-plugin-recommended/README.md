@@ -1,6 +1,6 @@
-# @ondrej-langr/bob-plugin-recommended
+# @tsuru/plugin-recommended
 
-Starting plugin for any bob project or workspace. Includes every template and command that user or business can benefit from greatly.
+Starting plugin for any Tsuru project or workspace. Includes every template and command that user or business can benefit from greatly.
 
 ## Supported engines
 
@@ -13,16 +13,16 @@ Installation works like in any other package installation
 
 - globally:
   ```bash
-  pnpm i -g @ondrej-langr/bob-plugin-recommended
+  pnpm i -g @tsuru/plugin-recommended
   ```
 - in existing project or workspace:
   ```bash
-  pnpm i @ondrej-langr/bob-plugin-recommended
+  pnpm i @tsuru/plugin-recommended
   ```
 
 ## Usage
 
-This is a @ondrej-langr/bob plugin. Please follow plugin documentation here [../bob/docs/plugins.md]
+This is a tsuru plugin. Please follow plugin documentation here [../tsuru/docs/plugins.md]
 
 ### Commands
 

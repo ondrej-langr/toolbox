@@ -1,4 +1,4 @@
-import { defineTemplateFile } from '@ondrej-langr/bob';
+import { defineTemplateFile } from 'tsuru';
 
 import { DEFAULT_NODE_VERSION } from '../../../constants.js';
 

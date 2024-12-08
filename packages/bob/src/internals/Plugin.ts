@@ -19,7 +19,7 @@ export class Plugin {
 
     if (!hasValidExport) {
       throw new Error(
-        `Failed to resolve bob plugin "${packageName}, because its default export is created with definePlugin function. If it is you probably have multiple versions of @ondrej-langr/bob installed."`,
+        `Failed to resolve Tsuru plugin "${packageName}, because its default export is created with definePlugin function. If it is you probably have multiple versions of tsuru installed."`,
       );
     }
 

@@ -18,7 +18,7 @@ Templates can be described by two types:
     - Define template logic with Template class and export as default
 
       ```ts
-      import { defineTemplateFile } from '@ondrej-langr/bob';
+      import { defineTemplateFile } from 'tsuru';
 
       export default defineTemplateFile('json', (existing) => {
         // do magic (validation, fetching, etc...)
@@ -38,7 +38,7 @@ Templates can be described by two types:
 
 Templates have multiple teplate types.
 
-> Please keep in mind that bob will try to write to files at the end of command, not as soon as the template file is executed.
+> Please keep in mind that Tsuru will try to write to files at the end of command, not as soon as the template file is executed.
 
 ### `text`
 
@@ -50,7 +50,7 @@ Reads file as is which allows for highest flexibility.
 - With `<result-file-name-with-extension>.templ.ts` is the best for complex logic with variables
 
   ```js
-  import { defineTemplateFile } from '@ondrej-langr/bob';
+  import { defineTemplateFile } from 'tsuru';
 
   export default defineTemplateFile('text', (existing) => {
     // do magic (validation, fetching, etc...)
@@ -67,10 +67,10 @@ Parses file contents into POJOs. It is recommended to valide its value with sche
 - With `<result-file-name-with-extension>.templ.ts` is the best for complex logic with variables
 
   ```js
-  import { defineTemplateFile } from '@ondrej-langr/bob';
+  import { defineTemplateFile } from 'tsuru';
 
   export default defineTemplateFile('json', (existing) => {
-    // The return type is the same as incomming type, bob will take care of serialization
+    // The return type is the same as incomming type, tsuru will take care of serialization
     return { ...existing, key: 'value' };
   });
   ```
@@ -84,7 +84,7 @@ Parses YAML files contents into POJOs with [yaml](https://www.npmjs.com/package/
 - With `<result-file-name-with-extension>.templ.ts` is the best for complex logic with variables
 
   ```js
-  import { defineTemplateFile } from '@ondrej-langr/bob';
+  import { defineTemplateFile } from 'tsuru';
   import { z } from 'zod';
 
   const schema = z.object({
@@ -94,7 +94,7 @@ Parses YAML files contents into POJOs with [yaml](https://www.npmjs.com/package/
   export default defineTemplateFile('yaml', (existing) => {
     const existingValidated = schema.parse(existing);
 
-    // The return type is the same as incomming type, bob will take care of serialization
+    // The return type is the same as incomming type, tsuru will take care of serialization
     return { ...existingValidated, key: 'value' };
   });
   ```
@@ -110,8 +110,8 @@ Using ASTs is most powerfull, but most intimidating at first glance. Don't let i
 - With `<result-file-name-with-extension>.templ.ts` is the best for complex logic with variables
 
   ```js
-  import { defineTemplateFile } from '@ondrej-langr/bob';
-  import { getAstFromString } from '@ondrej-langr/bob/ast/js-ts';
+  import { defineTemplateFile } from 'tsuru';
+  import { getAstFromString } from 'tsuru/ast/js-ts';
   import ts from 'typescript';
 
   export default defineTemplateFile('ts', (existing) => {

@@ -1,10 +1,10 @@
+import path from 'node:path';
 import {
   defineCommand,
   defineTemplatesLayer,
   FileSystem,
   Workspace,
-} from '@ondrej-langr/bob';
-import path from 'node:path';
+} from 'tsuru';
 import { PROJECT_METADATA_WORKSPACE_NAMESPACE } from '~/constants.js';
 import { workspaceMetadataSchema } from '~/workspaceMetadataSchema.js';
 

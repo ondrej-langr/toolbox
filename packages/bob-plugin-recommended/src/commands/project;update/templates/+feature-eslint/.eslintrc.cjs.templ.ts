@@ -1,8 +1,8 @@
-import { defineTemplateFile } from '@ondrej-langr/bob';
+import { defineTemplateFile } from 'tsuru';
 import {
   getAstFromString,
   upsertObjectCjsExport,
-} from '@ondrej-langr/bob/ast/js-ts';
+} from 'tsuru/ast/js-ts';
 import ts from 'typescript';
 
 const { factory } = ts;

@@ -4,6 +4,7 @@ import type { z } from 'zod';
 
 import { FileSystem } from '../../FileSystem.js';
 import { Project } from '../../Project.js';
+import { BOB_FOLDER_NAME } from '../constants.js';
 
 type ProjectMetaValueSchema = z.ZodObject<{
   config:
@@ -20,7 +21,7 @@ type ProjectMetaValueSchema = z.ZodObject<{
 }>;
 
 function createSnapshotPath(root: string) {
-  return path.join(root, '.bob', 'snapshot.json');
+  return path.join(root, BOB_FOLDER_NAME, 'snapshot.json');
 }
 
 async function loadSnapshot(root: string) {

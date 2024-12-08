@@ -1,4 +1,4 @@
-# @ondrej-langr/bob
+# tsuru
 
 ## 0.2.3
 

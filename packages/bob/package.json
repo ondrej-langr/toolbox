@@ -1,5 +1,5 @@
 {
-  "name": "@ondrej-langr/bob",
+  "name": "tsuru",
   "version": "0.4.1",
   "description": "Simpler CLI applications with focus on code generation",
   "license": "ISC",
@@ -33,7 +33,7 @@
       "types": "./dist/parsers/index.d.ts"
     }
   },
-  "bin": "./.bin/run-bob.js",
+  "bin": "./.bin/run-tsuru.js",
   "files": [
     "src",
     "dist",
@@ -44,7 +44,7 @@
     "build": "pnpm build:transpile && pnpm build:types",
     "build:transpile": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths",
     "build:types": "tsc --project tsconfig.build.json",
-    "start": "pnpm run prebuild && pnpm run build && node .bin/run-bob.js --cwd=\"./.temp\"",
+    "start": "pnpm run prebuild && pnpm run build && node .bin/run-tsuru.js --cwd=\"./.temp\"",
     "test": "pnpm test:unit && pnpm test:types",
     "test:types": "tsc --noEmit",
     "test:unit": "vitest --watch false --passWithNoTests"

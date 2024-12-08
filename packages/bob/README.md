@@ -1,13 +1,15 @@
-# @ondrej-langr/bob
+<img src="./docs/resources/paper-crane.png" height="150" style="max-width: 100%;" />
 
-@ondrej-langr/bob is a project that allows for simpler CLI applications with focus on code generation and managing the code through its lifetime.
+# tsuru
+
+`tsuru` is a project that allows for simpler CLI applications with focus on code generation and managing the code through its lifetime.
 
 ## Introduction
 
-Bob is a CLI program that allows for improved management of existing or new projects. p'Practically anything - especially its configuration and structure.
-The benefit really comes into play when Bob is used to manage multiple projects that might share common configurations.
+Tsuru is a CLI program that allows for improved management of existing or new projects. Practically anything - especially its configuration and structure.
+The benefit really comes into play when Tsuru is used to manage multiple projects that might share common configurations.
 
-The benefits this tool can bring mainly depends on how you, as a developer, approach it. The project management is done with commands and templates defined by you so it is totally up to you how you manage your projects. Bob only brings in the tools.
+The benefits this tool can bring mainly depends on how you, as a developer, approach it. The project management is done with commands and templates defined by you so it is totally up to you how you manage your projects. Tsuru only brings in the tools.
 
 ## Installation
 
@@ -17,45 +19,45 @@ The benefits this tool can bring mainly depends on how you, as a developer, appr
   - Node.js >= 20
   - PNPM >= 8
 
-### Installing @ondrej-langr/bob
+### Installing tsuru
 
 - globally if you do not have any project yet:
 
   ```bash
-  pnpm i -g @ondrej-langr/bob
+  pnpm i -g tsuru
   ```
 
 - in existing project or workspace:
   ```bash
-  pnpm i @ondrej-langr/bob
+  pnpm i tsuru
   ```
 
 ## Usage
 
-Using @ondrej-langr/bob through CLI is simple and relies on futher development of commands, because bob does not do anything by itself.
+Using tsuru through CLI is simple and relies on futher development of commands, because Tsuru does not do anything by itself.
 
 You, as a developer, have these options where your commands can be stored:
 
-- in [workspace](https://docs.npmjs.com/cli/v7/using-npm/workspaces) `.bob/commands` folder
-- in simple project `.bob/commands` folder
+- in [workspace](https://docs.npmjs.com/cli/v7/using-npm/workspaces) `.tsuru/commands` folder
+- in simple project `.tsuru/commands` folder
 - or in plugins `commands` folder. More on that later.
 
 ### Creating your first command in an existing project
 
-Creating your first command in an existing project is the most simple approach on how you can get to know @ondrej-langr/bob.
+Creating your first command in an existing project is the most simple approach on how you can get to know tsuru.
 
-1. Install @ondrej-langr/bob in the project root with your favourite package manager
-2. Create `.bob` folder in the project root
+1. Install tsuru in the project root with your favourite package manager
+2. Create `.tsuru` folder in the project root
 3. In newly created folder create `commands`. This folder will hold the actual commands.
-4. In `commands` folder create a new folder called `my-command`. This name is up to you and this name will be used in the actual program when Bob is executed.
+4. In `commands` folder create a new folder called `my-command`. This name is up to you and this name will be used in the actual program when Tsuru is executed.
 5. Create a `command.js` file in `my-command` folder. This will make the command active and valid, but it still needs basic definition
 6. Open `command.js` and define your first command:
 
    ```js
    // This package holds many helpful tools to help you manage your projects
-   import { defineCommand } from '@ondrej-langr/bob';
+   import { defineCommand } from 'tsuru';
 
-   // The defineCommand tells bob where it was called and registers it under that folder name. In this case its `my-command`
+   // The defineCommand tells Tsuru where it was called and registers it under that folder name. In this case its `my-command`
    export default defineCommand({
      // Give it some description
      description: 'This is my first command',
@@ -67,49 +69,49 @@ Creating your first command in an existing project is the most simple approach o
    });
    ```
 
-7. Now test that you created your first command and Bob can see it. Run this command in the root of your current application for which you created the command.
+7. Now test that you created your first command and Tsuru can see it. Run this command in the root of your current application for which you created the command.
    ```bash
-   npx bob --help
+   npx tsuru --help
    ```
 8. Verify that the command is there
 9. Now you can test your newly created command!
    ```bash
-   npx bob my-command
+   npx tsuru my-command
    ```
 10. Profit 🎉
 
-### Creating your first Bob plugin and using it
+### Creating your first Tsuru plugin and using it
 
-Managing plugins is essential to using bob, because it allows sharing your commands and templates between projects.
-The more projects you use bob on the more you benefit from it, because it allows you to quickly manage your projects and centralize resposiblity.
+Managing plugins is essential to using Tsuru, because it allows sharing your commands and templates between projects.
+The more projects you use Tsuru on the more you benefit from it, because it allows you to quickly manage your projects and centralize resposiblity.
 
 - Prepare a Node.js project
   - Create a folder for your project
   - Run `npm --init` and answer the questions. Before choosing a name please see our [naming conventions](./docs/naming-conventions.md) and follow them to keep our ecosystem clean.
-- Install bob in this new project
+- Install Tsuru in this new project
   ```bash
-  npm i @ondrej-langr/bob
+  npm i tsuru
   ```
 - Create a folder `dist` and place `index.js` in your newly created project
 - In newly created file define your plugin entrypoint
 
   ```js
-  import { definePlugin } from '@ondrej-langr/bob';
+  import { definePlugin } from 'tsuru';
 
-  // At this point bob will mark this plugin package as valid
+  // At this point Tsuru will mark this plugin package as valid
   export default definePlugin({});
   ```
 
-- Create the first command for your plugin (💡 Routing of bob commands is controller with file system)
+- Create the first command for your plugin (💡 Routing of Tsuru commands is controller with file system)
 
   - create a folder `commands` in the same folder as you created a `index.js` file
   - in newly created folder create a folder with the name of your command. For example `my-command`
   - and lastly create a `command.js` file in your command folder and add it content:
 
     ```js
-    import { defineCommand } from '@ondrej-langr/bob';
+    import { defineCommand } from 'tsuru';
 
-    // The defineCommand tells bob where it was called and registers it under that folder name. In this case its `my-command`
+    // The defineCommand tells Tsuru where it was called and registers it under that folder name. In this case its `my-command`
     export default defineCommand({
       // Give it some description
       description: 'This is my first command',
@@ -142,18 +144,18 @@ The more projects you use bob on the more you benefit from it, because it allows
   ```bash
   npm i <here-put-your-package-name> --save-dev
   ```
-- Now install bob also, but as a dev dependency
+- Now install Tsuru also, but as a dev dependency
   ```bash
-  npm i @ondrej-langr/bob --save-dev
+  npm i tsuru --save-dev
   ```
-- Create a `.bob` folder with `config.js` file in current project
+- Create a `.tsuru` folder with `config.js` file in current project
 - Define your config in `config.js` and add there the name of your plugin
 
   ```js
-  import { defineConfig } from '@ondrej-langr/bob';
+  import { defineConfig } from 'tsuru';
 
   export default defineConfig({
-    // Adding package name to plugins is essential othervise bob wont use that plugin
+    // Adding package name to plugins is essential othervise Tsuru wont use that plugin
     plugins: ['<here-put-your-package-name>'],
   });
   ```
@@ -169,9 +171,9 @@ These default arguments are always present and you can use them to your advantag
 
 ### Whats next?
 
-- If you want to know what type of templates bob supports you can visit [`the documentation for it`](./docs/template-file-types.md)
-- To help you fully understand bob please continue with further reading about its public API in the Code Wiki [here]()
-- If you just want an example on how to leverage Bob you can visit the [`@ondrej-langr/bob-plugin-recommended`](../bob-plugin-recommended/README.md)
+- If you want to know what type of templates Tsuru supports you can visit [`the documentation for it`](./docs/template-file-types.md)
+- To help you fully understand Tsuru please continue with further reading about its public API in the Code Wiki [here]()
+- If you just want an example on how to leverage Tsuru you can visit the [`tsuru-plugin-recommended`](../tsuru-plugin-recommended/README.md)
 - And if you are ready to contribute you can read about [`contributing`](./docs/contribution/README.md)
 
 ## Contribution

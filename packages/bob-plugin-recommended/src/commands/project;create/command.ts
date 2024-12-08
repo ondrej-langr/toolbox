@@ -1,16 +1,16 @@
+import type { AsyncDynamicQuestionProperty } from 'inquirer';
+import path from 'node:path';
 import {
   defineCommand,
   defineTemplatesLayer,
   FileSystem,
   Project,
   Workspace,
-} from '@ondrej-langr/bob';
+} from 'tsuru';
 import {
   packageJsonSchema,
   projectNameSchema,
-} from '@ondrej-langr/bob/schemas';
-import type { AsyncDynamicQuestionProperty } from 'inquirer';
-import path from 'node:path';
+} from 'tsuru/schemas';
 import { z } from 'zod';
 import { PROJECT_METADATA_PROJECT_NAMESPACE } from '~/constants.js';
 import { getPackageJsonDefaults } from '~/getPackageJsonDefaults.js';

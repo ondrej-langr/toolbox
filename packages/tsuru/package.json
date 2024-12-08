@@ -1,0 +1,85 @@
+{
+  "name": "tsuru",
+  "version": "0.0.0",
+  "description": "Simpler CLI applications with focus on code generation",
+  "license": "ISC",
+  "author": {
+    "name": "Ondřej Langr",
+    "email": "hi@ondrejlangr.cz"
+  },
+  "maintainers": [
+    {
+      "name": "Ondřej Langr",
+      "email": "hi@ondrejlangr.cz"
+    }
+  ],
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./schemas": {
+      "import": "./dist/schemas/index.js",
+      "types": "./dist/schemas/index.d.ts"
+    },
+    "./ast/js-ts": {
+      "import": "./dist/ast/js-ts/index.js",
+      "types": "./dist/ast/js-ts/index.d.ts"
+    },
+    "./parsers": {
+      "import": "./dist/parsers/index.js",
+      "types": "./dist/parsers/index.d.ts"
+    }
+  },
+  "bin": {
+    "tsu": "./.bin/run-tsuru.js",
+    "tsuru": "./.bin/run-tsuru.js"
+  },
+  "files": [
+    "src",
+    "dist",
+    ".bin"
+  ],
+  "scripts": {
+    "prebuild": "rm -rf dist .temp tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
+    "build": "pnpm build:transpile && pnpm build:types",
+    "build:transpile": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths",
+    "build:types": "tsc --project tsconfig.build.json",
+    "start": "pnpm run prebuild && pnpm run build && node .bin/run-tsuru.js --cwd=\"./.temp\"",
+    "test": "pnpm test:unit && pnpm test:types",
+    "test:types": "tsc --noEmit",
+    "test:unit": "vitest --watch false --passWithNoTests"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "cosmiconfig": "^9.0.0",
+    "deepmerge": "^4.3.1",
+    "execa": "^9.5.1",
+    "find-config": "^1.0.0",
+    "fs-extra": "^11.2.0",
+    "glob": "^10.4.5",
+    "inquirer": "9.2.23",
+    "picocolors": "^1.1.1",
+    "prettier": "^3.3.3",
+    "yaml": "^2.6.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@swc/cli": "^0.5.0",
+    "@swc/core": "^1.7.42",
+    "@types/find-config": "^1.0.4",
+    "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.17.6",
+    "typescript": "5.5.2",
+    "vite": "^5.4.10",
+    "vite-tsconfig-paths": "^5.0.1",
+    "vitest": "^2.1.4"
+  },
+  "engines": {
+    "node": ">=20.9.0",
+    "pnpm": ">=8.15.0"
+  }
+}

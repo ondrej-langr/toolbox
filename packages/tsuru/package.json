@@ -33,7 +33,10 @@
       "types": "./dist/parsers/index.d.ts"
     }
   },
-  "bin": "./.bin/run-tsuru.js",
+  "bin": {
+    "tsu": "./.bin/run-tsuru.js",
+    "tsuru": "./.bin/run-tsuru.js"
+  },
   "files": [
     "src",
     "dist",

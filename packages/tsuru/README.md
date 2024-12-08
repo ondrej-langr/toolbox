@@ -173,7 +173,7 @@ These default arguments are always present and you can use them to your advantag
 
 - If you want to know what type of templates Tsuru supports you can visit [`the documentation for it`](./docs/template-file-types.md)
 - To help you fully understand Tsuru please continue with further reading about its public API in the Code Wiki [here]()
-- If you just want an example on how to leverage Tsuru you can visit the [`@tsuru/plugin-recommended`](../tsuru-plugin-recommended/README.md)
+- If you just want an example on how to leverage Tsuru you can visit the [`tsuru-plugin-recommended`](../tsuru-plugin-recommended/README.md)
 - And if you are ready to contribute you can read about [`contributing`](./docs/contribution/README.md)
 
 ## Contribution

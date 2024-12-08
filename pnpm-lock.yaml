@@ -32,9 +32,6 @@ importers:
       '@trivago/prettier-plugin-sort-imports':
         specifier: ^4.3.0
         version: 4.3.0(prettier@3.3.3)
-      '@tsuru/plugin-recommended':
-        specifier: workspace:*
-        version: link:packages/tsuru-plugin-recommended
       eslint:
         specifier: ^8.57.0
         version: 8.57.1
@@ -47,6 +44,9 @@ importers:
       tsuru:
         specifier: workspace:*
         version: link:packages/tsuru
+      tsuru-plugin-recommended:
+        specifier: workspace:*
+        version: link:packages/tsuru-plugin-recommended
       turbo:
         specifier: ^2.0.4
         version: 2.2.3

@@ -1,5 +1,5 @@
 ---
-'@tsuru/plugin-recommended': minor
+'tsuru-plugin-recommended': minor
 ---
 
 Introduces package. This is a plugin that helps to manage ondrej-langr workspace and helps users to understand how Tsuru works.

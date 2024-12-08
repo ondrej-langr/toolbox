@@ -2,5 +2,5 @@
 import { defineConfig } from 'tsuru';
 
 export default defineConfig({
-  plugins: ['@tsuru/plugin-recommended'],
+  plugins: ['tsuru-plugin-recommended'],
 });

@@ -1,4 +1,4 @@
-# @tsuru/plugin-recommended
+# tsuru-plugin-recommended
 
 Starting plugin for any Tsuru project or workspace. Includes every template and command that user or business can benefit from greatly.
 
@@ -13,11 +13,11 @@ Installation works like in any other package installation
 
 - globally:
   ```bash
-  pnpm i -g @tsuru/plugin-recommended
+  pnpm i -g tsuru-plugin-recommended
   ```
 - in existing project or workspace:
   ```bash
-  pnpm i @tsuru/plugin-recommended
+  pnpm i tsuru-plugin-recommended
   ```
 
 ## Usage

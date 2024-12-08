@@ -29,11 +29,11 @@
     "@swc/cli": "^0.3.12",
     "@swc/core": "^1.6.4",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
-    "@tsuru/plugin-recommended": "workspace:*",
     "eslint": "^8.57.0",
     "prettier": "^3.3.2",
     "prettier-plugin-packagejson": "^2.5.0",
     "tsuru": "workspace:*",
+    "tsuru-plugin-recommended": "workspace:*",
     "turbo": "^2.0.4",
     "vite": "^5.3.1",
     "vitest": "^1.6.0"

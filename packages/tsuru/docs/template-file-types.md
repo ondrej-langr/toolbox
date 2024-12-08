@@ -118,7 +118,7 @@ Using ASTs is most powerfull, but most intimidating at first glance. Don't let i
     // Ts factory methods are now usable
     existing.getFirstToken();
 
-    // Bob also exposes some helpful tools
+    // Tsuru also exposes some helpful tools
     return getAstFromString('export const test = () => {};');
   });
   ```

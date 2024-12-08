@@ -1,6 +1,6 @@
 # Naming Conventions
 
-Bob has some naming that its better to follow
+Tsuru has some naming that its better to follow
 
 - Plugin naming
   - Please make sure that `tsuru-plugin` is mentioned somewhere in the package name

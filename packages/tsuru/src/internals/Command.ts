@@ -5,9 +5,9 @@ import type { DefaultCommandAnswers } from '../DefaultCommandAnswers.js';
 import type { Json } from '../schemas/jsonSchema.js';
 
 import { logger } from './logger.js';
+import type { MaybeArray } from './MaybeArray.js';
+import type { MaybePromise } from './MaybePromise.js';
 import type { Program } from './Program.js';
-import type { MaybeArray } from './types/MaybeArray.js';
-import type { MaybePromise } from './types/MaybePromise.js';
 
 export type CommandQuestion<
   CommandAnswers extends DefaultCommandAnswers,
@@ -23,7 +23,7 @@ export type CommandOptions<
   /**
    * {@link https://github.com/SBoudrias/Inquirer.js Inquirer.js} questions as array, each array item could be function which will return question or null
    */
-  questions:
+  questions?:
     | Array<CommandQuestion<CommandAnswers>>
     | ((
         this: Command<CommandAnswers>,
@@ -32,11 +32,10 @@ export type CommandOptions<
   /**
    * Runs before current layer is executed
    */
-  handler?: // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-  | ((
-        this: Command<CommandAnswers>,
-      ) => MaybePromise<MaybeArray<Command<any>> | void>)
-    | undefined;
+  handler: // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  (
+    this: Command<CommandAnswers>,
+  ) => MaybePromise<MaybeArray<Command<any>> | void>;
 };
 
 export class Command<

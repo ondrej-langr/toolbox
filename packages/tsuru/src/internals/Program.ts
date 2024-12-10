@@ -244,6 +244,8 @@ export class Program {
           await command.execute();
         });
     }
+
+    logger.debug('All possible commands attached...');
   }
 
   async getOptions(): Promise<DefaultProgramOptions> {
@@ -274,27 +276,28 @@ export class Program {
     // 3. SETUP COMMANDER
     // 4. ATTACH ALL COMMANDS FROM PLUGINS
     // 5. RUN
-    logger.debug('Starting tsuru...');
+    logger.debug('Starting...');
 
     await this.setupCommands();
 
-    logger.debug('Commands attached...');
-
-    logger.debug('Parsing commands and running...');
-    // Start program
-    await this.commanderProgram.parseAsync();
-
-    // Exit
-    if (!this.commanderProgram.args.length) {
-      logger.debug('No command has been provided, exitting...');
+    logger.debug('Checking if command was provided...');
+    if (process.argv.length < 3) {
+      logger.debug('No command has been provided, exiting...');
       this.commanderProgram.help();
+    } else {
+      logger.info('Welcome!');
     }
 
-    logger.debug('Everything ok, writing updated files...');
-    // TODO: create a local pull request for written files when appropriate action turns that on
-    // Commit all files in one go
+    // Start program
+    logger.debug('Parsing commands and running...');
+    await this.commanderProgram.parseAsync();
+
+    logger.debug(
+      'Everything ok, comitting files to local filesystem...',
+    );
     await FileSystem.commit();
 
-    logger.success("Tsuru finished all it's work! Bye");
+    logger.success('All work done 🎉');
+    logger.success('Bye!');
   }
 }

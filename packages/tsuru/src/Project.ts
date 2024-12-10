@@ -131,7 +131,7 @@ export class Project {
       )
         .catch((error) => {
           logger.warn(
-            `Failed to read or parse the ${METADATA_PATH_IN_PROJECT}`,
+            `Failed to read or parse the ${metadataJsonFilepath.replace(this.getRoot(), '')}`,
             {
               errorMessage:
                 error instanceof Error ? error.message : error,

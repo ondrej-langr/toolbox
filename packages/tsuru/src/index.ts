@@ -8,7 +8,7 @@ export * from './FileSystem.js';
 export * from './DefaultCommandAnswers.js';
 export * from './Project.js';
 export * from './Workspace.js';
-export { BOB_FOLDER_NAME } from './internals/constants.js';
+export { TSURU_FOLDER_NAME } from './internals/constants.js';
 
 export type { DistinctQuestion } from 'inquirer';
 

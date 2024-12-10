@@ -13,8 +13,8 @@ import { Workspace } from '../Workspace.js';
 import { Command } from './Command.js';
 import { Config, type ConfigOptions } from './Config.js';
 import {
-  BOB_FOLDER_NAME,
   PACKAGE_RUNTIME_ROOT,
+  TSURU_FOLDER_NAME,
 } from './constants.js';
 import { logger } from './logger.js';
 import { Plugin } from './Plugin.js';
@@ -167,7 +167,7 @@ export class Program {
         commandsGlobMatches.push(
           path.join(
             project.getRoot(),
-            BOB_FOLDER_NAME,
+            TSURU_FOLDER_NAME,
             COMMANDS_FILE_MATCH,
           ),
         );
@@ -182,7 +182,7 @@ export class Program {
             commandsGlobMatches.push(
               path.join(
                 projectWorkspace.getRoot(),
-                BOB_FOLDER_NAME,
+                TSURU_FOLDER_NAME,
                 COMMANDS_FILE_MATCH,
               ),
             );

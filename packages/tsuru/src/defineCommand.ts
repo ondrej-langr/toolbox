@@ -5,8 +5,9 @@ import {
   Command,
   type CommandOptions,
 } from './internals/Command.js';
+import { ALLOWED_COMMAND_FILE_EXTENSIONS } from './internals/constants.js';
+import { getCallerFilename } from './internals/getCallerFilename.js';
 import { logger } from './internals/logger.js';
-import { getCallerFilename } from './internals/utils/getCallerFilename.js';
 
 export type DefineCommandOptions<
   CommandAnswers extends DefaultCommandAnswers,
@@ -28,7 +29,11 @@ export function defineCommand<
   const commandRoot = path.dirname(filepath);
   let commandName = path.basename(commandRoot);
 
-  if (filename !== 'command.js' && filename !== 'command.ts') {
+  const isAllowedExtension =
+    !!ALLOWED_COMMAND_FILE_EXTENSIONS.find((extension) =>
+      filename.endsWith(`.${extension}`),
+    );
+  if (!isAllowedExtension) {
     throw new Error(
       `File where Command.define is called must be named command.ts. Got ${filename}`,
     );

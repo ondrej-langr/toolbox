@@ -1,10 +1,10 @@
 import path from 'node:path';
 
+import { getCallerFilename } from './internals/getCallerFilename.js';
 import {
   type LayerConstructorOptions,
   TemplatesLayer,
 } from './internals/TemplatesLayer.js';
-import { getCallerFilename } from './internals/utils/getCallerFilename.js';
 
 export const defineTemplatesLayer = <
   TVariables extends Record<string, any> | undefined = undefined,

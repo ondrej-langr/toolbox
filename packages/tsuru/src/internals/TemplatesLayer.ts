@@ -2,15 +2,22 @@ import { glob } from 'glob';
 import nodeFs from 'node:fs';
 import path from 'node:path';
 
-import { TemplateFile } from './TemplateFile.js';
-import type { MaybePromise } from './types/MaybePromise.js';
-import { createEjsTemplateFile } from './utils/createEjsTemplateFile.js';
+import type { MaybePromise } from './MaybePromise.js';
+import { templateFileLoader } from './templateFileLoader.js';
 
-const allowedTemplateExtensions = [
-  'ejs',
-  'templ.ts',
-  'templ.js',
-];
+const allowedTemplateExtensions = Object.keys(
+  templateFileLoader.loaders,
+);
+const templateExtensionRegex = new RegExp(
+  allowedTemplateExtensions
+    .map((allowedExtension) =>
+      allowedExtension.replaceAll('.', String.raw`\.`),
+    )
+    .join('|'),
+);
+const removeTemplateExtensionFromTemplateFilepath = (
+  filepath: string,
+) => filepath.replace(templateExtensionRegex, '');
 
 export interface LayerConstructorOptions<
   TVariables extends Record<string, any> | undefined = undefined,
@@ -82,11 +89,7 @@ export class TemplatesLayer<
     globsAsPromises.push(
       glob(
         allowedTemplateExtensions.map((templateExtension) =>
-          path.join(
-            this.dirname,
-            '**',
-            `*.${templateExtension}`,
-          ),
+          path.join(this.dirname, '**', `*${templateExtension}`),
         ),
         {
           dot: true,
@@ -121,48 +124,26 @@ export class TemplatesLayer<
     } of resolvedFiles) {
       for (const templateFileLocation of templateLocations) {
         // Realpath of to-be-created file
-        const writeTemplateTo = templateFileLocation
-          .replace(templatesRoot, to)
-          .replace(
-            new RegExp(
-              `\\.(${allowedTemplateExtensions.map((v) => v.replaceAll('.', String.raw`\.`)).join('|')})`,
-            ),
-            '',
+        const writeTemplateTo =
+          removeTemplateExtensionFromTemplateFilepath(
+            templateFileLocation.replace(templatesRoot, to),
           );
 
         createdFilesAsPromises.push(
-          Promise.resolve()
-            .then(async () => {
-              await this.options?.onBeforeFileRender?.apply(
-                this,
-              );
-              const template: TemplateFile<any, any, any> =
-                await (templateFileLocation.endsWith('.ejs')
-                  ? createEjsTemplateFile(templateFileLocation)
-                  : import(templateFileLocation).then(
-                      (module) => {
-                        if (
-                          'default' in module === false ||
-                          module.default instanceof
-                            TemplateFile ===
-                            false
-                        ) {
-                          throw new Error(
-                            `Template file at ${templateFileLocation} is incorrect. Please export return type from TemplateFile.define as default export from that file.`,
-                          );
-                        }
+          Promise.resolve().then(async () => {
+            await Promise.resolve(
+              this.options?.onBeforeFileRender?.apply(this),
+            );
 
-                        return module.default;
-                      },
-                    ));
+            const template = await templateFileLoader.load(
+              templateFileLocation,
+            );
+            await template.writeTo(writeTemplateTo, variables);
 
-              await template.writeTo(writeTemplateTo, variables);
-            })
-            .then(async () => {
-              await Promise.resolve(
-                this.options?.onAfterFileRender?.apply(this),
-              );
-            }),
+            await Promise.resolve(
+              this.options?.onAfterFileRender?.apply(this),
+            );
+          }),
         );
       }
     }

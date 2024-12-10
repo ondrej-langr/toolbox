@@ -1,15 +1,18 @@
-import { glob } from 'glob';
-import url from 'node:url';
+import { cosmiconfig } from 'cosmiconfig';
 
-import { BOB_FOLDER_NAME } from './constants.js';
-import { logger } from './logger.js';
+import { TSURU_FOLDER_NAME } from './constants.js';
 
 export type ConfigOptions = {
   /** Defines plugin package names that current project uses. If Tsuru is executed in project inside workspace project it will inherit those configurations */
   plugins?: string[] | undefined;
 };
 
-const allowedConfigFileExtensions = ['.js', '.cjs', '.mjs'];
+const cosmiconfigModuleName = 'tsuru';
+const cosmiconfigSearchPlaces = [
+  `${TSURU_FOLDER_NAME}/config.js`,
+  `${TSURU_FOLDER_NAME}/config.ts`,
+  `${TSURU_FOLDER_NAME}/config.mjs`,
+];
 
 export class Config {
   private options: ConfigOptions;
@@ -22,32 +25,20 @@ export class Config {
   }
 
   static async loadAt(projectRoot: string) {
-    const foundConfigFilePaths = await glob(
-      allowedConfigFileExtensions.map(
-        (extension) => `${BOB_FOLDER_NAME}/config${extension}`,
-      ),
-      { cwd: projectRoot, absolute: true },
-    );
+    const configExplorer = cosmiconfig(cosmiconfigModuleName, {
+      searchPlaces: cosmiconfigSearchPlaces,
+      stopDir: projectRoot,
+    });
 
-    if (!foundConfigFilePaths.length) {
+    const result = await configExplorer.search(projectRoot);
+
+    if (!result) {
       return null;
     }
 
-    const configFilepath = url
-      .pathToFileURL(foundConfigFilePaths[0]!)
-      .toString();
-
-    const plugin = await import(configFilepath).catch(
-      (error) => {
-        logger.warn(
-          `Failed to load the Tsuru config at ${configFilepath}, because ${error}`,
-        );
-
-        return null;
-      },
-    );
+    const { config } = result;
     const defaultExport =
-      plugin && ('default' in plugin ? plugin.default : plugin);
+      config && ('default' in config ? config.default : config);
     const hasValidExport =
       defaultExport && defaultExport instanceof Config;
 

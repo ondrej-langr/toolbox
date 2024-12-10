@@ -3,18 +3,14 @@ import { z } from 'zod';
 
 import { FileSystem } from './FileSystem.js';
 import {
-  BOB_FOLDER_NAME,
   PACKAGE_JSON,
   PNPM_WORKSPACE_YAML,
+  TSURU_FOLDER_NAME,
 } from './internals/constants.js';
 import { logger } from './internals/logger.js';
 import type { PackageJson } from './schemas/packageJsonSchema.js';
 import { packageJsonSchema } from './schemas/packageJsonSchema.js';
 
-const METADATA_PATH_IN_PROJECT = path.join(
-  BOB_FOLDER_NAME,
-  'metadata.json',
-);
 const recursiveFindNonWorkspacePackageJson = (
   startAt: string,
 ): string | null => {
@@ -111,11 +107,15 @@ export class Project {
     return this.loadAt(projectPath);
   }
 
-  private async readMetadataFile() {
-    const metadataJsonFilepath = path.join(
+  private getMetadataPath() {
+    return path.join(
       this.getRoot(),
-      METADATA_PATH_IN_PROJECT,
+      TSURU_FOLDER_NAME,
+      'metadata.json',
     );
+  }
+  private async readMetadataFile() {
+    const metadataJsonFilepath = this.getMetadataPath();
     let metadataFromFile: Record<
       string,
       Record<string, any>
@@ -158,7 +158,15 @@ export class Project {
         const metadataUnderNamespace =
           metadataFromFile[namespace] ?? {};
 
-        return await schema.parseAsync(metadataUnderNamespace);
+        return await schema
+          .parseAsync(metadataUnderNamespace)
+          .catch((error) => {
+            logger.error(
+              'Failed to parse the project metadata with provided schema. Please see the error bellow',
+            );
+
+            throw error;
+          });
       },
       /** Records new value for metadata. Not validated when saving to file */
       set: async (newValue: z.infer<TMetadataSchema>) => {
@@ -167,7 +175,7 @@ export class Project {
         metadataFromFile[namespace] = newValue;
 
         FileSystem.writeJson(
-          path.join(this.getRoot(), METADATA_PATH_IN_PROJECT),
+          this.getMetadataPath(),
           metadataFromFile,
         );
       },

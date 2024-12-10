@@ -6,7 +6,7 @@ import { textFileTypeParser } from '../parsers/textFileTypeParser.js';
 import { typescriptFileTypeParser } from '../parsers/typescriptFileTypeParser.js';
 import { yamlFileTypeParser } from '../parsers/yamlFileTypeParser.js';
 
-import type { MaybePromise } from './types/MaybePromise.js';
+import type { MaybePromise } from './MaybePromise.js';
 
 const parsers: FileTypeToParsers = {
   js: javascriptFileTypeParser,

@@ -2,7 +2,6 @@ import { Command as CommanderCommand } from 'commander';
 import { glob } from 'glob';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import url from 'node:url';
 import { z } from 'zod';
 
 import type { DefaultProgramOptions } from '../DefaultProgramOptions.js';
@@ -11,15 +10,15 @@ import { Project } from '../Project.js';
 import { Workspace } from '../Workspace.js';
 
 import { Command } from './Command.js';
+import { commandsLoader } from './commandsLoader.js';
 import { Config, type ConfigOptions } from './Config.js';
 import {
+  COMMANDS_GLOB_FILE_MATCH,
   PACKAGE_RUNTIME_ROOT,
   TSURU_FOLDER_NAME,
 } from './constants.js';
 import { logger } from './logger.js';
 import { Plugin } from './Plugin.js';
-
-const COMMANDS_FILE_MATCH = 'commands/*/command.js';
 
 export class Program {
   private commanderProgram: CommanderCommand;
@@ -157,7 +156,7 @@ export class Program {
 
           return path.join(
             pluginPackageSrcRoot,
-            COMMANDS_FILE_MATCH,
+            COMMANDS_GLOB_FILE_MATCH,
           );
         }),
       ];
@@ -168,7 +167,7 @@ export class Program {
           path.join(
             project.getRoot(),
             TSURU_FOLDER_NAME,
-            COMMANDS_FILE_MATCH,
+            COMMANDS_GLOB_FILE_MATCH,
           ),
         );
 
@@ -183,7 +182,7 @@ export class Program {
               path.join(
                 projectWorkspace.getRoot(),
                 TSURU_FOLDER_NAME,
-                COMMANDS_FILE_MATCH,
+                COMMANDS_GLOB_FILE_MATCH,
               ),
             );
           }
@@ -196,28 +195,23 @@ export class Program {
 
       const commandsAsPromises = commandsPathnames.map(
         async (commandPathname): Promise<Command<any>> => {
-          const commandPathnameAsUrl = url
-            .pathToFileURL(commandPathname)
-            .toString();
           logger.debug(
-            `Registering command under "${commandPathnameAsUrl}"`,
+            `Registering command under "${commandPathname}"`,
           );
-          const command = await import(commandPathnameAsUrl);
-          const defaultExport =
-            command &&
-            ('default' in command ? command.default : command);
+
+          const { config: command } =
+            (await commandsLoader.load(commandPathname))!;
+
           const hasValidExport =
-            defaultExport && defaultExport instanceof Command;
+            command && command instanceof Command;
 
           if (!hasValidExport) {
             throw new Error(
-              `Command at ${commandPathnameAsUrl} has invalid default export. Please use defineCommand function. If it used there are multiple versions of tsuru package`,
+              `Command at ${commandPathname} has invalid default export. Please use defineCommand function. If it used there are multiple versions of tsuru package`,
             );
           }
 
-          defaultExport.setProgram(this);
-
-          return defaultExport;
+          return command.setProgram(this);
         },
       );
       const resolvedCommands = await Promise.all(

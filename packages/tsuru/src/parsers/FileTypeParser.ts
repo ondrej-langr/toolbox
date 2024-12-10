@@ -1,4 +1,4 @@
-import type { MaybePromise } from '../internals/types/MaybePromise.js';
+import type { MaybePromise } from '../internals/MaybePromise.js';
 
 export interface FileTypeParser<TDataType extends any> {
   /** Method that takes initial file content and deserializes it into more approachable format. For example AST */

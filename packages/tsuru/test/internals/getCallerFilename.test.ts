@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { getCallerFilename } from '../../src/internals/utils/getCallerFilename';
+import { getCallerFilename } from '../../src/internals/getCallerFilename';
 
 function testingFunction() {
   const caller = getCallerFilename();

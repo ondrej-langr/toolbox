@@ -7,7 +7,10 @@ import type { FileTypeToParsers } from './parsers/FileTypeToParsers.js';
 export function defineTemplateFile<
   TVariables extends Record<string, any>,
   TParserType extends keyof FileTypeToParsers,
-  THandler = TemplateFileHandler<TParserType, TVariables>,
+  THandler extends TemplateFileHandler<
+    TParserType,
+    TVariables
+  > = TemplateFileHandler<TParserType, TVariables>,
 >(
   type: TParserType,
   handler: THandler,

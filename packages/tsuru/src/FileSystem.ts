@@ -5,7 +5,7 @@ import * as prettier from 'prettier';
 import type { z } from 'zod';
 
 import { logger } from './internals/logger.js';
-import type { JsonPartial } from './schemas/jsonSchema.js';
+import type { JsonLikeObject } from './schemas/jsonLikeObjectSchema.js';
 
 /**
 Wrapper around fs-extra that batches update of files until they are committed
@@ -74,7 +74,10 @@ export class FileSystem {
   }
 
   static async readJson<
-    S extends z.ZodObject<any> | z.ZodRecord,
+    S extends
+      | z.ZodObject<any>
+      | z.ZodRecord
+      | z.ZodIntersection<any, any>,
   >(
     absoluteFilePath: string,
     options: {
@@ -131,7 +134,7 @@ export class FileSystem {
 
   static writeJson(
     absoluteFilePath: string,
-    value: JsonPartial,
+    value: JsonLikeObject,
   ) {
     this.writeFile(
       absoluteFilePath,

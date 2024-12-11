@@ -34,7 +34,10 @@ export type TemplateFileHandler<
 export class TemplateFile<
   TVariables extends Record<string, any>,
   TParserType extends keyof FileTypeToParsers,
-  THandler = TemplateFileHandler<TParserType, TVariables>,
+  THandler extends TemplateFileHandler<
+    TParserType,
+    TVariables
+  > = TemplateFileHandler<TParserType, TVariables>,
 > {
   private handler: THandler;
   private readonly type: TParserType;
@@ -55,11 +58,10 @@ export class TemplateFile<
     );
 
     const result = await Promise.resolve(
-      // @ts-expect-error -- Its callable, but type cannot be known at this point
       this.handler(
         existingContentDeserialized as any,
         // Make sure that variables are always an object
-        { variables: variables ?? {} },
+        { variables: (variables ?? {}) as TVariables },
       ),
     );
 

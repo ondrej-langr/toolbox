@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { jsonLikeObjectSchema } from './jsonLikeObjectSchema.js';
 import { packageJsonPersonSchema } from './packageJsonPersonSchema.js';
 import { projectNameSchema } from './projectNameSchema.js';
 
@@ -70,6 +71,6 @@ export const packageJsonSchema = z
       )
       .optional(),
   })
-  .passthrough();
+  .and(jsonLikeObjectSchema);
 
 export type PackageJson = z.output<typeof packageJsonSchema>;

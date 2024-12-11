@@ -2,7 +2,7 @@ import inquirer from 'inquirer';
 import type { DistinctQuestion as InquirerQuestion } from 'inquirer';
 
 import type { DefaultCommandAnswers } from '../DefaultCommandAnswers.js';
-import type { Json } from '../schemas/jsonSchema.js';
+import type { JsonLikeObject } from '../schemas/jsonLikeObjectSchema.js';
 
 import { logger } from './logger.js';
 import type { MaybeArray } from './MaybeArray.js';
@@ -113,7 +113,7 @@ export class Command<
 
     logger.debug('Running command', {
       name: this.name,
-      options: options as unknown as Json,
+      options: options as unknown as JsonLikeObject,
     });
 
     await this.askQuestions();

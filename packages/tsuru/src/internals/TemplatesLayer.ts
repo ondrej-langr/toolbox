@@ -55,19 +55,10 @@ export interface LayerConstructorOptions<
 export class TemplatesLayer<
   TVariables extends Record<string, any> | undefined = undefined,
 > {
-  private readonly options:
-    | LayerConstructorOptions<TVariables>
-    | undefined;
-
-  private readonly dirname: string;
-
   constructor(
-    dirname: string,
-    options?: LayerConstructorOptions<TVariables>,
-  ) {
-    this.options = options;
-    this.dirname = dirname;
-  }
+    private readonly dirname: string,
+    private readonly options?: LayerConstructorOptions<TVariables>,
+  ) {}
 
   /**
    * Resolves paths to templates

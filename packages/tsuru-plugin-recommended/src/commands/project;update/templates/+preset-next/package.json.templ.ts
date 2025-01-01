@@ -2,7 +2,7 @@ import { defineTemplateFile } from 'tsuru';
 import { packageJsonSchema } from 'tsuru/schemas';
 import { merge } from 'webpack-merge';
 
-export default defineTemplateFile('json', (existing) => {
+export default defineTemplateFile('json', async (existing) => {
   const existingValidated = packageJsonSchema.parse(existing);
 
   return merge(existingValidated, {

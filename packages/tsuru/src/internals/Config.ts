@@ -15,10 +15,7 @@ const cosmiconfigSearchPlaces = [
 ];
 
 export class Config {
-  private options: ConfigOptions;
-  constructor(options: ConfigOptions) {
-    this.options = options;
-  }
+  constructor(private options: ConfigOptions) {}
 
   getOptions() {
     return this.options;

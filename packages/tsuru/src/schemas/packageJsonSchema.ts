@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { jsonLikeObjectSchema } from './jsonLikeObjectSchema.js';
 import { packageJsonPersonSchema } from './packageJsonPersonSchema.js';
+import { packageVersionSchema } from './packageVersionSchema.js';
 import { projectNameSchema } from './projectNameSchema.js';
 
 const dependencySchema = z.record(z.string(), z.string());
@@ -11,7 +12,7 @@ export const packageJsonSchema = z
     name: projectNameSchema,
     description: z.string(),
     type: z.enum(['commonjs', 'module']).default('module'),
-    version: z.string().optional(),
+    version: packageVersionSchema.optional(),
     workspaces: z.array(z.string()).optional(),
     scripts: z.record(z.string(), z.string()).optional(),
     keywords: z.array(z.string()).optional(),

@@ -39,13 +39,10 @@ export class TemplateFile<
     TVariables
   > = TemplateFileHandler<TParserType, TVariables>,
 > {
-  private handler: THandler;
-  private readonly type: TParserType;
-
-  constructor(type: TParserType, handler: THandler) {
-    this.type = type;
-    this.handler = handler;
-  }
+  constructor(
+    private readonly type: TParserType,
+    private handler: THandler,
+  ) {}
 
   private async runTemplateHandler(
     existingFileContentsAsString: string | undefined = undefined,

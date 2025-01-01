@@ -41,17 +41,14 @@ export type CommandOptions<
 export class Command<
   CommandAnswers extends DefaultCommandAnswers,
 > {
-  readonly options: CommandOptions<CommandAnswers>;
-  readonly name: string;
-  readonly description: string;
   readonly logger: typeof logger;
   private answers: CommandAnswers | undefined;
   private program: Omit<Program, 'run'>;
 
   constructor(
-    name: string,
-    description: string,
-    options: CommandOptions<CommandAnswers>,
+    public readonly name: string,
+    public readonly description: string,
+    public readonly options: CommandOptions<CommandAnswers>,
   ) {
     this.name = name;
     this.description = description;

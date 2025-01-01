@@ -10,7 +10,6 @@ import { workspaceMetadataSchema } from '~/workspaceMetadataSchema.js';
 
 export default defineCommand({
   description: 'Update workspace',
-  questions: [],
   async handler() {
     const program = this.getProgram();
     const options = await program.getOptions();

@@ -40,23 +40,16 @@ const recursiveFindNonWorkspacePackageJson = (
 // the need to have workspace package only stuff.
 // Having it here and not separating it could mean that workspace could be under another workspace. That kind of scope could be too large to support
 export class Project {
-  /**
-   * Root of this package
-   */
-  private readonly root: string;
-
-  /**
-   * Loaded and parsed package.json contents
-   */
-  private packageJsonContents: PackageJson;
-
   constructor(
-    packageRoot: string,
-    packageJsonContents: PackageJson,
-  ) {
-    this.root = packageRoot;
-    this.packageJsonContents = packageJsonContents;
-  }
+    /**
+     * Root of this package
+     */
+    private readonly root: string,
+    /**
+     * Loaded and parsed package.json contents
+     */
+    private packageJsonContents: PackageJson,
+  ) {}
 
   // TODO: this should load from our filesystem
   /**

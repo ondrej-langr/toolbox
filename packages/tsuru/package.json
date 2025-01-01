@@ -28,6 +28,10 @@
       "import": "./dist/ast/js-ts/index.js",
       "types": "./dist/ast/js-ts/index.d.ts"
     },
+    "./ast/json": {
+      "import": "./dist/ast/json/index.js",
+      "types": "./dist/ast/json/index.d.ts"
+    },
     "./parsers": {
       "import": "./dist/parsers/index.js",
       "types": "./dist/parsers/index.d.ts"
@@ -56,6 +60,7 @@
     "commander": "^12.1.0",
     "cosmiconfig": "^9.0.0",
     "deepmerge": "^4.3.1",
+    "es-toolkit": "^1.31.0",
     "execa": "^9.5.1",
     "find-config": "^1.0.0",
     "fs-extra": "^11.2.0",

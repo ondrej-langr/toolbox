@@ -23,11 +23,14 @@ describe('packageJsonSChema', () => {
           withBoolean: true,
           withNumber: 1,
         },
-      }).error,
-    ).toBe({
+      }).data,
+    ).toStrictEqual({
       name: 'package-name',
       description: 'This is my package description',
       first: 'it',
+      type: 'module',
+      license: 'MIT',
+      engines: {},
       second: {
         normalString: 'life',
         withBoolean: true,

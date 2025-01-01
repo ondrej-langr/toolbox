@@ -16,7 +16,7 @@ describe('TemplateFile', () => {
       async () => undefined,
     );
 
-    const template = new TemplateFile('json', (test) => ({}));
+    const template = new TemplateFile('json', mockedHandler);
 
     expect(MockedFileSystem.writeFile).toHaveBeenCalledTimes(0);
     expect(mockedHandler).toHaveBeenCalledTimes(0);

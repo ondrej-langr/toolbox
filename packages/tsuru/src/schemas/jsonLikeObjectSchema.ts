@@ -22,7 +22,7 @@ export const jsonLikeObjectSchema: z.ZodType<JsonLikeObject> =
       z.union([
         literalSchema,
         z.array(jsonLikeObjectSchema),
-        z.record(jsonLikeObjectSchema),
+        jsonLikeObjectSchema,
       ]),
     ),
   );

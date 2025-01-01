@@ -39,15 +39,12 @@ export function defineCommand<
     );
   }
 
+  // This is special appending logic so users can group their commands
   if (commandName.includes('$')) {
     commandName = commandName.replaceAll(
       '$',
-      path.basename(commandName),
+      `${path.basename(path.dirname(commandRoot))}:`,
     );
-  }
-
-  if (commandName.includes(';')) {
-    commandName = commandName.replaceAll(';', ':');
   }
 
   const command = new Command(commandName, description, {

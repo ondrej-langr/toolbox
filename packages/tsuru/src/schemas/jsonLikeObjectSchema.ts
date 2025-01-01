@@ -21,7 +21,7 @@ export const jsonLikeObjectSchema: z.ZodType<JsonLikeObject> =
     z.record(
       z.union([
         literalSchema,
-        z.array(jsonLikeObjectSchema),
+        z.array(jsonLikeObjectSchema.or(literalSchema)),
         jsonLikeObjectSchema,
       ]),
     ),

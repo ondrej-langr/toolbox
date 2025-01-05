@@ -54,7 +54,7 @@ export type ApplyPackageJsonTemplateOptions = {
 export const applyPackageJsonTemplate = ({
   templatePackageJson,
   userPackageJson,
-}: ApplyPackageJsonTemplateOptions) => {
+}: ApplyPackageJsonTemplateOptions): PackageJson => {
   const result = merge(
     cloneDeep(templatePackageJson),
     cloneDeep(userPackageJson),

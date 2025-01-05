@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import type { projectPresets } from '~/commands/project;create/constants.js';
-import { presetNextRouterChoices } from '~/commands/project;create/presetNextRouterChoices.js';
+import type { projectPresets } from '~/commands/project/$create/constants.js';
+import { presetNextRouterChoices } from '~/commands/project/$create/presetNextRouterChoices.js';
 
 const presetsToMetaConfig = {
   empty: z.object({

@@ -17,7 +17,7 @@ Commands can be placed in two places: projects or plugins!
 
 1. Open your plugin project folder and locate your `index` file that exports everything from plugin package
 2. Create a `commands` folder on the same level
-4. And there create a commands like usually 🎉
+3. And there create a commands like usually 🎉
 
 ## Naming commands
 

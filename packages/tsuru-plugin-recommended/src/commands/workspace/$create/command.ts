@@ -9,7 +9,7 @@ import {
   workspaceMetadataSchema,
 } from '~/workspaceMetadataSchema.js';
 
-import updateWorkspaceCommand from '../workspace;update/command.js';
+import updateWorkspaceCommand from '../$update/command.js';
 
 const WORKSPACE_NAME_REGEX = /([a-z]|[1-9]|-){2,}/;
 

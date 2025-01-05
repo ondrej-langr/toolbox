@@ -1,6 +1,10 @@
-import type { AsyncDynamicQuestionProperty } from 'inquirer';
+import type {
+  AsyncDynamicQuestionProperty,
+  Question,
+} from 'inquirer';
 import path from 'node:path';
 import {
+  CommandQuestion,
   defineCommand,
   defineTemplatesLayer,
   FileSystem,
@@ -19,7 +23,7 @@ import {
   projectMetadataSchema,
 } from '~/projectMetadataSchema.js';
 
-import projectUpdateCommand from '../project;update/command.js';
+import projectUpdateCommand from '../$update/command.js';
 
 import { projectPresets } from './constants.js';
 import { getProjectFolderNameFromProjectName } from './getProjectFolderNameFromProjectName.js';
@@ -30,11 +34,6 @@ const getWorkspace = async (cwd: string) => {
   _forWorkspace ??= await Workspace.loadNearest(cwd);
   return _forWorkspace;
 };
-
-const enabledWhenInWorkspace: AsyncDynamicQuestionProperty<
-  boolean,
-  any
-> = async (cwd: string) => !!(await getWorkspace(cwd));
 
 type CommandAnswers = {
   name: string;
@@ -49,8 +48,9 @@ type CommandAnswers = {
 
 export default defineCommand<CommandAnswers>({
   description: 'Create project',
-  questions() {
+  async questions() {
     const program = this.getProgram();
+    const programOptions = await program.getOptions();
 
     return [
       {
@@ -119,7 +119,9 @@ export default defineCommand<CommandAnswers>({
         type: 'list',
         message:
           'What will be the project location inside current workspace?',
-        when: enabledWhenInWorkspace,
+        async when() {
+          return !!(await getWorkspace(programOptions.cwd));
+        },
         async choices(answers) {
           const options = await program.getOptions();
           const workspaces = await (

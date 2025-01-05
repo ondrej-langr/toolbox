@@ -1,5 +1,11 @@
 # tsuru
 
+## 0.2.1
+
+### Patch Changes
+
+- [`9b99e9f`](https://github.com/ondrej-langr/toolbox/commit/9b99e9f7586191b6f3f8410e199f7e7126a008fc) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Adds exact return type to applyPackageJsonTemplate
+
 ## 0.2.0
 
 ### Minor Changes

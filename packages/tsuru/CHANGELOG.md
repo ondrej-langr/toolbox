@@ -1,5 +1,13 @@
 # tsuru
 
+## 0.2.2
+
+### Patch Changes
+
+- [#9](https://github.com/ondrej-langr/toolbox/pull/9) [`c7ca2fb`](https://github.com/ondrej-langr/toolbox/commit/c7ca2fb2690a698d49c2b5e414c505dc0a9106b8) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Fixes logging messages by placing tsuru as a message prefix instead of the message type
+
+- [#9](https://github.com/ondrej-langr/toolbox/pull/9) [`c7ca2fb`](https://github.com/ondrej-langr/toolbox/commit/c7ca2fb2690a698d49c2b5e414c505dc0a9106b8) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Adds external .ts loader for cosmiconfig. This should improve the stability of typescript configs and commands.
+
 ## 0.2.1
 
 ### Patch Changes

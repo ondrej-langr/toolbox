@@ -16,27 +16,27 @@ export const logger = {
   debug: runWhenDebugEnabled(
     (message: string, meta?: JsonLikeObject) =>
       console.log(
-        `${colors.blue('debug@tsuru:')} ${message}${meta ? ` ${JSON.stringify(meta, null, 2)}` : ''}`,
+        `${colors.blue('@tsuru debug:')} ${message}${meta ? ` ${JSON.stringify(meta, null, 2)}` : ''}`,
       ),
   ),
 
   error: (message: string, meta?: JsonLikeObject) =>
     console.log(
-      `${colors.red('error@tsuru:')} ${message}${meta ? ` ${JSON.stringify(meta, null, 2)}` : ''}`,
+      `${colors.red('@tsuru error:')} ${message}${meta ? ` ${JSON.stringify(meta, null, 2)}` : ''}`,
     ),
 
   info: (message: string, meta?: JsonLikeObject) =>
     console.log(
-      `${colors.blue('info@tsuru:')} ${message}${meta ? ` ${JSON.stringify(meta, null, 2)}` : ''}`,
+      `${colors.blue('@tsuru info:')} ${message}${meta ? ` ${JSON.stringify(meta, null, 2)}` : ''}`,
     ),
 
   warn: (message: string, meta?: JsonLikeObject) =>
     console.log(
-      `${colors.yellow('warn@tsuru:')} ${message}${meta ? ` ${JSON.stringify(meta, null, 2)}` : ''}`,
+      `${colors.yellow('@tsuru warn:')} ${message}${meta ? ` ${JSON.stringify(meta, null, 2)}` : ''}`,
     ),
 
   success: (message: string, meta?: JsonLikeObject) =>
     console.log(
-      `${colors.green('success@tsuru:')} ${message}${meta ? ` ${JSON.stringify(meta, null, 2)}` : ''}`,
+      `${colors.green('@tsuru success:')} ${message}${meta ? ` ${JSON.stringify(meta, null, 2)}` : ''}`,
     ),
 };

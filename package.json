@@ -2,7 +2,7 @@
   "name": "ondrej-langr",
   "version": "0.0.0",
   "description": "Toolbox with tools and wrenches made by Ondřej Langr",
-  "license": "ISC",
+  "license": "MIT",
   "author": {
     "name": "Ondřej Langr",
     "email": "hi@ondrejlangr.cz"

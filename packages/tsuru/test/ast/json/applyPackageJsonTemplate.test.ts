@@ -5,9 +5,9 @@ import type { PackageJson } from '../../../src/schemas/packageJsonSchema';
 
 const createCurrentPackageJson = (): PackageJson => ({
   name: 'test',
-  description: '',
+  description: 'This is a user description',
   engines: {},
-  license: '',
+  license: 'MIT',
   type: 'module',
   devDependencies: {},
 });
@@ -16,10 +16,12 @@ describe('applyPackageJsonTemplate', () => {
   it('should apply package.json template correctly', () => {
     const currentPackageJson: PackageJson =
       createCurrentPackageJson();
+
     currentPackageJson.devDependencies = {
       secondLib: '^1.2.4',
       thirdLib: '1.2.5',
       fourthLib: '^1.2.5',
+      fifthLib: '^1.2.5',
     };
     currentPackageJson.engines = {
       node: '>=20',
@@ -35,6 +37,7 @@ describe('applyPackageJsonTemplate', () => {
         secondLib: '1.4.4',
         thirdLib: '^1.1.1',
         fourthLib: '^1.1.5',
+        fifthLib: '^2.2.5',
       },
       engines: {
         node: '>=20.5.1',
@@ -44,13 +47,13 @@ describe('applyPackageJsonTemplate', () => {
 
     expect(
       applyPackageJsonTemplate({
-        templatePackageJson: currentPackageJson,
-        userPackageJson: packageJsonFromTemplates,
+        templatePackageJson: packageJsonFromTemplates,
+        userPackageJson: currentPackageJson,
       }),
     ).toMatchObject({
       name: 'test',
-      description: '',
-      license: '',
+      description: 'This is a user description',
+      license: 'MIT',
       type: 'commonjs',
       dependencies: {
         zeroLib: '^1.2.4',
@@ -59,6 +62,7 @@ describe('applyPackageJsonTemplate', () => {
         secondLib: '1.4.4',
         thirdLib: '1.2.5',
         fourthLib: '^1.2.5',
+        fifthLib: '^2.2.5',
       },
       engines: {
         node: '>=20.5.1',
@@ -78,14 +82,14 @@ describe('applyPackageJsonTemplate', () => {
 
     expect(
       applyPackageJsonTemplate({
-        templatePackageJson: currentPackageJson,
-        userPackageJson: packageJsonFromTemplates,
+        templatePackageJson: packageJsonFromTemplates,
+        userPackageJson: currentPackageJson,
       }),
     ).toMatchObject({
       name: 'test',
-      description: '',
+      description: 'This is a user description',
       engines: {},
-      license: '',
+      license: 'MIT',
       type: 'commonjs',
     } satisfies PackageJson);
   });
@@ -122,14 +126,14 @@ describe('applyPackageJsonTemplate', () => {
 
       expect(
         applyPackageJsonTemplate({
-          templatePackageJson: currentPackageJson,
-          userPackageJson: packageJsonFromTemplates,
+          templatePackageJson: packageJsonFromTemplates,
+          userPackageJson: currentPackageJson,
         }),
       ).toMatchObject({
         name: 'test',
-        description: '',
+        description: 'This is a user description',
         engines: {},
-        license: '',
+        license: 'MIT',
         type: 'module',
         packageManager: resultPackageManager,
       } satisfies PackageJson);

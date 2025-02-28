@@ -8,9 +8,9 @@ export default defineTemplateFile('json', (existing) => {
 
   return applyPackageJsonTemplate({
     templatePackageJson: {
-      description: '',
+      description: existingValidated.description ?? '',
       license: 'MIT',
-      name: '',
+      name: existingValidated.name ?? 'TODO',
       ...getPackageJsonDefaults(),
       version: existingValidated.version ?? '0.0.0',
       scripts: {

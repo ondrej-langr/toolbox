@@ -15,20 +15,20 @@ const correctDependencyVersions = (
   newPartial: Dependencies,
 ): NonNullable<Dependencies> => {
   const result = { ...currentDependencies };
-  const newDependenciesAsEntries = Object.entries(
-    newPartial ?? {},
-  );
+  const managedDependencies = Object.entries(newPartial ?? {});
 
   forEach(
-    newDependenciesAsEntries,
+    managedDependencies,
     ([dependencyName, requiredDependencyVersion]) => {
       const previousDependencyVersion =
         currentDependencies?.[dependencyName] ??
         requiredDependencyVersion;
 
       const previousSatisfiesRangeAndIsValid = semver.satisfies(
-        previousDependencyVersion.replaceAll(/[=^~]/g, ''),
-        requiredDependencyVersion,
+        previousDependencyVersion.replaceAll(/[=^>~]/g, ''),
+        requiredDependencyVersion
+          .replaceAll('=', '')
+          .replace('>', '^'),
       );
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- at this point it should be defined
@@ -56,11 +56,12 @@ export const applyPackageJsonTemplate = ({
   userPackageJson,
 }: ApplyPackageJsonTemplateOptions): PackageJson => {
   const result = merge(
-    cloneDeep(templatePackageJson),
     cloneDeep(userPackageJson),
+    cloneDeep(templatePackageJson),
   );
-  const currentDependencies = templatePackageJson.dependencies;
-  const nextDependenciesOverride = userPackageJson.dependencies;
+  const currentDependencies = userPackageJson.dependencies;
+  const nextDependenciesOverride =
+    templatePackageJson.dependencies;
 
   if (
     currentDependencies &&
@@ -72,10 +73,9 @@ export const applyPackageJsonTemplate = ({
     );
   }
 
-  const currentDevDependencies =
-    templatePackageJson.devDependencies;
+  const currentDevDependencies = userPackageJson.devDependencies;
   const nextDevDependenciesOverride =
-    userPackageJson.devDependencies;
+    templatePackageJson.devDependencies;
   if (
     currentDevDependencies &&
     Object.keys(nextDevDependenciesOverride ?? {}).length > 0
@@ -99,11 +99,14 @@ export const applyPackageJsonTemplate = ({
   }
 
   // Allow engine versions in range
-  const currentPackageManager =
-    templatePackageJson.packageManager;
+  const currentPackageManager = userPackageJson.packageManager;
   const nextPackageManagerOverride =
-    userPackageJson.packageManager;
+    templatePackageJson.packageManager;
   if (currentPackageManager && nextPackageManagerOverride) {
+    // Set required package by template
+    // However later on it will be adjusted if current satisfies version by template. Meaning that user can define other version if it fall into same major semver version
+    result.packageManager = nextPackageManagerOverride;
+
     const [
       currentPackageManagerName,
       currentPackageManagerVersion,

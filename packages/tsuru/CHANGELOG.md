@@ -1,5 +1,11 @@
 # tsuru
 
+## 0.2.3
+
+### Patch Changes
+
+- [`3248f95`](https://github.com/ondrej-langr/toolbox/commit/3248f95cad6bc697d0e72a9f38d58798f64e0798) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Fixes invalid applyPackageJsonTemplate functionality where version were ont correctly checked against template defined versions.
+
 ## 0.2.2
 
 ### Patch Changes

@@ -25,8 +25,6 @@ import {
 import { Project } from './Project.js';
 import { Workspace } from './Workspace.js';
 
-console.log('hellop');
-
 export type ProgramConstructorOptions = {
   /** The name of your program */
   name: string;
@@ -59,7 +57,8 @@ export class Program {
       const { name, description, version, aliases } =
         this.options;
 
-      this.commanderProgram = new CommanderCommand().name(name);
+      this.commanderProgram = new CommanderCommand();
+      this.commanderProgram.name(name);
 
       if (description) {
         this.commanderProgram.description(description);

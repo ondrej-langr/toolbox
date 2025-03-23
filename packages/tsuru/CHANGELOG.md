@@ -1,5 +1,11 @@
 # tsuru
 
+## 0.3.0
+
+### Minor Changes
+
+- [`abd850f`](https://github.com/ondrej-langr/toolbox/commit/abd850fc58aeb24126cc772a192b624d824ae6fc) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Exports program from `tsuru` which allows for a way to create custom program and not rely on tsuru to orchestrate commands. This means users can create their own command line programs with the help of tsuru.
+
 ## 0.2.3
 
 ### Patch Changes

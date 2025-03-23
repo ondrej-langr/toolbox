@@ -1,5 +1,11 @@
 # tsuru
 
+## 0.5.1
+
+### Patch Changes
+
+- [`c4e9fef`](https://github.com/ondrej-langr/toolbox/commit/c4e9fefba892030f0902e1b290c559c2176b8d4d) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Fixes setting of program name
+
 ## 0.5.0
 
 ### Minor Changes

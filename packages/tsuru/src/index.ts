@@ -6,6 +6,10 @@ export * from './defineTemplateFile.js';
 export * from './defineTemplatesLayer.js';
 export * from './FileSystem.js';
 export * from './DefaultCommandAnswers.js';
+export {
+  Program,
+  type ProgramConstructorOptions,
+} from './Program.js';
 export * from './Project.js';
 export * from './Workspace.js';
 export { TSURU_FOLDER_NAME } from './internals/constants.js';
@@ -21,7 +25,6 @@ export {
   type Config,
   type ConfigOptions,
 } from './internals/Config.js';
-export { type Program } from './internals/Program.js';
 export {
   type Plugin,
   type PluginOptions,

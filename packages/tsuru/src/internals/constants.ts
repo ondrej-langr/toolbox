@@ -15,4 +15,5 @@ export const PACKAGE_RUNTIME_ROOT = root;
 export const TSURU_FOLDER_NAME = '.tsuru';
 export const PNPM_WORKSPACE_YAML = 'pnpm-workspace.yaml';
 export const PACKAGE_JSON = 'package.json';
-export const COMMANDS_GLOB_FILE_MATCH = `commands/{*/command.{${ALLOWED_COMMAND_FILE_EXTENSIONS.join()}},*/$*/command.{${ALLOWED_COMMAND_FILE_EXTENSIONS.join()}}}`;
+export const COMMANDS_GLOB_FILE_MATCH = `{*/command.{${ALLOWED_COMMAND_FILE_EXTENSIONS.join()}},*/$*/command.{${ALLOWED_COMMAND_FILE_EXTENSIONS.join()}}}`;
+export const COMMANDS_GLOB_FILE_MATCH_WITH_FOLDER = `commands/${COMMANDS_GLOB_FILE_MATCH}`;

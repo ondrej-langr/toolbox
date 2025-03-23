@@ -4,26 +4,38 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 
-import type { DefaultProgramOptions } from '../DefaultProgramOptions.js';
-import { FileSystem } from '../FileSystem.js';
-import { Project } from '../Project.js';
-import { Workspace } from '../Workspace.js';
-
-import { Command } from './Command.js';
-import { commandsLoader } from './commandsLoader.js';
-import { Config, type ConfigOptions } from './Config.js';
+import type { DefaultProgramOptions } from './DefaultProgramOptions.js';
+import { FileSystem } from './FileSystem.js';
+import { Command } from './internals/Command.js';
+import { commandsLoader } from './internals/commandsLoader.js';
+import {
+  Config,
+  type ConfigOptions,
+} from './internals/Config.js';
 import {
   COMMANDS_GLOB_FILE_MATCH,
+  COMMANDS_GLOB_FILE_MATCH_WITH_FOLDER,
   PACKAGE_RUNTIME_ROOT,
   TSURU_FOLDER_NAME,
-} from './constants.js';
-import { logger } from './logger.js';
-import { Plugin } from './Plugin.js';
+} from './internals/constants.js';
+import { logger } from './internals/logger.js';
+import { Plugin } from './internals/Plugin.js';
+import { Project } from './Project.js';
+import { Workspace } from './Workspace.js';
+
+export type ProgramConstructorOptions = {
+  commandsRoots?: Set<string>;
+  plugins?: string[];
+};
 
 export class Program {
   private commanderProgram: CommanderCommand;
   private plugins: Map<string, Plugin>;
   private commands: Set<Command<any>>;
+
+  constructor(
+    private readonly options?: ProgramConstructorOptions,
+  ) {}
 
   private async getCommanderProgram() {
     if (typeof this.commanderProgram === 'undefined') {
@@ -90,7 +102,7 @@ export class Program {
     if (typeof this.plugins === 'undefined') {
       const project = await this.getProject();
       const totalConfigPluginsOptions: ConfigOptions['plugins'] =
-        [];
+        [...(this.options?.plugins ?? [])];
       logger.debug(`Initializing plugins...`);
 
       if (project) {
@@ -146,6 +158,11 @@ export class Program {
       const project = await this.getProject();
 
       const commandsGlobMatches: string[] = [
+        // Find program defined commands
+        ...[...(this.options?.commandsRoots ?? [])].map(
+          (absolutePath) =>
+            path.join(absolutePath, COMMANDS_GLOB_FILE_MATCH),
+        ),
         // Find commands in plugins
         ...[...plugins.entries()].map(([pluginPackageName]) => {
           const pluginPackageSrcRoot = path.dirname(
@@ -156,7 +173,7 @@ export class Program {
 
           return path.join(
             pluginPackageSrcRoot,
-            COMMANDS_GLOB_FILE_MATCH,
+            COMMANDS_GLOB_FILE_MATCH_WITH_FOLDER,
           );
         }),
       ];
@@ -167,7 +184,7 @@ export class Program {
           path.join(
             project.getRoot(),
             TSURU_FOLDER_NAME,
-            COMMANDS_GLOB_FILE_MATCH,
+            COMMANDS_GLOB_FILE_MATCH_WITH_FOLDER,
           ),
         );
 
@@ -182,7 +199,7 @@ export class Program {
               path.join(
                 projectWorkspace.getRoot(),
                 TSURU_FOLDER_NAME,
-                COMMANDS_GLOB_FILE_MATCH,
+                COMMANDS_GLOB_FILE_MATCH_WITH_FOLDER,
               ),
             );
           }
@@ -261,8 +278,6 @@ export class Program {
 
     return commanderProgram.version() ?? '0.0.0';
   }
-
-  constructor() {}
 
   async run() {
     // 1. FIND PLUGINS

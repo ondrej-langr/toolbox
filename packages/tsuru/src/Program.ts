@@ -15,7 +15,6 @@ import {
 import {
   COMMANDS_GLOB_FILE_MATCH,
   COMMANDS_GLOB_FILE_MATCH_WITH_FOLDER,
-  PACKAGE_RUNTIME_ROOT,
   TSURU_FOLDER_NAME,
 } from './internals/constants.js';
 import { logger } from './internals/logger.js';
@@ -24,6 +23,14 @@ import { Project } from './Project.js';
 import { Workspace } from './Workspace.js';
 
 export type ProgramConstructorOptions = {
+  /** The name of your program */
+  name: string;
+  /** Program aliases, only first is shown in the help */
+  aliases?: string[];
+  /** Description of this program */
+  description?: string;
+  /** Your program version */
+  version?: string;
   commandsRoots?: Set<string>;
   plugins?: string[];
 };
@@ -34,20 +41,29 @@ export class Program {
   private commands: Set<Command<any>>;
 
   constructor(
-    private readonly options?: ProgramConstructorOptions,
+    private readonly options: ProgramConstructorOptions,
   ) {}
 
   private async getCommanderProgram() {
     if (typeof this.commanderProgram === 'undefined') {
-      const bobPackage = await Project.loadAt(
-        path.join(PACKAGE_RUNTIME_ROOT, '..'),
-      );
-      const bobPackageJson = bobPackage.getPackageInfo();
+      const { name, description, version, aliases } =
+        this.options;
 
-      this.commanderProgram = new CommanderCommand()
-        .name(bobPackageJson.name)
-        .description(bobPackageJson.description)
-        .version(bobPackageJson.version ?? 'unknown')
+      this.commanderProgram = new CommanderCommand().name(name);
+
+      if (description) {
+        this.commanderProgram.description(description);
+      }
+
+      if (version) {
+        this.commanderProgram.version(version);
+      }
+
+      if (aliases) {
+        this.commanderProgram.aliases(aliases);
+      }
+
+      this.commanderProgram
         .option(
           '-c, --cwd <value>',
           'Define cwd for commands, defaults to cwd that this cli application is executed from',
@@ -102,7 +118,7 @@ export class Program {
     if (typeof this.plugins === 'undefined') {
       const project = await this.getProject();
       const totalConfigPluginsOptions: ConfigOptions['plugins'] =
-        [...(this.options?.plugins ?? [])];
+        [...(this.options.plugins ?? [])];
       logger.debug(`Initializing plugins...`);
 
       if (project) {
@@ -159,7 +175,7 @@ export class Program {
 
       const commandsGlobMatches: string[] = [
         // Find program defined commands
-        ...[...(this.options?.commandsRoots ?? [])].map(
+        ...[...(this.options.commandsRoots ?? [])].map(
           (absolutePath) =>
             path.join(absolutePath, COMMANDS_GLOB_FILE_MATCH),
         ),

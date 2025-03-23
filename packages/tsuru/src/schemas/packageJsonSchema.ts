@@ -63,11 +63,18 @@ export const packageJsonSchema = z
       .record(
         z.string(),
         z.string().or(
-          z.object({
-            import: z.string(),
-            types: z.string(),
-            require: z.string().optional(),
-          }),
+          z
+            .object({
+              import: z.string().optional(),
+              types: z.string().optional(),
+              browser: z.string().optional(),
+              require: z.string().optional(),
+              default: z.string().optional(),
+            })
+            .refine(
+              (value) => Object.keys(value).length > 0,
+              'Please define atleast one export field for current export',
+            ),
         ),
       )
       .optional(),

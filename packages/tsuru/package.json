@@ -28,6 +28,10 @@
       "import": "./dist/program/index.js",
       "types": "./dist/program/index.d.ts"
     },
+    "./logger": {
+      "import": "./dist/logger/index.js",
+      "types": "./dist/logger/index.d.ts"
+    },
     "./ast/js-ts": {
       "import": "./dist/ast/js-ts/index.js",
       "types": "./dist/ast/js-ts/index.d.ts"

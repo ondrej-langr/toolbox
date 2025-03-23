@@ -64,7 +64,7 @@ Creating your first command in an existing project is the most simple approach o
      // And define your logic for this command (be it sync or async)
      handler() {
        // "this" references to an actual Command instance which holds necessary information about the command, running program, project for which this command was executed (if any) and much more
-       this.logger.success('hello world!');
+       this.program.logger.success('hello world!');
      },
    });
    ```
@@ -118,7 +118,7 @@ The more projects you use Tsuru on the more you benefit from it, because it allo
       // And define your logic for this command (be it sync or async)
       handler() {
         // "this" references to an actual Command instance which holds necessary information about the command, running program, project for which this command was executed (if any) and much more
-        this.logger.success('hello world!');
+        this.program.logger.success('hello world!');
       },
     });
     ```

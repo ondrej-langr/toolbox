@@ -17,10 +17,15 @@ import {
   COMMANDS_GLOB_FILE_MATCH_WITH_FOLDER,
   TSURU_FOLDER_NAME,
 } from './internals/constants.js';
-import { logger } from './internals/logger.js';
 import { Plugin } from './internals/Plugin.js';
+import {
+  createLogger,
+  type Logger,
+} from './logger/createLogger.js';
 import { Project } from './Project.js';
 import { Workspace } from './Workspace.js';
+
+console.log('hellop');
 
 export type ProgramConstructorOptions = {
   /** The name of your program */
@@ -39,10 +44,15 @@ export class Program {
   private commanderProgram: CommanderCommand;
   private plugins: Map<string, Plugin>;
   private commands: Set<Command<any>>;
+  readonly logger: Logger;
 
   constructor(
     private readonly options: ProgramConstructorOptions,
-  ) {}
+  ) {
+    this.logger = createLogger({
+      name: options.name,
+    });
+  }
 
   private async getCommanderProgram() {
     if (typeof this.commanderProgram === 'undefined') {
@@ -79,7 +89,7 @@ export class Program {
           false,
         );
 
-      logger.debug('Initialized program');
+      this.logger.debug('Initialized program');
     }
 
     return this.commanderProgram;
@@ -91,7 +101,7 @@ export class Program {
     const { cwd } = program.opts<DefaultProgramOptions>();
     let projectOrWorkspace: Project | Workspace | null = null;
 
-    logger.debug(
+    this.logger.debug(
       `Getting project or workspace at current cwd "${cwd}"`,
     );
 
@@ -119,10 +129,10 @@ export class Program {
       const project = await this.getProject();
       const totalConfigPluginsOptions: ConfigOptions['plugins'] =
         [...(this.options.plugins ?? [])];
-      logger.debug(`Initializing plugins...`);
+      this.logger.debug(`Initializing plugins...`);
 
       if (project) {
-        logger.debug(`Loading project Tsuru config...`);
+        this.logger.debug(`Loading project Tsuru config...`);
         const projectBobConfig = await Config.loadAt(
           project.getRoot(),
         );
@@ -133,7 +143,7 @@ export class Program {
           );
         }
 
-        logger.debug(`Loading workspace Tsuru config...`);
+        this.logger.debug(`Loading workspace Tsuru config...`);
         const projectWorkspace = await Workspace.loadNearest(
           project.getRoot(),
         );
@@ -149,7 +159,7 @@ export class Program {
       }
       // TODO: allow user to define plugins with cli arguments
 
-      logger.debug(
+      this.logger.debug(
         `Resolving plugins from workspaces and projects...`,
       );
       const resolvedPlugins = await Promise.all(
@@ -228,7 +238,7 @@ export class Program {
 
       const commandsAsPromises = commandsPathnames.map(
         async (commandPathname): Promise<Command<any>> => {
-          logger.debug(
+          this.logger.debug(
             `Registering command under "${commandPathname}"`,
           );
 
@@ -263,7 +273,7 @@ export class Program {
     const commanderProgram = await this.getCommanderProgram();
 
     for (const command of commands) {
-      logger.debug(`Attaching command "${command.name}"`);
+      this.logger.debug(`Attaching command "${command.name}"`);
       commanderProgram
         .command(command.name)
         .description(command.description)
@@ -272,7 +282,7 @@ export class Program {
         });
     }
 
-    logger.debug('All possible commands attached...');
+    this.logger.debug('All possible commands attached...');
   }
 
   async getOptions(): Promise<DefaultProgramOptions> {
@@ -301,28 +311,30 @@ export class Program {
     // 3. SETUP COMMANDER
     // 4. ATTACH ALL COMMANDS FROM PLUGINS
     // 5. RUN
-    logger.debug('Starting...');
+    this.logger.debug('Starting...');
 
     await this.setupCommands();
 
-    logger.debug('Checking if command was provided...');
+    this.logger.debug('Checking if command was provided...');
     if (process.argv.length < 3) {
-      logger.debug('No command has been provided, exiting...');
+      this.logger.debug(
+        'No command has been provided, exiting...',
+      );
       this.commanderProgram.help();
     } else {
-      logger.info('Welcome!');
+      this.logger.info('Welcome!');
     }
 
     // Start program
-    logger.debug('Parsing commands and running...');
+    this.logger.debug('Parsing commands and running...');
     await this.commanderProgram.parseAsync();
 
-    logger.debug(
+    this.logger.debug(
       'Everything ok, comitting files to local filesystem...',
     );
     await FileSystem.commit();
 
-    logger.success('All work done 🎉');
-    logger.success('Bye!');
+    this.logger.success('All work done 🎉');
+    this.logger.success('Bye!');
   }
 }

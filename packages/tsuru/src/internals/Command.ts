@@ -5,7 +5,6 @@ import type { DefaultCommandAnswers } from '../DefaultCommandAnswers.js';
 import type { Program } from '../Program.js';
 import type { JsonLikeObject } from '../schemas/jsonLikeObjectSchema.js';
 
-import { logger } from './logger.js';
 import type { MaybeArray } from './MaybeArray.js';
 import type { MaybePromise } from './MaybePromise.js';
 
@@ -41,7 +40,6 @@ export type CommandOptions<
 export class Command<
   CommandAnswers extends DefaultCommandAnswers,
 > {
-  readonly logger: typeof logger;
   private answers: CommandAnswers | undefined;
   private program: Omit<Program, 'run'>;
 
@@ -53,7 +51,6 @@ export class Command<
     this.name = name;
     this.description = description;
     this.options = options;
-    this.logger = logger;
   }
 
   /**
@@ -108,7 +105,7 @@ export class Command<
   async execute() {
     const options = this.getProgram().getOptions();
 
-    logger.debug('Running command', {
+    this.program.logger.debug('Running command', {
       name: this.name,
       options: options as unknown as JsonLikeObject,
     });

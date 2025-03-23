@@ -1,5 +1,14 @@
 # tsuru-plugin-recommended
 
+## 0.1.6
+
+### Patch Changes
+
+- [`e8f0e31`](https://github.com/ondrej-langr/toolbox/commit/e8f0e314a41caa9a8850bcbac907864254878ee5) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Updates prettier dependencies to latest and ignores .bin/ folder for formatting
+
+- Updated dependencies [[`673b861`](https://github.com/ondrej-langr/toolbox/commit/673b861833feab22cd37ab4c4dfb3570c3cbe8b4)]:
+  - tsuru@0.4.0
+
 ## 0.1.5
 
 ### Patch Changes

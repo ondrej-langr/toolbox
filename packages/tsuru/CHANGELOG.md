@@ -1,5 +1,11 @@
 # tsuru
 
+## 0.4.0
+
+### Minor Changes
+
+- [`673b861`](https://github.com/ondrej-langr/toolbox/commit/673b861833feab22cd37ab4c4dfb3570c3cbe8b4) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Makes program constructor options required and adds more properties to define program with
+
 ## 0.3.0
 
 ### Minor Changes

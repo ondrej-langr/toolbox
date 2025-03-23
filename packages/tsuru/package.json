@@ -1,6 +1,6 @@
 {
   "name": "tsuru",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Simpler CLI applications with focus on code generation",
   "license": "ISC",
   "author": {

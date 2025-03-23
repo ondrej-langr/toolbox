@@ -1,5 +1,13 @@
 # tsuru
 
+## 0.5.0
+
+### Minor Changes
+
+- [`e25b120`](https://github.com/ondrej-langr/toolbox/commit/e25b1203870cb5ad62ccc0079694eda4b3bcf31a) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Logger is now exposed on program itself and removed from command. This command now also takes its name after program name itself
+
+- [`84a7626`](https://github.com/ondrej-langr/toolbox/commit/84a7626752375852d9c359df0a26827b654a6eed) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Exposes logger from package. This allows users to create their own logger by importing the `createLogger` function from `tsuru/logger`.
+
 ## 0.4.0
 
 ### Minor Changes

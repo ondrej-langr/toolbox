@@ -1,5 +1,12 @@
 # tsuru-plugin-recommended
 
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies [[`e25b120`](https://github.com/ondrej-langr/toolbox/commit/e25b1203870cb5ad62ccc0079694eda4b3bcf31a), [`84a7626`](https://github.com/ondrej-langr/toolbox/commit/84a7626752375852d9c359df0a26827b654a6eed)]:
+  - tsuru@0.5.0
+
 ## 0.1.6
 
 ### Patch Changes

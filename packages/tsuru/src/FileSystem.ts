@@ -7,11 +7,13 @@ import type { z } from 'zod';
 import { logger } from './internals/logger.js';
 import type { JsonLikeObject } from './schemas/jsonLikeObjectSchema.js';
 
+type CacheItem = { contents: string; isChanged: boolean };
+
 /**
 Wrapper around fs-extra that batches update of files until they are committed
 */
 export class FileSystem {
-  private static cache = new Map<string, string>();
+  private static cache = new Map<string, CacheItem>();
 
   static readonly cacheless = fs;
 
@@ -22,19 +24,25 @@ export class FileSystem {
     let result = this.cache.get(absoluteFilePath);
 
     if (result) {
-      return result;
+      return result.contents;
     }
 
     if ((await fs.exists(absoluteFilePath)) === false) {
       return undefined;
     }
 
-    result = await fs.readFile(absoluteFilePath, {
+    const existingContent = await fs.readFile(absoluteFilePath, {
       encoding: 'utf8',
     });
-    this.cache.set(absoluteFilePath, result);
 
-    return result;
+    const cacheItem: CacheItem = {
+      contents: existingContent,
+      isChanged: false,
+    };
+
+    this.cache.set(absoluteFilePath, cacheItem);
+
+    return cacheItem.contents;
   }
 
   static findFile(filename: string, options: { cwd: string }) {
@@ -129,7 +137,10 @@ export class FileSystem {
     logger.debug(
       `Registering text file for write ${absoluteFilePath}`,
     );
-    this.cache.set(absoluteFilePath, value);
+    this.cache.set(absoluteFilePath, {
+      contents: value,
+      isChanged: true,
+    });
   }
 
   static writeJson(
@@ -197,22 +208,25 @@ export class FileSystem {
     for (const key of keys) {
       const value = this.cache.get(key);
 
-      if (value === undefined) {
+      if (value === undefined || !value.isChanged) {
         continue;
       }
 
       writesAsPromises.push(
         (async () => {
-          let formattedValue = value;
+          let formattedValue = value.contents;
 
           // Ignore initial prettierignore that does not need to be formatted
           if (path.basename(key) !== '.prettierignore') {
             logger.debug(`Formatting file ${key}`);
             try {
-              formattedValue = await prettier.format(value, {
-                ...defaultPrettierConfig,
-                filepath: key,
-              });
+              formattedValue = await prettier.format(
+                formattedValue,
+                {
+                  ...defaultPrettierConfig,
+                  filepath: key,
+                },
+              );
             } catch {
               logger.debug(`Failed to format ${key}`);
             }

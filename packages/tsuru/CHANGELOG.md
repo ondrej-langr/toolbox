@@ -1,5 +1,11 @@
 # tsuru
 
+## 0.5.2
+
+### Patch Changes
+
+- [`e6703e4`](https://github.com/ondrej-langr/toolbox/commit/e6703e43f8c04cbe532506cfd08e0cee98e7defe) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Prevents committing files from virtual file system onto disc when file was not changed with tsuru
+
 ## 0.5.1
 
 ### Patch Changes

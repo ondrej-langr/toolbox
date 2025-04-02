@@ -1,6 +1,6 @@
 {
   "name": "tsuru-plugin-recommended",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Plugin for Tsuru with recommended configs and commands",
   "license": "ISC",
   "author": {

@@ -65,6 +65,7 @@
     "test:unit": "vitest --watch false --passWithNoTests"
   },
   "dependencies": {
+    "@types/inquirer": "^9.0.7",
     "commander": "^12.1.0",
     "cosmiconfig": "^9.0.0",
     "cosmiconfig-typescript-loader": "^6.1.0",
@@ -86,7 +87,6 @@
     "@swc/core": "^1.7.42",
     "@types/find-config": "^1.0.4",
     "@types/fs-extra": "^11.0.4",
-    "@types/inquirer": "^9.0.7",
     "@types/node": "^20.17.6",
     "@types/semver": "^7.5.8",
     "typescript": "5.5.2",

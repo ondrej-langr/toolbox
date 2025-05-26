@@ -11,7 +11,7 @@ export const packageJsonSchema = z
   .object({
     name: projectNameSchema,
     description: z.string(),
-    type: z.enum(['commonjs', 'module']).default('module'),
+    type: z.enum(['commonjs', 'module']).optional(),
     version: packageVersionSchema.optional(),
     workspaces: z.array(z.string()).optional(),
     scripts: z.record(z.string(), z.string()).optional(),

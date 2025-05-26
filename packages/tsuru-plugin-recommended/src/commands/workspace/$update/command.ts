@@ -8,6 +8,8 @@ import {
 import { PROJECT_METADATA_WORKSPACE_NAMESPACE } from '~/constants.js';
 import { workspaceMetadataSchema } from '~/workspaceMetadataSchema.js';
 
+import updateProjectCommand from '../../project/$update/command.js';
+
 export default defineCommand({
   description: 'Update workspace',
   async handler() {
@@ -40,6 +42,7 @@ export default defineCommand({
         workspaceMetadataSchema,
       )
       .get();
+
     await defineTemplatesLayer('templates').renderTemplates(
       workspace.getRoot(),
     );
@@ -66,6 +69,13 @@ export default defineCommand({
           `templates/${featureTemplateFolderName}`,
         ).renderTemplates(workspace.getRoot());
       }
+    }
+
+    const projects = await workspace.getProjects();
+
+    for (const project of projects) {
+      program.setCwd(project.getRoot());
+      await updateProjectCommand.execute();
     }
   },
 });

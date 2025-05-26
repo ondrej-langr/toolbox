@@ -8,7 +8,6 @@ export default defineTemplateFile('json', (existing) => {
 
   return applyPackageJsonTemplate({
     templatePackageJson: {
-      private: true,
       version: existingValidated.version ?? '0.0.0',
       ...getPackageJsonDefaults(),
       scripts: {

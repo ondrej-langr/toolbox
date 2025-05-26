@@ -9,6 +9,8 @@ import {
 import { PROJECT_METADATA_PROJECT_NAMESPACE } from '~/constants.js';
 import { projectMetadataSchema } from '~/projectMetadataSchema.js';
 
+import { presetLibraryGenerator } from './+preset-library.generator.js';
+
 export default defineCommand<{
   projectLocationInWorkspace?: string;
 }>({
@@ -80,6 +82,14 @@ export default defineCommand<{
       ? await Project.loadAt(renderTo)
       : (closestProjectOrWorkspace as Project);
 
+    if (!project.hasEnabledTsuru()) {
+      program.logger.warn(
+        `Project at ${project.getRoot()} did not enable tsuru, skipping`,
+      );
+
+      return;
+    }
+
     const projectMeta = await project
       .getMetadataNamespace(
         PROJECT_METADATA_PROJECT_NAMESPACE,
@@ -92,9 +102,14 @@ export default defineCommand<{
     await defineTemplatesLayer('templates').renderTemplates(
       renderTo,
     );
-    await defineTemplatesLayer(
-      presetTemplateFolderName,
-    ).renderTemplates(renderTo);
+
+    if (projectMeta.config.preset === 'library') {
+      await presetLibraryGenerator(project, projectMeta);
+    } else {
+      await defineTemplatesLayer<{ project: Project }>(
+        `templates/${presetTemplateFolderName}`,
+      ).renderTemplates(renderTo, { project });
+    }
 
     if (
       projectMeta.config.preset === 'next' &&
@@ -127,7 +142,7 @@ export default defineCommand<{
         FileSystem.cacheless.existsSync(rootFeatureTemplatesPath)
       ) {
         await defineTemplatesLayer(
-          featureTemplateFolderName,
+          `templates/${featureTemplateFolderName}`,
         ).renderTemplates(renderTo);
       }
 

@@ -3,7 +3,6 @@ import type { z } from 'zod';
 
 export const getPackageJsonDefaults = () =>
   ({
-    type: 'module',
     engines: {
       node: '>=20',
       pnpm: '>=8',

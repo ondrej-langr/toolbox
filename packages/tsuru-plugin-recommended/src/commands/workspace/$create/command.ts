@@ -90,6 +90,7 @@ export default defineCommand<{
 
     // Prepare cwd for update workspace command
     await program.setCwd(workspacePath);
+
     await updateWorkspaceCommand.execute();
   },
 });

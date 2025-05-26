@@ -1,10 +1,5 @@
-import type {
-  AsyncDynamicQuestionProperty,
-  Question,
-} from 'inquirer';
 import path from 'node:path';
 import {
-  CommandQuestion,
   defineCommand,
   defineTemplatesLayer,
   FileSystem,

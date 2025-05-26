@@ -1,3 +1,4 @@
+import { DeleteFileTemplateResult } from '../DeleteFileTemplateResult.js';
 import { FileSystem } from '../FileSystem.js';
 import type { FileTypeToParsers } from '../parsers/FileTypeToParsers.js';
 import { javascriptFileTypeParser } from '../parsers/javascriptFileTypeParser.js';
@@ -25,7 +26,8 @@ export type TemplateFileHandler<
   >[0],
   context: { variables: TVariables },
 ) => MaybePromise<
-  ReturnType<FileTypeToParsers[TParserType]['deserialize']>
+  | ReturnType<FileTypeToParsers[TParserType]['deserialize']>
+  | DeleteFileTemplateResult
 >;
 
 /**
@@ -62,17 +64,26 @@ export class TemplateFile<
       ),
     );
 
+    if (result instanceof DeleteFileTemplateResult) {
+      return result;
+    }
+
     return await parser.serialize(result as any);
   }
 
   async writeTo(resultLocation: string, variables?: TVariables) {
     const existingFileContentsAsString =
       await FileSystem.readFile(resultLocation);
+
     const templateContents = await this.runTemplateHandler(
       existingFileContentsAsString,
       variables,
     );
 
-    FileSystem.writeFile(resultLocation, templateContents);
+    if (templateContents instanceof DeleteFileTemplateResult) {
+      FileSystem.delete(resultLocation);
+    } else {
+      FileSystem.writeFile(resultLocation, templateContents);
+    }
   }
 }

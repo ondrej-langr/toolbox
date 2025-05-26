@@ -1,9 +1,13 @@
+export * from './exceptions/InvalidPackageJsonError.js';
+export * from './exceptions/PackageJsonMissingError.js';
+
 export * from './DefaultProgramOptions.js';
 export * from './defineCommand.js';
 export * from './defineConfig.js';
 export * from './definePlugin.js';
 export * from './defineTemplateFile.js';
 export * from './defineTemplatesLayer.js';
+export { DeleteFileTemplateResult } from './DeleteFileTemplateResult.js';
 export * from './FileSystem.js';
 export * from './DefaultCommandAnswers.js';
 export {

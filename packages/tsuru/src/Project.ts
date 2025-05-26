@@ -1,6 +1,8 @@
 import path from 'node:path';
 import { z } from 'zod';
 
+import { InvalidPackageJsonError } from './exceptions/InvalidPackageJsonError.js';
+import { PackageJsonMissingError } from './exceptions/PackageJsonMissingError.js';
 import { FileSystem } from './FileSystem.js';
 import {
   PACKAGE_JSON,
@@ -8,6 +10,7 @@ import {
   TSURU_FOLDER_NAME,
 } from './internals/constants.js';
 import { logger } from './internals/logger.js';
+import type { JsonLikeValue } from './schemas/jsonLikeObjectSchema.js';
 import type { PackageJson } from './schemas/packageJsonSchema.js';
 import { packageJsonSchema } from './schemas/packageJsonSchema.js';
 
@@ -57,27 +60,27 @@ export class Project {
    */
   static async loadAt(at: string) {
     const packageJsonPath = path.join(at, PACKAGE_JSON);
-    // TODO: notify user here on invalid package.json
-    const packageJsonContent = await FileSystem.readJson(
-      packageJsonPath,
-      {
-        schema: packageJsonSchema,
-      },
-    ).catch((error) => {
+
+    try {
+      const packageJsonContent = FileSystem.readJson(
+        packageJsonPath,
+        {
+          schema: packageJsonSchema,
+        },
+      );
+
+      if (!packageJsonContent) {
+        throw new PackageJsonMissingError(at);
+      }
+
+      return new Project(at, packageJsonContent);
+    } catch (error) {
       if (error instanceof z.ZodError) {
-        logger.warn(`Package.json at ${at} is not valid`);
+        throw new InvalidPackageJsonError(packageJsonPath);
       }
 
       throw error;
-    });
-
-    if (!packageJsonContent) {
-      throw new Error(
-        `Not a valid Node.js package, missing ${PACKAGE_JSON} at ${packageJsonPath}`,
-      );
     }
-
-    return new Project(at, packageJsonContent);
   }
 
   /**
@@ -115,29 +118,32 @@ export class Project {
     > = {};
 
     if (FileSystem.existsSync(metadataJsonFilepath)) {
-      metadataFromFile = await FileSystem.readJson(
-        metadataJsonFilepath,
-        {
-          // Make sure that its an object
-          schema: z.record(z.string(), z.record(z.any())),
-        },
-      )
-        .catch((error) => {
-          logger.warn(
-            `Failed to read or parse the ${metadataJsonFilepath.replace(this.getRoot(), '')}`,
-            {
-              errorMessage:
-                error instanceof Error ? error.message : error,
-              metadataJsonFilepath,
-            },
-          );
-
-          return {};
-        })
-        .then((result) => result ?? {});
+      try {
+        metadataFromFile =
+          FileSystem.readJson(metadataJsonFilepath, {
+            // Make sure that its an object
+            schema: z.record(z.string(), z.record(z.any())),
+          }) ?? {};
+      } catch (error) {
+        logger.warn(
+          `Failed to read or parse the ${metadataJsonFilepath.replace(this.getRoot(), '')}`,
+          {
+            errorMessage: (error instanceof Error
+              ? error.message
+              : error) as JsonLikeValue,
+            metadataJsonFilepath,
+          },
+        );
+      }
     }
 
     return metadataFromFile;
+  }
+
+  hasEnabledTsuru() {
+    const metadataJsonFilepath = this.getMetadataPath();
+
+    return FileSystem.existsSync(metadataJsonFilepath);
   }
 
   getMetadataNamespace<TMetadataSchema extends z.ZodObject<any>>(
@@ -156,6 +162,13 @@ export class Project {
           .catch((error) => {
             logger.error(
               'Failed to parse the project metadata with provided schema. Please see the error bellow',
+              {
+                metadataFromFile,
+                metadataFromFileForGivenNamespace:
+                  metadataUnderNamespace,
+                givenNamespace: namespace,
+                metadataFilePath: this.getMetadataPath(),
+              },
             );
 
             throw error;

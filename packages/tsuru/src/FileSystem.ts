@@ -7,7 +7,11 @@ import type { z } from 'zod';
 import { logger } from './internals/logger.js';
 import type { JsonLikeObject } from './schemas/jsonLikeObjectSchema.js';
 
-type CacheItem = { contents: string; isChanged: boolean };
+type CacheItem = {
+  contents: string;
+  isChanged: boolean;
+  delete?: boolean;
+};
 
 /**
 Wrapper around fs-extra that batches update of files until they are committed
@@ -18,20 +22,18 @@ export class FileSystem {
   static readonly cacheless = fs;
 
   // TODO: filePath must be absolute
-  static async readFile(
-    absoluteFilePath: string,
-  ): Promise<string | undefined> {
+  static readFile(absoluteFilePath: string): string | undefined {
     let result = this.cache.get(absoluteFilePath);
 
     if (result) {
       return result.contents;
     }
 
-    if ((await fs.exists(absoluteFilePath)) === false) {
+    if (fs.existsSync(absoluteFilePath) === false) {
       return undefined;
     }
 
-    const existingContent = await fs.readFile(absoluteFilePath, {
+    const existingContent = fs.readFileSync(absoluteFilePath, {
       encoding: 'utf8',
     });
 
@@ -81,7 +83,7 @@ export class FileSystem {
     return null;
   }
 
-  static async readJson<
+  static readJson<
     S extends
       | z.ZodObject<any>
       | z.ZodRecord
@@ -92,8 +94,8 @@ export class FileSystem {
       reviver?: (key: string, value: any) => any;
       schema: S;
     },
-  ): Promise<z.output<S> | undefined> {
-    const content = await this.readFile(absoluteFilePath);
+  ): z.output<S> | undefined {
+    const content = this.readFile(absoluteFilePath);
 
     if (!content) {
       return undefined;
@@ -110,7 +112,7 @@ export class FileSystem {
       throw error;
     }
 
-    return options.schema.parseAsync(result);
+    return options.schema.parse(result);
   }
 
   static existsSync(absoluteFilePath: string) {
@@ -131,6 +133,59 @@ export class FileSystem {
       `Checking if file ${absoluteFilePath} exists: ${exists ? '✅' : '❌'}`,
     );
     return exists;
+  }
+
+  static delete(absoluteFilePath: string) {
+    logger.debug(
+      `Registering delete for write ${absoluteFilePath}`,
+    );
+    this.cache.set(absoluteFilePath, {
+      contents: '',
+      isChanged: true,
+      delete: true,
+    });
+  }
+
+  static updateJson<
+    S extends
+      | z.ZodObject<any>
+      | z.ZodRecord
+      | z.ZodIntersection<any, any>,
+  >(
+    absoluteFilePath: string,
+    options: {
+      schema: S;
+      updater: (
+        currentValue: z.output<S> | undefined,
+        original: string | undefined,
+      ) => z.output<S> | undefined | void;
+    },
+  ) {
+    const original = this.readFile(absoluteFilePath);
+    const contents = this.readJson(absoluteFilePath, {
+      schema: options.schema,
+    });
+    const result = options.updater(contents, original);
+
+    if (result) {
+      this.writeJson(absoluteFilePath, result);
+    }
+  }
+
+  static updateFile(
+    absoluteFilePath: string,
+    options: {
+      updater: (
+        prevValue: string | undefined,
+      ) => string | undefined | void;
+    },
+  ) {
+    const contents = this.readFile(absoluteFilePath);
+    const result = options.updater(contents);
+
+    if (result) {
+      this.writeFile(absoluteFilePath, result);
+    }
   }
 
   static writeFile(absoluteFilePath: string, value: string) {
@@ -232,10 +287,15 @@ export class FileSystem {
             }
           }
 
-          logger.debug(`Writing file ${key}`);
-          await fs.outputFile(key, formattedValue, {
-            encoding: 'utf8',
-          });
+          if (value.delete) {
+            logger.debug(`Deleting file ${key} if exists`);
+            await fs.remove(key);
+          } else {
+            logger.debug(`Writing file ${key}`);
+            await fs.outputFile(key, formattedValue, {
+              encoding: 'utf8',
+            });
+          }
 
           this.cache.delete(key);
         })(),

@@ -17,8 +17,9 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/$exports/index.js",
+      "types": "./dist/$exports/index.d.ts",
+      "require": "./dist/cjs/$exports/index.js"
     }
   },
   "files": [

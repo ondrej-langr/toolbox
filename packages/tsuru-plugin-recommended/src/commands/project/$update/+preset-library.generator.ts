@@ -79,6 +79,33 @@ export const presetLibraryGenerator = async (
 
   scripts.set('build', buildScripts.join(' && '));
 
+  if (existingPackageJson.exports) {
+    for (const [exportKey, exportValue] of Object.entries(
+      existingPackageJson.exports,
+    )) {
+      if (typeof exportValue === 'string') {
+        continue;
+      }
+
+      const filepath =
+        exportKey === '.'
+          ? '$exports/index.js'
+          : `$exports/${exportKey}.js`;
+
+      const totalExports: typeof exportValue = {
+        types: `./dist/${filepath.replace('.js', '.d.ts')}`,
+        ...((isCjs || dualBuild) && {
+          require: `./dist/cjs/${filepath}`,
+        }),
+        ...((isCjs || dualBuild) && {
+          import: `./dist/${filepath}`,
+        }),
+      };
+
+      existingPackageJson.exports[exportKey] = totalExports;
+    }
+  }
+
   FileSystem.writeJson(
     path.join(projectPath, 'package.json'),
     applyPackageJsonTemplate({

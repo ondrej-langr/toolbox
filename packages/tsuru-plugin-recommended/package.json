@@ -1,6 +1,7 @@
 {
   "name": "tsuru-plugin-recommended",
   "version": "0.1.9",
+  "private": false,
   "description": "Plugin for Tsuru with recommended configs and commands",
   "license": "ISC",
   "author": {
@@ -13,7 +14,6 @@
       "email": "hi@ondrejlangr.cz"
     }
   ],
-  "type": "module",
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -26,14 +26,15 @@
     "dist"
   ],
   "scripts": {
-    "prebuild": "rm -rf dist .temp tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
-    "build": "pnpm build:transpile && pnpm build:types",
-    "build:transpile": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths",
+    "prebuild": "rm -rf dist .temp",
+    "build": "pnpm build:types && pnpm build:esm && pnpm build:cjs",
+    "build:cjs": "swc ./src -d dist/cjs --copy-files --include-dotfiles --strip-leading-paths --config-file .cjs.swcrc",
+    "build:esm": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths --config-file .esm.swcrc",
     "build:types": "tsc --project tsconfig.build.json",
     "start": "pnpm run prebuild && pnpm run build && node .bin/run-tsuru.js --cwd=\"./.temp\"",
     "test": "pnpm test:unit && pnpm test:types",
     "test:types": "tsc --noEmit",
-    "test:unit": "vitest --watch false --passWithNoTests"
+    "test:unit": "vitest --watch false"
   },
   "dependencies": {
     "inquirer": "9.2.23",
@@ -48,8 +49,9 @@
     "typescript": "5.5.2",
     "vite": "^5.4.10",
     "vite-tsconfig-paths": "^5.0.1",
-    "vitest": "^2.1.4"
+    "vitest": "^1.6.0"
   },
+  "packageManager": "pnpm@9.7.0",
   "engines": {
     "node": ">=20.9.0",
     "pnpm": ">=8.15.0"

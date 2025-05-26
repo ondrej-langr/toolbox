@@ -1,5 +1,11 @@
 # tsuru
 
+## 0.5.3
+
+### Patch Changes
+
+- [`2d7ec24`](https://github.com/ondrej-langr/toolbox/commit/2d7ec24924100493c39a868556f9d1ea0fa662e6) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Moves @types/inquirer into normal dependencies as types are needed when using tsuru as a library
+
 ## 0.5.2
 
 ### Patch Changes

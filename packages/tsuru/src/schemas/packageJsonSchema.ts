@@ -6,6 +6,12 @@ import { packageVersionSchema } from './packageVersionSchema.js';
 import { projectNameSchema } from './projectNameSchema.js';
 
 const dependencySchema = z.record(z.string(), z.string());
+const exportValueSchema = z.string().or(
+  z.object({
+    default: z.string(),
+    types: z.string().optional(),
+  }),
+);
 
 export const packageJsonSchema = z
   .object({
@@ -65,11 +71,11 @@ export const packageJsonSchema = z
         z.string().or(
           z
             .object({
-              import: z.string().optional(),
-              types: z.string().optional(),
-              browser: z.string().optional(),
-              require: z.string().optional(),
-              default: z.string().optional(),
+              import: exportValueSchema.optional(),
+              types: exportValueSchema.optional(),
+              browser: exportValueSchema.optional(),
+              require: exportValueSchema.optional(),
+              default: exportValueSchema.optional(),
             })
             .refine(
               (value) => Object.keys(value).length > 0,

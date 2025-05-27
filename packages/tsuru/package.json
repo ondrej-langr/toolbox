@@ -17,39 +17,74 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts",
-      "require": "./dist/cjs/index.js"
+      "import": {
+        "default": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "require": {
+        "default": "./dist/cjs/index.js",
+        "types": "./dist/cjs/index.d.ts"
+      }
     },
     "./schemas": {
-      "import": "./dist/schemas/index.js",
-      "types": "./dist/schemas/index.d.ts",
-      "require": "./dist/cjs/schemas/index.js"
+      "import": {
+        "default": "./dist/schemas/index.js",
+        "types": "./dist/schemas/index.d.ts"
+      },
+      "require": {
+        "default": "./dist/cjs/schemas/index.js",
+        "types": "./dist/cjs/schemas/index.d.ts"
+      }
     },
     "./program": {
-      "import": "./dist/program.js",
-      "types": "./dist/program.d.ts",
-      "require": "./dist/cjs/program.js"
+      "import": {
+        "default": "./dist/program.js",
+        "types": "./dist/program.d.ts"
+      },
+      "require": {
+        "default": "./dist/cjs/program.js",
+        "types": "./dist/cjs/program.d.ts"
+      }
     },
     "./logger": {
-      "import": "./dist/logger/index.js",
-      "types": "./dist/logger/index.d.ts",
-      "require": "./dist/cjs/logger/index.js"
+      "import": {
+        "default": "./dist/logger/index.js",
+        "types": "./dist/logger/index.d.ts"
+      },
+      "require": {
+        "default": "./dist/cjs/logger/index.js",
+        "types": "./dist/cjs/logger/index.d.ts"
+      }
     },
     "./ast/js-ts": {
-      "import": "./dist/ast/js-ts/index.js",
-      "types": "./dist/ast/js-ts/index.d.ts",
-      "require": "./dist/cjs/ast/js-ts/index.js"
+      "import": {
+        "default": "./dist/ast/js-ts/index.js",
+        "types": "./dist/ast/js-ts/index.d.ts"
+      },
+      "require": {
+        "default": "./dist/cjs/ast/js-ts/index.js",
+        "types": "./dist/cjs/ast/js-ts/index.d.ts"
+      }
     },
     "./ast/json": {
-      "import": "./dist/ast/json/index.js",
-      "types": "./dist/ast/json/index.d.ts",
-      "require": "./dist/cjs/ast/json/index.js"
+      "import": {
+        "default": "./dist/ast/json/index.js",
+        "types": "./dist/ast/json/index.d.ts"
+      },
+      "require": {
+        "default": "./dist/cjs/ast/json/index.js",
+        "types": "./dist/cjs/ast/json/index.d.ts"
+      }
     },
     "./parsers": {
-      "import": "./dist/parsers/index.js",
-      "types": "./dist/parsers/index.d.ts",
-      "require": "./dist/cjs/parsers/index.js"
+      "import": {
+        "default": "./dist/parsers/index.js",
+        "types": "./dist/parsers/index.d.ts"
+      },
+      "require": {
+        "default": "./dist/cjs/parsers/index.js",
+        "types": "./dist/cjs/parsers/index.d.ts"
+      }
     }
   },
   "bin": {
@@ -66,7 +101,7 @@
     "build": "pnpm build:types && pnpm build:esm && pnpm build:cjs",
     "build:cjs": "swc ./src -d dist/cjs --copy-files --include-dotfiles --strip-leading-paths --config-file .cjs.swcrc && echo \"{ \\\"type\\\": \\\"commonjs\\\" }\" > dist/cjs/package.json",
     "build:esm": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths --config-file .esm.swcrc && echo \"{ \\\"type\\\": \\\"module\\\" }\" > dist/package.json",
-    "build:types": "tsc --project tsconfig.build.json",
+    "build:types": "tsc --project tsconfig.build.json --outDir dist && tsc --project tsconfig.build.json --outDir dist/cjs",
     "start": "pnpm run prebuild && pnpm run build && node .bin/run-tsuru.js --cwd=\"./.temp\"",
     "test": "pnpm test:unit && pnpm test:types",
     "test:types": "tsc --noEmit",

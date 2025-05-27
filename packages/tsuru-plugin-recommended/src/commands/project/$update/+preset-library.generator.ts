@@ -49,12 +49,12 @@ export const presetLibraryGenerator = async (
 
   const typeIsDefined = existingPackageJson?.type !== undefined;
   const dualBuild = !typeIsDefined;
+  const typesScripts = [];
 
   const scripts = new Map<string, string>(
     Object.entries({
       test: 'echo "Error: no test specified" && exit 1',
       prebuild: 'rm -rf dist .temp',
-      'build:types': 'tsc --project tsconfig.build.json',
 
       'build:cjs':
         'swc ./src -d dist/cjs --copy-files --include-dotfiles --strip-leading-paths --config-file .cjs.swcrc && echo \"{ \\\"type\\\": \\\"commonjs\\\" }\" > dist/cjs/package.json',
@@ -65,20 +65,28 @@ export const presetLibraryGenerator = async (
   );
 
   const buildScripts = ['pnpm build:types'];
+  const buildTypesScripts = [];
 
   if (isEsm || dualBuild) {
     buildScripts.push('pnpm build:esm');
+    buildTypesScripts.push(
+      'tsc --project tsconfig.build.json --outDir dist',
+    );
   } else {
     scripts.delete('build:esm');
   }
 
   if (isCjs || dualBuild) {
     buildScripts.push('pnpm build:cjs');
+    buildTypesScripts.push(
+      'tsc --project tsconfig.build.json --outDir dist/cjs',
+    );
   } else {
     scripts.delete('build:cjs');
   }
 
   scripts.set('build', buildScripts.join(' && '));
+  scripts.set('build:types', buildTypesScripts.join(' && '));
 
   if (existingPackageJson.exports) {
     for (const [exportKey, exportValue] of Object.entries(
@@ -111,12 +119,19 @@ export const presetLibraryGenerator = async (
       const esmFilepath = `./${path.join('./dist', filepath)}`;
 
       const totalExports: typeof exportValue = {
-        types: esmFilepath.replace('.js', '.d.ts'),
         ...((isCjs || dualBuild) && {
-          require: esmFilepath.replace('/dist/', '/dist/cjs/'),
+          require: {
+            default: esmFilepath.replace('/dist/', '/dist/cjs/'),
+            types: esmFilepath
+              .replace('/dist/', '/dist/cjs/')
+              .replace('.js', '.d.ts'),
+          },
         }),
         ...((isEsm || dualBuild) && {
-          import: esmFilepath,
+          import: {
+            default: esmFilepath,
+            types: esmFilepath.replace('.js', '.d.ts'),
+          },
         }),
       };
 

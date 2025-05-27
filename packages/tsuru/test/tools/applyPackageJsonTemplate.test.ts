@@ -1,4 +1,4 @@
-import { PackageJson } from '@ondrejlangr/zod-package-json/dist';
+import { PackageJson } from '@ondrej-langr/zod-package-json/dist';
 import { describe, expect, it } from 'vitest';
 
 import { applyPackageJsonTemplate } from '../../src/tools/applyPackageJsonTemplate';

@@ -43,7 +43,7 @@
     "test:unit": "vitest --watch false --passWithNoTests"
   },
   "dependencies": {
-    "@ondrejlangr/zod-package-json": "workspace:*",
+    "@ondrej-langr/zod-package-json": "workspace:*",
     "inquirer": "9.2.23",
     "tsuru": "workspace:*",
     "zod": "^3.23.8"

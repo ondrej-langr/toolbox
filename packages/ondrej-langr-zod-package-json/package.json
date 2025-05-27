@@ -1,5 +1,5 @@
 {
-  "name": "@ondrejlangr/zod-package-json",
+  "name": "@ondrej-langr/zod-package-json",
   "version": "0.0.0",
   "private": false,
   "description": "Package.json schema but in zod",

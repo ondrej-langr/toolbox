@@ -1,4 +1,4 @@
-import { packageVersionSchema } from '@ondrejlangr/zod-package-json';
+import { packageVersionSchema } from '@ondrej-langr/zod-package-json';
 import semver from 'semver';
 import { z } from 'zod';
 

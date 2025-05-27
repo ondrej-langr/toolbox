@@ -57,7 +57,7 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0(@types/node@22.9.0)
 
-  packages/ondrejlangr-zod-package-json:
+  packages/ondrej-langr-zod-package-json:
     dependencies:
       semver:
         specifier: ^7.6.3
@@ -96,9 +96,9 @@ importers:
 
   packages/tsuru:
     dependencies:
-      '@ondrejlangr/zod-package-json':
+      '@ondrej-langr/zod-package-json':
         specifier: workspace:*
-        version: link:../ondrejlangr-zod-package-json
+        version: link:../ondrej-langr-zod-package-json
       '@types/inquirer':
         specifier: ^9.0.7
         version: 9.0.7
@@ -172,9 +172,9 @@ importers:
 
   packages/tsuru-plugin-recommended:
     dependencies:
-      '@ondrejlangr/zod-package-json':
+      '@ondrej-langr/zod-package-json':
         specifier: workspace:*
-        version: link:../ondrejlangr-zod-package-json
+        version: link:../ondrej-langr-zod-package-json
       inquirer:
         specifier: 9.2.23
         version: 9.2.23

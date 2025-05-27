@@ -1,7 +1,7 @@
 import {
   packageJsonSchema,
   packageNameSchema,
-} from '@ondrejlangr/zod-package-json';
+} from '@ondrej-langr/zod-package-json';
 import path from 'node:path';
 import {
   defineCommand,

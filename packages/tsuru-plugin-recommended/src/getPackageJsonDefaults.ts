@@ -1,4 +1,4 @@
-import type { packageJsonSchema } from '@ondrejlangr/zod-package-json';
+import type { packageJsonSchema } from '@ondrej-langr/zod-package-json';
 import type { z } from 'zod';
 
 export const getPackageJsonDefaults = () =>

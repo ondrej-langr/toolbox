@@ -1,5 +1,5 @@
 /* eslint-disable unicorn/prevent-abbreviations -- follows npm naming convention */
-import type { PackageJson } from '@ondrejlangr/zod-package-json';
+import type { PackageJson } from '@ondrej-langr/zod-package-json';
 import { cloneDeep, merge } from 'es-toolkit';
 import { forEach } from 'es-toolkit/compat';
 import semver from 'semver';

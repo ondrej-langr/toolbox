@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { packageJsonSchema } from '../../src/schemas/packageJsonSchema';
+import { packageJsonSchema } from '../src/packageJsonSchema';
 
 describe('packageJsonSChema', () => {
   it('should validate minimal package json', () => {

@@ -1,6 +1,5 @@
+import type { JsonLikeObject } from '@ondrejlangr/zod-package-json';
 import colors from 'picocolors';
-
-import type { JsonLikeObject } from '../schemas/jsonLikeObjectSchema.js';
 
 const isDebugEnabled = process.argv.includes('--debug');
 

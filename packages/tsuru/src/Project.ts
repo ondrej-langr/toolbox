@@ -1,3 +1,8 @@
+import {
+  type JsonLikeValue,
+  type PackageJson,
+  packageJsonSchema,
+} from '@ondrejlangr/zod-package-json';
 import path from 'node:path';
 import { z } from 'zod';
 
@@ -10,9 +15,6 @@ import {
   TSURU_FOLDER_NAME,
 } from './internals/constants.js';
 import { logger } from './internals/logger.js';
-import type { JsonLikeValue } from './schemas/jsonLikeObjectSchema.js';
-import type { PackageJson } from './schemas/packageJsonSchema.js';
-import { packageJsonSchema } from './schemas/packageJsonSchema.js';
 
 const recursiveFindNonWorkspacePackageJson = (
   startAt: string,

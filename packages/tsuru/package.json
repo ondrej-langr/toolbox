@@ -26,16 +26,6 @@
         "types": "./dist/cjs/index.d.ts"
       }
     },
-    "./schemas": {
-      "import": {
-        "default": "./dist/schemas/index.js",
-        "types": "./dist/schemas/index.d.ts"
-      },
-      "require": {
-        "default": "./dist/cjs/schemas/index.js",
-        "types": "./dist/cjs/schemas/index.d.ts"
-      }
-    },
     "./program": {
       "import": {
         "default": "./dist/program.js",
@@ -56,24 +46,14 @@
         "types": "./dist/cjs/logger/index.d.ts"
       }
     },
-    "./ast/js-ts": {
+    "./tools": {
       "import": {
-        "default": "./dist/ast/js-ts/index.js",
-        "types": "./dist/ast/js-ts/index.d.ts"
+        "default": "./dist/tools/index.js",
+        "types": "./dist/tools/index.d.ts"
       },
       "require": {
-        "default": "./dist/cjs/ast/js-ts/index.js",
-        "types": "./dist/cjs/ast/js-ts/index.d.ts"
-      }
-    },
-    "./ast/json": {
-      "import": {
-        "default": "./dist/ast/json/index.js",
-        "types": "./dist/ast/json/index.d.ts"
-      },
-      "require": {
-        "default": "./dist/cjs/ast/json/index.js",
-        "types": "./dist/cjs/ast/json/index.d.ts"
+        "default": "./dist/cjs/tools/index.js",
+        "types": "./dist/cjs/tools/index.d.ts"
       }
     },
     "./parsers": {
@@ -108,6 +88,7 @@
     "test:unit": "vitest --watch false --passWithNoTests"
   },
   "dependencies": {
+    "@ondrejlangr/zod-package-json": "workspace:*",
     "@types/inquirer": "^9.0.7",
     "commander": "^12.1.0",
     "cosmiconfig": "^9.0.0",

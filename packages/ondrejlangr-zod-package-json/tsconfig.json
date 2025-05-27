@@ -1,0 +1,20 @@
+{
+  "extends": "@apitree.cz/ts-config/library",
+  "compilerOptions": {
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "noEmit": false,
+    "verbatimModuleSyntax": true,
+    "tsBuildInfoFile": "dist/tsconfig.typecheck.tsbuildinfo",
+    "paths": {
+      "~/*": ["./src/*"]
+    }
+  },
+  "include": [
+    ".eslintrc.cjs",
+    "src/**/*",
+    "tests/**/*",
+    "vitest.config.ts"
+  ],
+  "exclude": ["dist", "node_modules"]
+}

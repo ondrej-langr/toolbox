@@ -1,6 +1,5 @@
+import type { JsonLikeObject } from '@ondrejlangr/zod-package-json';
 import yaml from 'yaml';
-
-import type { JsonLikeObject } from '../schemas/jsonLikeObjectSchema.js';
 
 import type { FileTypeParser } from './FileTypeParser.js';
 

@@ -1,8 +1,8 @@
 {
-  "name": "tsuru-plugin-recommended",
-  "version": "0.2.0",
+  "name": "@ondrejlangr/zod-package-json",
+  "version": "0.0.0",
   "private": false,
-  "description": "Plugin for Tsuru with recommended configs and commands",
+  "description": "Package.json schema but in zod",
   "license": "ISC",
   "author": {
     "name": "Ondřej Langr",
@@ -37,26 +37,27 @@
     "build:cjs": "swc ./src -d dist/cjs --copy-files --include-dotfiles --strip-leading-paths --config-file .cjs.swcrc && echo \"{ \\\"type\\\": \\\"commonjs\\\" }\" > dist/cjs/package.json",
     "build:esm": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths --config-file .esm.swcrc && echo \"{ \\\"type\\\": \\\"module\\\" }\" > dist/package.json",
     "build:types": "tsc --project tsconfig.build.json --outDir dist && tsc --project tsconfig.build.json --outDir dist/cjs",
-    "start": "pnpm run prebuild && pnpm run build && node .bin/run-tsuru.js --cwd=\"./.temp\"",
     "test": "pnpm test:unit && pnpm test:types",
     "test:types": "tsc --noEmit",
     "test:unit": "vitest --watch false --passWithNoTests"
   },
   "dependencies": {
-    "@ondrejlangr/zod-package-json": "workspace:*",
-    "inquirer": "9.2.23",
-    "tsuru": "workspace:*",
-    "zod": "^3.23.8"
+    "semver": "^7.6.3"
   },
   "devDependencies": {
     "@swc/cli": "^0.5.0",
     "@swc/core": "^1.7.42",
-    "@types/inquirer": "^9.0.7",
     "@types/node": "^20.17.6",
+    "@types/semver": "^7.5.8",
+    "chokidar": "^4.0.3",
     "typescript": "5.5.2",
     "vite": "^5.4.10",
     "vite-tsconfig-paths": "^5.0.1",
-    "vitest": "^1.6.0"
+    "vitest": "^1.6.0",
+    "zod": "^3.23.8"
+  },
+  "peerDependencies": {
+    "zod": "^3.23.8"
   },
   "packageManager": "pnpm@9.7.0",
   "engines": {

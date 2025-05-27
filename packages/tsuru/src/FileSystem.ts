@@ -1,3 +1,4 @@
+import type { JsonLikeObject } from '@ondrejlangr/zod-package-json';
 import fs from 'fs-extra';
 import os from 'node:os';
 import path from 'node:path';
@@ -5,7 +6,6 @@ import * as prettier from 'prettier';
 import type { z } from 'zod';
 
 import { logger } from './internals/logger.js';
-import type { JsonLikeObject } from './schemas/jsonLikeObjectSchema.js';
 
 type CacheItem = {
   contents: string;

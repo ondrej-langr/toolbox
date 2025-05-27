@@ -1,9 +1,9 @@
+import type { JsonLikeObject } from '@ondrejlangr/zod-package-json';
 import inquirer from 'inquirer';
 import type { DistinctQuestion as InquirerQuestion } from 'inquirer';
 
 import type { DefaultCommandAnswers } from '../DefaultCommandAnswers.js';
 import type { Program } from '../Program.js';
-import type { JsonLikeObject } from '../schemas/jsonLikeObjectSchema.js';
 
 import type { MaybeArray } from './MaybeArray.js';
 import type { MaybePromise } from './MaybePromise.js';

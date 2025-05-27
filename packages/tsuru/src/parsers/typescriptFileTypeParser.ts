@@ -1,7 +1,6 @@
 import type ts from 'typescript';
-
-import { getAstFromString } from '../ast/js-ts/getAstFromString.js';
-import { getStringFromAstNode } from '../ast/js-ts/getStringFromAstNode.js';
+import { getAstFromString } from '~/tools/getAstFromString.js';
+import { getStringFromAstNode } from '~/tools/getStringFromAstNode.js';
 
 import type { FileTypeParser } from './FileTypeParser.js';
 

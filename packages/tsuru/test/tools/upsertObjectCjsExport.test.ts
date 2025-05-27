@@ -1,9 +1,9 @@
 import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 
-import { getAstFromString } from '../../../src/ast/js-ts/getAstFromString';
-import { getStringFromAstNode } from '../../../src/ast/js-ts/getStringFromAstNode';
-import { upsertObjectCjsExport } from '../../../src/ast/js-ts/upsertObjectCjsExport';
+import { getAstFromString } from '../../src/tools/getAstFromString';
+import { getStringFromAstNode } from '../../src/tools/getStringFromAstNode';
+import { upsertObjectCjsExport } from '../../src/tools/upsertObjectCjsExport';
 
 describe('upsertObjectCjsExport', () => {
   it('should create default export with data', () => {

@@ -1,6 +1,6 @@
+import { packageJsonSchema } from '@ondrejlangr/zod-package-json';
 import { defineTemplateFile } from 'tsuru';
-import { applyPackageJsonTemplate } from 'tsuru/ast/json';
-import { packageJsonSchema } from 'tsuru/schemas';
+import { applyPackageJsonTemplate } from 'tsuru/tools';
 import { getPackageJsonDefaults } from '~/getPackageJsonDefaults.js';
 
 export default defineTemplateFile('json', (existing) => {

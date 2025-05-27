@@ -5,7 +5,7 @@ import {
   FileSystem,
   type Project,
 } from 'tsuru';
-import { applyPackageJsonTemplate } from 'tsuru/ast/json';
+import { applyPackageJsonTemplate } from 'tsuru/tools';
 import type { z } from 'zod';
 import { getPackageJsonDefaults } from '~/getPackageJsonDefaults.js';
 import type { workspaceMetadataSchema } from '~/workspaceMetadataSchema.js';

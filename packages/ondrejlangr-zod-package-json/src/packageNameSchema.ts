@@ -6,7 +6,7 @@ const PROJECT_NAME_REGEX = new RegExp(
 );
 const MAX_NUMBER_OF_CHARS_NPM = 214;
 
-export const projectNameSchema = z
+export const packageNameSchema = z
   .string()
   .min(1)
   // This is maximum number of chars that npm can take

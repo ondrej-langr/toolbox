@@ -1,8 +1,8 @@
+import { packageVersionSchema } from '@ondrejlangr/zod-package-json';
 import semver from 'semver';
 import { z } from 'zod';
 
 import type { MaybePromise } from './internals/MaybePromise.js';
-import { packageVersionSchema } from './schemas/packageVersionSchema.js';
 
 export type MigrationVersion =
   | `>${string}`

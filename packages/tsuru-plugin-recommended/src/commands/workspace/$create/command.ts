@@ -1,6 +1,6 @@
+import type { packageJsonSchema } from '@ondrejlangr/zod-package-json';
 import path from 'node:path';
 import { defineCommand, FileSystem, Workspace } from 'tsuru';
-import { packageJsonSchema } from 'tsuru/schemas';
 import type { z } from 'zod';
 import { PROJECT_METADATA_WORKSPACE_NAMESPACE } from '~/constants.js';
 import { getPackageJsonDefaults } from '~/getPackageJsonDefaults.js';

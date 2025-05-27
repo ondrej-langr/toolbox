@@ -1,0 +1,24 @@
+{
+  "$schema": "https://swc.rs/schema.json",
+  "module": {
+    "type": "commonjs"
+  },
+  "jsc": {
+    "target": "esnext",
+    "baseUrl": "./src",
+    "parser": {
+      "syntax": "typescript",
+      "tsx": true
+    },
+    "paths": {
+      "~/*": [
+        "./*"
+      ]
+    },
+    "transform": {
+      "react": {
+        "runtime": "automatic"
+      }
+    }
+  }
+}

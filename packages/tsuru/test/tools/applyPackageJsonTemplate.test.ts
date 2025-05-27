@@ -1,7 +1,7 @@
+import { PackageJson } from '@ondrejlangr/zod-package-json/dist';
 import { describe, expect, it } from 'vitest';
 
-import { applyPackageJsonTemplate } from '../../../src/ast/json/applyPackageJsonTemplate';
-import type { PackageJson } from '../../../src/schemas/packageJsonSchema';
+import { applyPackageJsonTemplate } from '../../src/tools/applyPackageJsonTemplate';
 
 const createCurrentPackageJson = (): PackageJson => ({
   name: 'test',

@@ -1,3 +1,7 @@
+import {
+  packageJsonSchema,
+  packageNameSchema,
+} from '@ondrejlangr/zod-package-json';
 import path from 'node:path';
 import {
   defineCommand,
@@ -6,10 +10,6 @@ import {
   Project,
   Workspace,
 } from 'tsuru';
-import {
-  packageJsonSchema,
-  projectNameSchema,
-} from 'tsuru/schemas';
 import { z } from 'zod';
 import { PROJECT_METADATA_PROJECT_NAMESPACE } from '~/constants.js';
 import { getPackageJsonDefaults } from '~/getPackageJsonDefaults.js';
@@ -53,7 +53,7 @@ export default defineCommand<CommandAnswers>({
         type: 'input',
         message: 'Whats the project name?',
         validate(input) {
-          const zodOutput = projectNameSchema.safeParse(input);
+          const zodOutput = packageNameSchema.safeParse(input);
 
           if (zodOutput.error) {
             return zodOutput.error.format()._errors.join(', ');

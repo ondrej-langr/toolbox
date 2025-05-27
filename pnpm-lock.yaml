@@ -57,8 +57,48 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0(@types/node@22.9.0)
 
+  packages/ondrejlangr-zod-package-json:
+    dependencies:
+      semver:
+        specifier: ^7.6.3
+        version: 7.6.3
+    devDependencies:
+      '@swc/cli':
+        specifier: ^0.5.0
+        version: 0.5.0(@swc/core@1.7.42)(chokidar@4.0.3)
+      '@swc/core':
+        specifier: ^1.7.42
+        version: 1.7.42
+      '@types/node':
+        specifier: ^20.17.6
+        version: 20.17.6
+      '@types/semver':
+        specifier: ^7.5.8
+        version: 7.5.8
+      chokidar:
+        specifier: ^4.0.3
+        version: 4.0.3
+      typescript:
+        specifier: 5.5.2
+        version: 5.5.2
+      vite:
+        specifier: ^5.4.10
+        version: 5.4.10(@types/node@20.17.6)
+      vite-tsconfig-paths:
+        specifier: ^5.0.1
+        version: 5.0.1(typescript@5.5.2)(vite@5.4.10(@types/node@20.17.6))
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(@types/node@20.17.6)
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
+
   packages/tsuru:
     dependencies:
+      '@ondrejlangr/zod-package-json':
+        specifier: workspace:*
+        version: link:../ondrejlangr-zod-package-json
       '@types/inquirer':
         specifier: ^9.0.7
         version: 9.0.7
@@ -132,6 +172,9 @@ importers:
 
   packages/tsuru-plugin-recommended:
     dependencies:
+      '@ondrejlangr/zod-package-json':
+        specifier: workspace:*
+        version: link:../ondrejlangr-zod-package-json
       inquirer:
         specifier: 9.2.23
         version: 9.2.23

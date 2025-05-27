@@ -1,7 +1,7 @@
 import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 
-import { doIdentifiersEqual } from '../../../src/ast/js-ts/doIdentifiersEqual';
+import { doIdentifiersEqual } from '../../src/tools/doIdentifiersEqual';
 
 describe('doIdentifiersEqual', () => {
   it('compares two same identifiers and results in true', () => {

@@ -1,5 +1,22 @@
 # tsuru-plugin-recommended
 
+## 0.2.0
+
+### Minor Changes
+
+- [`260065e`](https://github.com/ondrej-langr/toolbox/commit/260065ef023d187b44f13d19f7546b7605099a40) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Creates exports fields management
+
+- [`368d7e2`](https://github.com/ondrej-langr/toolbox/commit/368d7e2053f0ab4377268be1ad42f4b9bdd1b799) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Fixes templates for workspace and project
+
+- [`4670b8c`](https://github.com/ondrej-langr/toolbox/commit/4670b8c90a9513901370ef57bfeef3f6cc59bf6e) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Uses tsuru for tsuru plugin
+
+### Patch Changes
+
+- [`972c8da`](https://github.com/ondrej-langr/toolbox/commit/972c8daf75579e527b2f6c35877e95d18ee978a3) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Fixes dual exports paths by creating specific package.json with type property set
+
+- Updated dependencies [[`11be3f2`](https://github.com/ondrej-langr/toolbox/commit/11be3f26451503713e5d2a15004ec8da711cbe89), [`7b4619c`](https://github.com/ondrej-langr/toolbox/commit/7b4619c64a659297855324ebd5ae6ba6ab3589d7), [`9eb4cba`](https://github.com/ondrej-langr/toolbox/commit/9eb4cbaf94e0925752eae817d68bee52143510c1), [`b689a0f`](https://github.com/ondrej-langr/toolbox/commit/b689a0f36ac5820f3c0f9c3a8bcda7358ec74380)]:
+  - tsuru@0.6.0
+
 ## 0.1.10
 
 ### Patch Changes

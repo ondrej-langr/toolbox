@@ -1,5 +1,19 @@
 # tsuru
 
+## 0.6.0
+
+### Minor Changes
+
+- [`11be3f2`](https://github.com/ondrej-langr/toolbox/commit/11be3f26451503713e5d2a15004ec8da711cbe89) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - POSSIBLE BREAKING: Allows tsuru to be consumed in esm and cjs by building dual builds
+
+- [`7b4619c`](https://github.com/ondrej-langr/toolbox/commit/7b4619c64a659297855324ebd5ae6ba6ab3589d7) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - BREAKING: Makes type property in package.json optional without default value
+
+- [`9eb4cba`](https://github.com/ondrej-langr/toolbox/commit/9eb4cbaf94e0925752eae817d68bee52143510c1) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Creates new exceptions and makes all methods, except commit, in FileSystem sync instead of async
+
+### Patch Changes
+
+- [`b689a0f`](https://github.com/ondrej-langr/toolbox/commit/b689a0f36ac5820f3c0f9c3a8bcda7358ec74380) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Removes unused dependencies
+
 ## 0.5.3
 
 ### Patch Changes

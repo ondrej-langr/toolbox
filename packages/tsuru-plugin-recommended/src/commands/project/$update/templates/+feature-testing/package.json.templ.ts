@@ -9,7 +9,7 @@ export default defineTemplateFile('json', (existing) => {
     templatePackageJson: {
       scripts: {
         test: 'pnpm test:unit && pnpm test:types',
-        'test:unit': 'vitest --watch false',
+        'test:unit': 'vitest --watch false --passWithNoTests',
         'test:types': 'tsc --noEmit',
       },
       devDependencies: {

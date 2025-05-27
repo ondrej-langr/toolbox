@@ -1,3 +1,4 @@
+import fs from 'fs-extra';
 import path from 'node:path';
 import {
   defineTemplateFile,
@@ -56,10 +57,10 @@ export const presetLibraryGenerator = async (
       'build:types': 'tsc --project tsconfig.build.json',
 
       'build:cjs':
-        'swc ./src -d dist/cjs --copy-files --include-dotfiles --strip-leading-paths --config-file .cjs.swcrc',
+        'swc ./src -d dist/cjs --copy-files --include-dotfiles --strip-leading-paths --config-file .cjs.swcrc && echo \"{ \\\"type\\\": \\\"commonjs\\\" }\" > dist/cjs/package.json',
 
       'build:esm':
-        'swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths --config-file .esm.swcrc',
+        'swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths --config-file .esm.swcrc && echo \"{ \\\"type\\\": \\\"module\\\" }\" > dist/package.json',
     }),
   );
 
@@ -87,18 +88,35 @@ export const presetLibraryGenerator = async (
         continue;
       }
 
-      const filepath =
-        exportKey === '.'
-          ? '$exports/index.js'
-          : `$exports/${exportKey}.js`;
+      let filepath = 'index.js';
+
+      if (exportKey !== '.') {
+        const isDirectory =
+          fs.existsSync(
+            path.join(projectPath, 'src', exportKey),
+          ) &&
+          fs
+            .statSync(path.join(projectPath, 'src', exportKey))
+            .isDirectory();
+
+        if (isDirectory) {
+          filepath = path.join(exportKey, 'index.js');
+        } else {
+          filepath = exportKey.endsWith('.js')
+            ? exportKey
+            : `${exportKey}.js`;
+        }
+      }
+
+      const esmFilepath = `./${path.join('./dist', filepath)}`;
 
       const totalExports: typeof exportValue = {
-        types: `./dist/${filepath.replace('.js', '.d.ts')}`,
+        types: esmFilepath.replace('.js', '.d.ts'),
         ...((isCjs || dualBuild) && {
-          require: `./dist/cjs/${filepath}`,
+          require: esmFilepath.replace('/dist/', '/dist/cjs/'),
         }),
-        ...((isCjs || dualBuild) && {
-          import: `./dist/${filepath}`,
+        ...((isEsm || dualBuild) && {
+          import: esmFilepath,
         }),
       };
 

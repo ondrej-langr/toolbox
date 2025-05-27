@@ -17,9 +17,9 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/$exports/index.js",
-      "types": "./dist/$exports/index.d.ts",
-      "require": "./dist/cjs/$exports/index.js"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "require": "./dist/cjs/index.js"
     }
   },
   "files": [
@@ -29,13 +29,13 @@
   "scripts": {
     "prebuild": "rm -rf dist .temp",
     "build": "pnpm build:types && pnpm build:esm && pnpm build:cjs",
-    "build:cjs": "swc ./src -d dist/cjs --copy-files --include-dotfiles --strip-leading-paths --config-file .cjs.swcrc",
-    "build:esm": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths --config-file .esm.swcrc",
+    "build:cjs": "swc ./src -d dist/cjs --copy-files --include-dotfiles --strip-leading-paths --config-file .cjs.swcrc && echo \"{ \\\"type\\\": \\\"commonjs\\\" }\" > dist/cjs/package.json",
+    "build:esm": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths --config-file .esm.swcrc && echo \"{ \\\"type\\\": \\\"module\\\" }\" > dist/package.json",
     "build:types": "tsc --project tsconfig.build.json",
     "start": "pnpm run prebuild && pnpm run build && node .bin/run-tsuru.js --cwd=\"./.temp\"",
     "test": "pnpm test:unit && pnpm test:types",
     "test:types": "tsc --noEmit",
-    "test:unit": "vitest --watch false"
+    "test:unit": "vitest --watch false --passWithNoTests"
   },
   "dependencies": {
     "inquirer": "9.2.23",

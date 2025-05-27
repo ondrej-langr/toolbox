@@ -17,9 +17,14 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts",
-      "require": "./dist/cjs/index.js"
+      "import": {
+        "default": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "require": {
+        "default": "./dist/cjs/index.js",
+        "types": "./dist/cjs/index.d.ts"
+      }
     }
   },
   "files": [
@@ -31,7 +36,7 @@
     "build": "pnpm build:types && pnpm build:esm && pnpm build:cjs",
     "build:cjs": "swc ./src -d dist/cjs --copy-files --include-dotfiles --strip-leading-paths --config-file .cjs.swcrc && echo \"{ \\\"type\\\": \\\"commonjs\\\" }\" > dist/cjs/package.json",
     "build:esm": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths --config-file .esm.swcrc && echo \"{ \\\"type\\\": \\\"module\\\" }\" > dist/package.json",
-    "build:types": "tsc --project tsconfig.build.json",
+    "build:types": "tsc --project tsconfig.build.json --outDir dist && tsc --project tsconfig.build.json --outDir dist/cjs",
     "start": "pnpm run prebuild && pnpm run build && node .bin/run-tsuru.js --cwd=\"./.temp\"",
     "test": "pnpm test:unit && pnpm test:types",
     "test:types": "tsc --noEmit",

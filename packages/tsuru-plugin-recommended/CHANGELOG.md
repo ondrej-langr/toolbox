@@ -1,5 +1,16 @@
 # tsuru-plugin-recommended
 
+## 0.3.0
+
+### Minor Changes
+
+- [#10](https://github.com/ondrej-langr/toolbox/pull/10) [`82898e2`](https://github.com/ondrej-langr/toolbox/commit/82898e2dd2f8592e78def8ac2df64d82d18ae3da) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Fixes dual build packages by structuring the exports differently and providing types for each export type separately
+
+### Patch Changes
+
+- Updated dependencies [[`82898e2`](https://github.com/ondrej-langr/toolbox/commit/82898e2dd2f8592e78def8ac2df64d82d18ae3da), [`82898e2`](https://github.com/ondrej-langr/toolbox/commit/82898e2dd2f8592e78def8ac2df64d82d18ae3da)]:
+  - tsuru@0.7.0
+
 ## 0.2.0
 
 ### Minor Changes

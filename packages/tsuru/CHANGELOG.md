@@ -1,5 +1,15 @@
 # tsuru
 
+## 0.7.0
+
+### Minor Changes
+
+- [#10](https://github.com/ondrej-langr/toolbox/pull/10) [`82898e2`](https://github.com/ondrej-langr/toolbox/commit/82898e2dd2f8592e78def8ac2df64d82d18ae3da) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Extends variety for exports key value. Each export can now include specific types for different types of exports
+
+### Patch Changes
+
+- [#10](https://github.com/ondrej-langr/toolbox/pull/10) [`82898e2`](https://github.com/ondrej-langr/toolbox/commit/82898e2dd2f8592e78def8ac2df64d82d18ae3da) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Fixes dual build packages by structuring the exports differently and providing types for each export type separately
+
 ## 0.6.0
 
 ### Minor Changes

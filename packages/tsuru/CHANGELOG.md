@@ -1,5 +1,16 @@
 # tsuru
 
+## 0.8.0
+
+### Minor Changes
+
+- [`7b89ef3`](https://github.com/ondrej-langr/toolbox/commit/7b89ef3304f495558c58de4858175e89b9b6e9fb) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - BREAKING: tsuru/schema was moved to @ondrej-langr/zod-package-json and tsuru/ast/json + tsuru/ast/js-ts was moved to tsuru/tools. Functionality is unchanged
+
+### Patch Changes
+
+- Updated dependencies [[`7b89ef3`](https://github.com/ondrej-langr/toolbox/commit/7b89ef3304f495558c58de4858175e89b9b6e9fb)]:
+  - @ondrej-langr/zod-package-json@0.1.0
+
 ## 0.7.0
 
 ### Minor Changes

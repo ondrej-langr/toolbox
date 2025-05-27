@@ -1,6 +1,6 @@
 {
   "name": "@ondrej-langr/zod-package-json",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": false,
   "description": "Package.json schema but in zod",
   "license": "ISC",

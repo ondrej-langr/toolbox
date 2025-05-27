@@ -28,7 +28,6 @@ describe('packageJsonSChema', () => {
       name: 'package-name',
       description: 'This is my package description',
       first: 'it',
-      type: 'module',
       license: 'MIT',
       engines: {},
       second: {

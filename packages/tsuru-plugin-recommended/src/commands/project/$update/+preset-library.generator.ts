@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import fs from 'node:fs';
 import path from 'node:path';
 import {
   defineTemplateFile,
@@ -15,7 +15,7 @@ const getSwrcFileContents = (type: 'module' | 'commonjs') =>
     {
       $schema: 'https://swc.rs/schema.json',
       module: {
-        type: 'nodenext',
+        type: type === 'module' ? 'nodenext' : 'commonjs',
       },
       jsc: {
         target: 'esnext',
@@ -157,7 +157,7 @@ export const presetLibraryGenerator = async (
   if (dualBuild || isEsm) {
     FileSystem.writeFile(
       esmSwcrcFilePath,
-      getSwrcFileContents('commonjs'),
+      getSwrcFileContents('module'),
     );
   } else {
     FileSystem.delete(esmSwcrcFilePath);

@@ -1,0 +1,10 @@
+{
+  "project": {
+    "config": {
+      "preset": "library",
+      "features": {
+        "testing": true
+      }
+    }
+  }
+}

@@ -101,7 +101,7 @@ importers:
     devDependencies:
       '@swc/cli':
         specifier: ^0.5.0
-        version: 0.5.0(@swc/core@1.7.42)
+        version: 0.5.0(@swc/core@1.7.42)(chokidar@4.0.3)
       '@swc/core':
         specifier: ^1.7.42
         version: 1.7.42
@@ -114,6 +114,9 @@ importers:
       '@types/semver':
         specifier: ^7.5.8
         version: 7.5.8
+      chokidar:
+        specifier: ^4.0.3
+        version: 4.0.3
       typescript:
         specifier: 5.5.2
         version: 5.5.2
@@ -124,8 +127,8 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1(typescript@5.5.2)(vite@5.4.10(@types/node@20.17.6))
       vitest:
-        specifier: ^2.1.4
-        version: 2.1.4(@types/node@20.17.6)
+        specifier: ^1.6.0
+        version: 1.6.0(@types/node@20.17.6)
 
   packages/tsuru-plugin-recommended:
     dependencies:
@@ -141,7 +144,7 @@ importers:
     devDependencies:
       '@swc/cli':
         specifier: ^0.5.0
-        version: 0.5.0(@swc/core@1.7.42)
+        version: 0.5.0(@swc/core@1.7.42)(chokidar@4.0.3)
       '@swc/core':
         specifier: ^1.7.42
         version: 1.7.42
@@ -1306,6 +1309,10 @@ packages:
   check-error@2.1.1:
     resolution: {integrity: sha512-OAlb+T7V4Op9OwdkjmguYRqncdlx5JiofwOAUkmTF+jNdHwzTaTs4sRAGpzLF3oOz5xAyDGrPgeIDFQmDOTiJw==}
     engines: {node: '>= 16'}
+
+  chokidar@4.0.3:
+    resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
+    engines: {node: '>= 14.16.0'}
 
   ci-info@3.9.0:
     resolution: {integrity: sha512-NIxF55hv4nSqQswkAeiOi1r83xy8JldOFDTWiug55KBu9Jnblncd2U6ViHmYgHf01TPZS77NJBhBMKdWj9HQMQ==}
@@ -3108,6 +3115,10 @@ packages:
     resolution: {integrity: sha512-ePeK6cc1EcKLEhJFt/AebMCLL+GgSKhuygrZ/GLaKZYEecIgIECf4UaUuaByiGtzckwR4ain9VzUh95T1exYGw==}
     engines: {node: '>=8'}
 
+  readdirp@4.1.2:
+    resolution: {integrity: sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==}
+    engines: {node: '>= 14.18.0'}
+
   reflect.getprototypeof@1.0.6:
     resolution: {integrity: sha512-fmfw4XgoDke3kdI6h4xcUz1dG8uaiv5q9gcEwLS4Pnth2kxT+GZ7YehS1JTMGBQmtV7Y4GFGbs2re2NqhdozUg==}
     engines: {node: '>= 0.4'}
@@ -4511,7 +4522,7 @@ snapshots:
       slash: 3.0.0
       source-map: 0.7.4
 
-  '@swc/cli@0.5.0(@swc/core@1.7.42)':
+  '@swc/cli@0.5.0(@swc/core@1.7.42)(chokidar@4.0.3)':
     dependencies:
       '@mole-inc/bin-wrapper': 8.0.1
       '@swc/core': 1.7.42
@@ -4523,6 +4534,8 @@ snapshots:
       semver: 7.6.3
       slash: 3.0.0
       source-map: 0.7.4
+    optionalDependencies:
+      chokidar: 4.0.3
 
   '@swc/core-darwin-arm64@1.7.42':
     optional: true
@@ -4876,14 +4889,6 @@ snapshots:
       chai: 5.1.2
       tinyrainbow: 1.2.0
 
-  '@vitest/mocker@2.1.4(vite@5.4.10(@types/node@20.17.6))':
-    dependencies:
-      '@vitest/spy': 2.1.4
-      estree-walker: 3.0.3
-      magic-string: 0.30.12
-    optionalDependencies:
-      vite: 5.4.10(@types/node@20.17.6)
-
   '@vitest/mocker@2.1.4(vite@5.4.10(@types/node@22.9.0))':
     dependencies:
       '@vitest/spy': 2.1.4
@@ -5213,6 +5218,10 @@ snapshots:
       get-func-name: 2.0.2
 
   check-error@2.1.1: {}
+
+  chokidar@4.0.3:
+    dependencies:
+      readdirp: 4.1.2
 
   ci-info@3.9.0: {}
 
@@ -7365,6 +7374,8 @@ snapshots:
     dependencies:
       readable-stream: 3.6.2
 
+  readdirp@4.1.2: {}
+
   reflect.getprototypeof@1.0.6:
     dependencies:
       call-bind: 1.0.7
@@ -8061,23 +8072,6 @@ snapshots:
       - supports-color
       - terser
 
-  vite-node@2.1.4(@types/node@20.17.6):
-    dependencies:
-      cac: 6.7.14
-      debug: 4.3.7
-      pathe: 1.1.2
-      vite: 5.4.10(@types/node@20.17.6)
-    transitivePeerDependencies:
-      - '@types/node'
-      - less
-      - lightningcss
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-
   vite-node@2.1.4(@types/node@22.9.0):
     dependencies:
       cac: 6.7.14
@@ -8185,41 +8179,6 @@ snapshots:
     transitivePeerDependencies:
       - less
       - lightningcss
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-
-  vitest@2.1.4(@types/node@20.17.6):
-    dependencies:
-      '@vitest/expect': 2.1.4
-      '@vitest/mocker': 2.1.4(vite@5.4.10(@types/node@20.17.6))
-      '@vitest/pretty-format': 2.1.4
-      '@vitest/runner': 2.1.4
-      '@vitest/snapshot': 2.1.4
-      '@vitest/spy': 2.1.4
-      '@vitest/utils': 2.1.4
-      chai: 5.1.2
-      debug: 4.3.7
-      expect-type: 1.1.0
-      magic-string: 0.30.12
-      pathe: 1.1.2
-      std-env: 3.7.0
-      tinybench: 2.9.0
-      tinyexec: 0.3.1
-      tinypool: 1.0.1
-      tinyrainbow: 1.2.0
-      vite: 5.4.10(@types/node@20.17.6)
-      vite-node: 2.1.4(@types/node@20.17.6)
-      why-is-node-running: 2.3.0
-    optionalDependencies:
-      '@types/node': 20.17.6
-    transitivePeerDependencies:
-      - less
-      - lightningcss
-      - msw
       - sass
       - sass-embedded
       - stylus

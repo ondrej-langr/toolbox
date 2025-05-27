@@ -1,6 +1,7 @@
 {
   "name": "tsuru",
   "version": "0.5.3",
+  "private": false,
   "description": "Simpler CLI applications with focus on code generation",
   "license": "ISC",
   "author": {
@@ -13,36 +14,42 @@
       "email": "hi@ondrejlangr.cz"
     }
   ],
-  "type": "module",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "require": "./dist/cjs/index.js"
     },
     "./schemas": {
       "import": "./dist/schemas/index.js",
-      "types": "./dist/schemas/index.d.ts"
+      "types": "./dist/schemas/index.d.ts",
+      "require": "./dist/cjs/schemas/index.js"
     },
     "./program": {
-      "import": "./dist/program/index.js",
-      "types": "./dist/program/index.d.ts"
+      "import": "./dist/program.js",
+      "types": "./dist/program.d.ts",
+      "require": "./dist/cjs/program.js"
     },
     "./logger": {
       "import": "./dist/logger/index.js",
-      "types": "./dist/logger/index.d.ts"
+      "types": "./dist/logger/index.d.ts",
+      "require": "./dist/cjs/logger/index.js"
     },
     "./ast/js-ts": {
       "import": "./dist/ast/js-ts/index.js",
-      "types": "./dist/ast/js-ts/index.d.ts"
+      "types": "./dist/ast/js-ts/index.d.ts",
+      "require": "./dist/cjs/ast/js-ts/index.js"
     },
     "./ast/json": {
       "import": "./dist/ast/json/index.js",
-      "types": "./dist/ast/json/index.d.ts"
+      "types": "./dist/ast/json/index.d.ts",
+      "require": "./dist/cjs/ast/json/index.js"
     },
     "./parsers": {
       "import": "./dist/parsers/index.js",
-      "types": "./dist/parsers/index.d.ts"
+      "types": "./dist/parsers/index.d.ts",
+      "require": "./dist/cjs/parsers/index.js"
     }
   },
   "bin": {
@@ -55,9 +62,10 @@
     ".bin"
   ],
   "scripts": {
-    "prebuild": "rm -rf dist .temp tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
-    "build": "pnpm build:transpile && pnpm build:types",
-    "build:transpile": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths",
+    "prebuild": "rm -rf dist .temp",
+    "build": "pnpm build:types && pnpm build:esm && pnpm build:cjs",
+    "build:cjs": "swc ./src -d dist/cjs --copy-files --include-dotfiles --strip-leading-paths --config-file .cjs.swcrc && echo \"{ \\\"type\\\": \\\"commonjs\\\" }\" > dist/cjs/package.json",
+    "build:esm": "swc ./src -d dist --copy-files --include-dotfiles --strip-leading-paths --config-file .esm.swcrc && echo \"{ \\\"type\\\": \\\"module\\\" }\" > dist/package.json",
     "build:types": "tsc --project tsconfig.build.json",
     "start": "pnpm run prebuild && pnpm run build && node .bin/run-tsuru.js --cwd=\"./.temp\"",
     "test": "pnpm test:unit && pnpm test:types",
@@ -85,11 +93,13 @@
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.17.6",
     "@types/semver": "^7.5.8",
+    "chokidar": "^4.0.3",
     "typescript": "5.5.2",
     "vite": "^5.4.10",
     "vite-tsconfig-paths": "^5.0.1",
-    "vitest": "^2.1.4"
+    "vitest": "^1.6.0"
   },
+  "packageManager": "pnpm@9.7.0",
   "engines": {
     "node": ">=20.9.0",
     "pnpm": ">=8.15.0"

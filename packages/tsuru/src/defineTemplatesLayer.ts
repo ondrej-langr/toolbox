@@ -6,6 +6,7 @@ import {
   TemplatesLayer,
 } from './internals/TemplatesLayer.js';
 
+/** @deprecated Will be removed as template layers are not recommended anymore */
 export const defineTemplatesLayer = <
   TVariables extends Record<string, any> | undefined = undefined,
 >(

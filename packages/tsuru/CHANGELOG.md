@@ -1,5 +1,11 @@
 # tsuru
 
+## 0.8.1
+
+### Patch Changes
+
+- [`eb4fd48`](https://github.com/ondrej-langr/toolbox/commit/eb4fd48eff641590478e21943624449b155232c4) Thanks [@ondrej-langr](https://github.com/ondrej-langr)! - Deprecates defineTemplatesLayer as it is not recommended anymore
+
 ## 0.8.0
 
 ### Minor Changes

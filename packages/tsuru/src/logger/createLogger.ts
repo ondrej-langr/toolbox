@@ -1,7 +1,9 @@
 import type { JsonLikeObject } from '@ondrej-langr/zod-package-json';
 import colors from 'picocolors';
 
-const isDebugEnabled = process.argv.includes('--debug');
+const isDebugEnabled =
+  process.argv.includes('--debug') ||
+  process.env.TSURU_DEBUG === 'true';
 
 type LoggerHandler = (
   message: string,

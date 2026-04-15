@@ -13,7 +13,7 @@ runs:
     - name: Enable Corepack
       shell: bash
       run: |
-        npm i -g corepack
+        npm i -g corepack --force
         corepack enable pnpm
 
     # - name: Cache

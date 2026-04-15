@@ -6,14 +6,17 @@ runs:
   steps:
     - uses: volta-cli/action@v4
 
+    - name: 'Install Node.js'
+      shell: bash
+      run: |
+        volta install node
+
+    - name: Install Corepack with Volta
+      shell: bash
+      run: |
+        volta install corepack
+
     - name: Enable Corepack
       shell: bash
       run: |
-        npm i -g corepack --force
-        corepack enable pnpm
-
-    # - name: Cache
-    #   uses: actions/cache@v4
-    #   with:
-    #     key: ${{ env.CACHE_KEY }}
-    #     path: ${{ env.CACHE_PATH }}
+        corepack enable --install-directory $VOLTA_HOME pnpm

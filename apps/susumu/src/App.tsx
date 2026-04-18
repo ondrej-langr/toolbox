@@ -9,7 +9,6 @@ import {
   DataList,
   Dialog,
   Flex,
-  Grid,
   IconButton,
   Link,
   Popover,
@@ -258,7 +257,12 @@ const Profile = () => {
                       );
 
                       if (code) {
-                        alert('QR: ' + code.data);
+                        evolu.restoreAppOwner(
+                          code.data as Evolu.Mnemonic,
+                          {
+                            reload: true,
+                          },
+                        );
                       } else {
                         alert('No QR code found');
                       }

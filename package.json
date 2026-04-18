@@ -11,9 +11,9 @@
   "scripts": {
     "build": "turbo run build",
     "deps:check": "pnpm dlx taze -r",
+    "disabled:prepare": "pnpm build && npx tsuru workspace:update && pnpm format",
     "format": "prettier . -w",
     "lint": "turbo run lint",
-    "prepare": "pnpm build && npx tsuru workspace:update && pnpm format",
     "release:prerelease": "changeset publish --tag next --no-git-tag",
     "release:stable": "changeset publish",
     "test": "turbo run test",

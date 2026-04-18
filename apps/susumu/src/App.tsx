@@ -258,7 +258,7 @@ const Profile = () => {
 
                       if (code) {
                         evolu.restoreAppOwner(
-                          code.data as Evolu.Mnemonic,
+                          Evolu.Mnemonic.orThrow(code.data),
                           {
                             reload: true,
                           },

@@ -11,7 +11,12 @@ import { Schema } from './schema';
 
 export const evolu = createEvolu(evoluReactWebDeps)(Schema, {
   name: SimpleName.orThrow('susumu'),
-  transports: [],
+  transports: [
+    {
+      type: 'WebSocket',
+      url: 'wss://sync.susumu.ondrejlangr.cz',
+    },
+  ],
 });
 
 export const getLogsForDate = (date: Dayjs) =>

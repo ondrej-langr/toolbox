@@ -1,23 +1,30 @@
 import * as Evolu from '@evolu/common';
 import { useQuery } from '@evolu/react';
 import {
+  Avatar,
   Badge,
   Box,
   Button,
   Container,
   DataList,
+  Dialog,
   Flex,
   Grid,
   IconButton,
+  Link,
   Popover,
+  Reset,
   Select,
   Separator,
+  Skeleton,
   Text,
   TextField,
   type TextProps,
 } from '@radix-ui/themes';
 import dayjs, { Dayjs } from 'dayjs';
-import { useRef, useState } from 'react';
+import jsQR from 'jsqr';
+import QrCode from 'qrcode';
+import { Suspense, use, useMemo, useRef, useState } from 'react';
 
 import { getLogsForDate, getLogsForMonth } from './evolu';
 import { useEvolu } from './hooks/useEvolu';
@@ -118,6 +125,155 @@ const formatMinutes = (minutes: number) => {
     : `${minutes}min`;
 };
 
+const MnemonicQrCode = ({
+  mnemonic,
+}: {
+  mnemonic: Promise<string>;
+}) => {
+  return (
+    <img
+      src={use(mnemonic)}
+      alt="QR Code"
+      style={{ width: '200px', height: '200px' }}
+    />
+  );
+};
+
+const Profile = () => {
+  const evolu = useEvolu();
+  const owner = use(evolu.appOwner);
+  const qrCode = useMemo(
+    () => QrCode.toDataURL(owner.mnemonic),
+    [owner.mnemonic],
+  );
+  const video = useRef<HTMLVideoElement>(null);
+  const canvas = useRef<HTMLCanvasElement>(null);
+
+  return (
+    <Flex gap="4" align="center">
+      <Popover.Root>
+        <Popover.Trigger>
+          <Reset>
+            <button>
+              <Avatar fallback="A" size="3" />
+            </button>
+          </Reset>
+        </Popover.Trigger>
+        <Popover.Content>
+          <Suspense
+            fallback={<Skeleton width="200px" height="200px" />}
+          >
+            <MnemonicQrCode mnemonic={qrCode} />
+          </Suspense>
+        </Popover.Content>
+      </Popover.Root>
+      <Flex direction="column">
+        <Text size="2">{owner.id}</Text>
+        <Flex>
+          <Dialog.Root
+            onOpenChange={async (isOpen) => {
+              // Release the stream when the popover is closed
+              if (!isOpen && video.current.srcObject) {
+                (video.current.srcObject as MediaStream)
+                  .getTracks()
+                  .forEach((track) => {
+                    track.stop();
+                  });
+              }
+
+              if (isOpen) {
+                try {
+                  const stream =
+                    await navigator.mediaDevices.getUserMedia({
+                      video: true,
+                      audio: false,
+                    });
+
+                  video.current.srcObject = stream;
+                } catch (err) {
+                  console.error('Camera error:', err);
+                }
+              }
+            }}
+          >
+            <Dialog.Trigger>
+              <Link href="#" color="orange" size="1">
+                Load user
+              </Link>
+            </Dialog.Trigger>
+            <Dialog.Content size="4">
+              <Dialog.Title>Choosing user</Dialog.Title>
+              <Dialog.Description>
+                Take a photo of QR code from other device
+              </Dialog.Description>
+
+              <Box mt={'5'} position="relative">
+                <video
+                  ref={video}
+                  autoPlay
+                  muted
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                  }}
+                />
+                <canvas
+                  ref={canvas}
+                  className="absolute inset-0 hidden"
+                />
+              </Box>
+
+              <Box mt={'5'}>
+                <Dialog.Close>
+                  <Button
+                    onClick={() => {
+                      canvas.current.width =
+                        video.current.videoWidth;
+                      canvas.current.height =
+                        video.current.videoHeight;
+                      const ctx =
+                        canvas.current.getContext('2d');
+
+                      ctx.drawImage(
+                        video.current,
+                        0,
+                        0,
+                        canvas.current.width,
+                        canvas.current.height,
+                      );
+                      const image = ctx.getImageData(
+                        0,
+                        0,
+                        canvas.current.width,
+                        canvas.current.height,
+                      );
+
+                      const code = jsQR(
+                        image.data,
+                        image.width,
+                        image.height,
+                        { inversionAttempts: 'dontInvert' },
+                      );
+
+                      if (code) {
+                        alert('QR: ' + code.data);
+                      } else {
+                        alert('No QR code found');
+                      }
+                    }}
+                  >
+                    Capture photo
+                  </Button>
+                </Dialog.Close>
+              </Box>
+            </Dialog.Content>
+          </Dialog.Root>
+        </Flex>
+      </Flex>
+    </Flex>
+  );
+};
+
 function App() {
   const [today] = useState(() => dayjs());
   const evolu = useEvolu();
@@ -140,15 +296,18 @@ function App() {
   ]);
 
   return (
-    <Container>
-      <Grid
-        gap="6"
-        columns={'2'}
-        rows="repeat(2, 64px)"
-        width="auto"
-        mt="6"
+    <Container px="4" mt="2">
+      <Suspense
+        fallback={<Skeleton width="200x" height="32px" />}
       >
-        <Box height="64px">
+        <Profile />
+      </Suspense>
+      <Flex
+        gap={{ initial: '6', sm: '4' }}
+        mt="9"
+        direction={{ initial: 'column', sm: 'row' }}
+      >
+        <Box flexGrow={'1'}>
           <Flex direction="column" gap="3">
             {todayTimeLogs.length === 0 && (
               <Text>
@@ -287,7 +446,10 @@ function App() {
             </Flex>
           </form>
         </Box>
-        <Box height="64px">
+        <Box
+          width="100%"
+          maxWidth={{ sm: '300px', initial: '100%' }}
+        >
           <DataList.Root>
             {Object.entries(todayForEachContext).map(
               ([contextName, count]) => (
@@ -295,7 +457,7 @@ function App() {
                   <DataList.Label minWidth="88px">
                     Today {contextName.toUpperCase()}
                   </DataList.Label>
-                  <DataList.Value>
+                  <DataList.Value className="justify-end">
                     <Badge
                       color={contextToColors[contextName]}
                       variant="solid"
@@ -323,7 +485,7 @@ function App() {
                   <DataList.Label minWidth="88px">
                     This month {contextName.toUpperCase()}
                   </DataList.Label>
-                  <DataList.Value>
+                  <DataList.Value className="justify-end">
                     <Badge
                       color={contextToColors[contextName]}
                       variant="soft"
@@ -338,7 +500,7 @@ function App() {
             )}
           </DataList.Root>
         </Box>
-      </Grid>
+      </Flex>
     </Container>
   );
 }

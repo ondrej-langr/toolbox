@@ -5,6 +5,7 @@ import {
   Badge,
   Box,
   Button,
+  Card,
   Container,
   DataList,
   Dialog,
@@ -281,11 +282,18 @@ const Profile = () => {
 };
 
 function App() {
-  const [today] = useState(() => dayjs());
+  const [currentDate, setCurrentDate] = useState<Dayjs>(() =>
+    dayjs(),
+  );
   const evolu = useEvolu();
-  const todayTimeLogs = useQuery(getLogsForDate(today));
-  const thisMonth = useQuery(getLogsForMonth(today));
+
+  const todayTimeLogs = useQuery(getLogsForDate(currentDate));
+  const thisMonth = useQuery(getLogsForMonth(currentDate));
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const currentDateIsToday = useMemo(
+    () => currentDate.isSame(dayjs(), 'day'),
+    [currentDate],
+  );
 
   const handleDeleteClick = (id: WorkLogId) => {
     evolu.update('workLog', {
@@ -317,7 +325,9 @@ function App() {
           <Flex direction="column" gap="3">
             {todayTimeLogs.length === 0 && (
               <Text>
-                No time logs for today. Start by adding one.
+                {currentDateIsToday
+                  ? 'No time logs for today. Start by adding one.'
+                  : 'No time logs for chosen day.'}
               </Text>
             )}
             {todayTimeLogs.map((item) => {
@@ -407,104 +417,176 @@ function App() {
             my={'4'}
             size="4"
           />
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const formData = new FormData(
-                e.target as HTMLFormElement,
-              );
-              const name = formData.get('name');
-              const context = formData.get(
-                'context',
-              ) as (typeof contexts)[number];
+          {currentDateIsToday && (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(
+                  e.target as HTMLFormElement,
+                );
+                const name = formData.get('name');
+                const context = formData.get(
+                  'context',
+                ) as (typeof contexts)[number];
 
-              evolu.insert('workLog', {
-                context,
-                name: name as string,
-                at: dayjs().toISOString(),
-              });
+                evolu.insert('workLog', {
+                  context,
+                  name: name as string,
+                  at: dayjs().toISOString(),
+                });
 
-              nameInputRef.current.value = '';
-            }}
-          >
-            <Flex gap="2">
-              <Select.Root name="context" defaultValue="aco">
-                <Select.Trigger />
-                <Select.Content>
-                  {contexts.map((contextName) => (
-                    <Select.Item
-                      value={contextName}
-                      key={contextName}
-                    >
-                      {contextName.toUpperCase()}
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Root>
-              <TextField.Root
-                ref={nameInputRef}
-                name="name"
-                placeholder="Name of the action"
-                style={{
-                  width: '100%',
-                }}
-              />
-            </Flex>
-          </form>
+                nameInputRef.current.value = '';
+              }}
+            >
+              <Flex gap="2">
+                <Select.Root name="context" defaultValue="aco">
+                  <Select.Trigger />
+                  <Select.Content>
+                    {contexts.map((contextName) => (
+                      <Select.Item
+                        value={contextName}
+                        key={contextName}
+                      >
+                        {contextName.toUpperCase()}
+                      </Select.Item>
+                    ))}
+                  </Select.Content>
+                </Select.Root>
+                <TextField.Root
+                  ref={nameInputRef}
+                  name="name"
+                  placeholder="Name of the action"
+                  style={{
+                    width: '100%',
+                  }}
+                />
+              </Flex>
+            </form>
+          )}
         </Box>
         <Box
           width="100%"
           maxWidth={{ sm: '300px', initial: '100%' }}
         >
-          <DataList.Root>
-            {Object.entries(todayForEachContext).map(
-              ([contextName, count]) => (
-                <DataList.Item align="center" key={contextName}>
-                  <DataList.Label minWidth="88px">
-                    Today {contextName.toUpperCase()}
-                  </DataList.Label>
-                  <DataList.Value className="justify-end">
-                    <Badge
-                      color={contextToColors[contextName]}
-                      variant="solid"
-                      radius="full"
-                      size={'3'}
-                    >
-                      {formatMinutes(count)}
-                    </Badge>
-                  </DataList.Value>
-                </DataList.Item>
-              ),
-            )}
+          <Card>
+            <Text size="2" weight="bold">
+              Selected date:{' '}
+              {currentDateIsToday
+                ? 'Today'
+                : currentDate.format('DD.MM. YYYY')}
+            </Text>
 
-            <Separator
-              orientation="horizontal"
-              my={'4'}
-              style={{
-                width: '100%',
-              }}
-            />
+            <Flex gap="2" justify="between" mt="4">
+              <Button
+                variant="classic"
+                size={'1'}
+                onClick={() =>
+                  setCurrentDate((dateOrToday) =>
+                    (currentDateIsToday
+                      ? dayjs()
+                      : dateOrToday
+                    ).subtract(1, 'day'),
+                  )
+                }
+              >
+                Previous
+              </Button>
 
-            {Object.entries(thisMonthForEachContext).map(
-              ([contextName, count]) => (
-                <DataList.Item align="center" key={contextName}>
-                  <DataList.Label minWidth="88px">
-                    This month {contextName.toUpperCase()}
-                  </DataList.Label>
-                  <DataList.Value className="justify-end">
-                    <Badge
-                      color={contextToColors[contextName]}
-                      variant="soft"
-                      radius="full"
-                      size={'3'}
-                    >
-                      {formatMinutes(count)}
-                    </Badge>
-                  </DataList.Value>
-                </DataList.Item>
-              ),
-            )}
-          </DataList.Root>
+              <Button
+                variant="classic"
+                onClick={() => setCurrentDate(dayjs())}
+                disabled={currentDateIsToday}
+                size={'1'}
+              >
+                Today
+              </Button>
+
+              <Button
+                variant="classic"
+                size={'1'}
+                disabled={currentDateIsToday}
+                onClick={() =>
+                  setCurrentDate((dateOrToday) =>
+                    (currentDateIsToday
+                      ? dayjs()
+                      : dateOrToday
+                    ).add(1, 'day'),
+                  )
+                }
+              >
+                Next
+              </Button>
+            </Flex>
+          </Card>
+
+          <Separator
+            orientation="horizontal"
+            my={'4'}
+            style={{
+              width: '100%',
+            }}
+          />
+
+          <Card>
+            <DataList.Root>
+              {Object.entries(todayForEachContext).map(
+                ([contextName, count]) => (
+                  <DataList.Item
+                    align="center"
+                    key={contextName}
+                  >
+                    <DataList.Label minWidth="88px">
+                      Today {contextName.toUpperCase()}
+                    </DataList.Label>
+                    <DataList.Value className="justify-end">
+                      <Badge
+                        color={contextToColors[contextName]}
+                        variant="solid"
+                        radius="full"
+                        size={'3'}
+                      >
+                        {formatMinutes(count)}
+                      </Badge>
+                    </DataList.Value>
+                  </DataList.Item>
+                ),
+              )}
+            </DataList.Root>
+          </Card>
+
+          <Separator
+            orientation="horizontal"
+            my={'4'}
+            style={{
+              width: '100%',
+            }}
+          />
+          <Card>
+            <DataList.Root>
+              {Object.entries(thisMonthForEachContext).map(
+                ([contextName, count]) => (
+                  <DataList.Item
+                    align="center"
+                    key={contextName}
+                  >
+                    <DataList.Label minWidth="88px">
+                      This month {contextName.toUpperCase()}
+                    </DataList.Label>
+                    <DataList.Value className="justify-end">
+                      <Badge
+                        color={contextToColors[contextName]}
+                        variant="soft"
+                        radius="full"
+                        size={'3'}
+                      >
+                        {formatMinutes(count)}
+                      </Badge>
+                    </DataList.Value>
+                  </DataList.Item>
+                ),
+              )}
+            </DataList.Root>
+          </Card>
         </Box>
       </Flex>
     </Container>

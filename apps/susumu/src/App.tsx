@@ -310,7 +310,7 @@ function App() {
   ]);
 
   return (
-    <Container px="4" mt="2">
+    <Container px="4" mt="2" mb="4">
       <Suspense
         fallback={<Skeleton width="200x" height="32px" />}
       >

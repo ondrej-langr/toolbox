@@ -1,6 +1,13 @@
 import * as Evolu from '@evolu/common';
 import { useQuery } from '@evolu/react';
 import {
+  ClockIcon,
+  EyeClosedIcon,
+  EyeOpenIcon,
+  MoonIcon,
+  TrashIcon,
+} from '@radix-ui/react-icons';
+import {
   Badge,
   Box,
   Button,
@@ -117,7 +124,7 @@ function App() {
   return (
     <Container px="4" mt="2" mb="4">
       <Suspense
-        fallback={<Skeleton width="200x" height="32px" />}
+        fallback={<Skeleton width="200x" height="40px" />}
       >
         <Profile />
       </Suspense>
@@ -127,7 +134,7 @@ function App() {
         direction={{ initial: 'column', sm: 'row' }}
       >
         <Box flexGrow={'1'}>
-          <Flex direction="column" gap="3">
+          <Flex direction="column" gap="5">
             {todayTimeLogs.length === 0 && (
               <Text>
                 {currentDateIsToday
@@ -137,92 +144,103 @@ function App() {
             )}
             {todayTimeLogs.map((item) => {
               return (
-                <Flex gapX="5" justify={'between'} key={item.id}>
+                <Flex gapX="2" justify={'between'} key={item.id}>
                   {isWorkLogBreak(item) ? (
-                    <Flex gap="5" align="center" flexGrow={'1'}>
-                      <Text size="2">{item.name}</Text>
-                      <Separator
-                        color="green"
-                        style={{ flexGrow: '1' }}
-                      />
-                    </Flex>
+                    <Callout.Root
+                      className="py-1.5! flex-1 rounded-sm!"
+                      variant="surface"
+                    >
+                      <Callout.Icon>
+                        <MoonIcon />
+                      </Callout.Icon>
+                      <Callout.Text>{item.name}</Callout.Text>
+                    </Callout.Root>
                   ) : (
-                    <Flex direction="column" flexGrow={'1'}>
+                    <Flex
+                      direction="column"
+                      flexGrow={'1'}
+                      mt={'-2'}
+                    >
                       <Text
                         size="1"
-                        color={contextToColors[item.context]}
+                        color="gray"
                         weight="bold"
+                        className="text-[10px]! opacity-80"
                       >
+                        <Badge
+                          color={contextToColors[item.context]}
+                          className="relative -top-0.5 mr-2"
+                          variant="solid"
+                        />
                         {item.context.toUpperCase()}
                       </Text>
-                      <Text size="5">{item.name}</Text>
+                      <Text size="3">{item.name}</Text>
                     </Flex>
                   )}
-                  <Flex gap="2" align="center">
-                    <Popover.Root>
-                      <Popover.Trigger>
-                        <Badge
-                          color="iris"
-                          variant="outline"
-                          radius="medium"
-                          size={'3'}
-                        >
-                          {dayjs(item.at).format('HH:mm')}
-                        </Badge>
-                      </Popover.Trigger>
-                      <Popover.Content>
-                        <form
-                          onSubmit={(e) => {
-                            e.preventDefault();
+                  <Popover.Root>
+                    <Popover.Trigger>
+                      <Badge
+                        color="iris"
+                        variant="outline"
+                        radius="medium"
+                        size={'3'}
+                        className="py-1.5!"
+                      >
+                        {dayjs(item.at).format('HH:mm')}
+                        <ClockIcon />
+                      </Badge>
+                    </Popover.Trigger>
+                    <Popover.Content>
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
 
-                            const formData = new FormData(
-                              e.target as HTMLFormElement,
-                            );
-                            const time = formData
-                              .get('time')
-                              .toString();
-                            const [hour, minute] =
-                              time.split(':');
+                          const formData = new FormData(
+                            e.target as HTMLFormElement,
+                          );
+                          const time = formData
+                            .get('time')
+                            .toString();
+                          const [hour, minute] = time.split(':');
 
-                            const newDate = dayjs(item.at)
-                              .set('hour', Number(hour))
-                              .set('minute', Number(minute));
+                          const newDate = dayjs(item.at)
+                            .set('hour', Number(hour))
+                            .set('minute', Number(minute));
 
-                            evolu.update('workLog', {
-                              id: item.id,
-                              at: newDate.toISOString(),
-                            });
+                          evolu.update('workLog', {
+                            id: item.id,
+                            at: newDate.toISOString(),
+                          });
 
-                            document.dispatchEvent(
-                              new KeyboardEvent('keydown', {
-                                key: 'Escape',
-                                code: 'Escape',
-                                bubbles: true,
-                              }),
-                            );
-                          }}
-                        >
-                          <Flex gap="2">
-                            <TextField.Root
-                              type="time"
-                              name="time"
-                              defaultValue={dayjs(
-                                item.at,
-                              ).format('HH:mm')}
-                            />
-                            <Button type="submit">Submit</Button>
-                          </Flex>
-                        </form>
-                      </Popover.Content>
-                    </Popover.Root>
-                    <IconButton
-                      color="red"
-                      size="2"
-                      onClick={() => handleDeleteClick(item.id)}
-                    >
-                      D
-                    </IconButton>
-                  </Flex>
+                          document.dispatchEvent(
+                            new KeyboardEvent('keydown', {
+                              key: 'Escape',
+                              code: 'Escape',
+                              bubbles: true,
+                            }),
+                          );
+                        }}
+                      >
+                        <Flex gap="2">
+                          <TextField.Root
+                            type="time"
+                            name="time"
+                            defaultValue={dayjs(item.at).format(
+                              'HH:mm',
+                            )}
+                          />
+                          <Button type="submit">Submit</Button>
+                        </Flex>
+                      </form>
+                    </Popover.Content>
+                  </Popover.Root>
+                  <IconButton
+                    color="red"
+                    size="2"
+                    onClick={() => handleDeleteClick(item.id)}
+                  >
+                    <TrashIcon width="20" height="20" />
+                  </IconButton>
                 </Flex>
               );
             })}
@@ -345,13 +363,20 @@ function App() {
           {lastItem && (
             <>
               <Callout.Root color="gray" variant="soft">
-                <Callout.Icon>--</Callout.Icon>
+                <Callout.Icon>
+                  {isWorkLogBreak(lastItem) ? (
+                    <EyeClosedIcon />
+                  ) : (
+                    <EyeOpenIcon className="animate-pulse" />
+                  )}
+                </Callout.Icon>
                 <Callout.Text>
                   {isWorkLogBreak(lastItem) ? (
                     'You are on a break'
                   ) : (
                     <>
-                      Current task is taking{' '}
+                      Working on{' '}
+                      <Strong>{lastItem.context}</Strong> for{' '}
                       <Strong>
                         {formatSeconds(
                           currentDate.diff(
@@ -362,9 +387,10 @@ function App() {
                       </Strong>{' '}
                       <br />
                       <Tooltip
+                        side="right"
                         content={
                           <>
-                            Or press{' '}
+                            Click or press{' '}
                             <Kbd size="1">Ctrl + b</Kbd>{' '}
                           </>
                         }
@@ -376,7 +402,7 @@ function App() {
                           style={{ display: 'inline-block' }}
                           onClick={takeBreak}
                         >
-                          Take break
+                          Take a break
                         </Link>
                       </Tooltip>
                     </>

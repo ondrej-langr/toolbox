@@ -1,285 +1,46 @@
 import * as Evolu from '@evolu/common';
 import { useQuery } from '@evolu/react';
 import {
-  Avatar,
   Badge,
   Box,
   Button,
+  Callout,
   Card,
   Container,
   DataList,
-  Dialog,
   Flex,
   IconButton,
+  Kbd,
   Link,
   Popover,
-  Reset,
   Select,
   Separator,
   Skeleton,
+  Strong,
   Text,
   TextField,
-  type TextProps,
+  Tooltip,
 } from '@radix-ui/themes';
 import dayjs, { Dayjs } from 'dayjs';
-import jsQR from 'jsqr';
-import QrCode from 'qrcode';
-import { Suspense, use, useMemo, useRef, useState } from 'react';
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
-import { getLogsForDate, getLogsForMonth } from './evolu';
+import { Profile } from './components/Profile';
+import { contexts, contextToColors } from './constants';
 import { useEvolu } from './hooks/useEvolu';
-import type { WorkLogId } from './schema';
-
-const contexts = ['aco', 'larokinvest', 'spcom'] as const;
-const contextToColors: Record<
-  (typeof contexts)[number],
-  TextProps['color']
-> = {
-  aco: 'blue',
-  larokinvest: 'green',
-  spcom: 'yellow',
-};
-
-type WorkLog = ReturnType<typeof getLogsForDate>['Row'];
-
-const isVolno = (log: WorkLog) =>
-  log.name.toLowerCase() === 'volno';
-
-const calculateEntries = (logs: WorkLog[]) => {
-  const timeForContext = Object.fromEntries(
-    contexts.map((item) => [item, 0] as const),
-  ) as Record<(typeof contexts)[number], number>;
-
-  const contextRangeStarts = Object.fromEntries(
-    contexts.map((item) => [item, null] as const),
-  ) as Record<(typeof contexts)[number], null | Dayjs>;
-
-  logs.forEach((log, index, items) => {
-    const previous = items[index - 1];
-    const logHasContext =
-      contextRangeStarts[log.context] !== null;
-
-    if (!logHasContext) {
-      contextRangeStarts[log.context] = log.at;
-    }
-
-    // End previous if it has a different context
-    if (
-      previous &&
-      previous.context !== log.context &&
-      !isVolno(previous)
-    ) {
-      timeForContext[previous.context] += Math.abs(
-        dayjs(previous.at).diff(log.at, 'second'),
-      );
-      contextRangeStarts[previous.context] = null;
-
-      return;
-    }
-
-    // "Volno" ends all the context ranges
-    if (logHasContext && isVolno(log)) {
-      for (const context of contexts) {
-        if (contextRangeStarts[context] !== null) {
-          timeForContext[context] += Math.abs(
-            dayjs(contextRangeStarts[context]).diff(
-              log.at,
-              'second',
-            ),
-          );
-
-          contextRangeStarts[context] = null;
-        }
-      }
-
-      return;
-    }
-
-    // calculate time for the current context comparing with the previous log
-    if (
-      previous &&
-      previous.context === log.context &&
-      !isVolno(log) &&
-      !isVolno(previous)
-    ) {
-      timeForContext[log.context] += Math.abs(
-        dayjs(previous.at).diff(log.at, 'second'),
-      );
-      contextRangeStarts[log.context] = log.at;
-
-      return;
-    }
-  });
-
-  return Object.fromEntries(
-    Object.entries(timeForContext).map(([context, time]) => [
-      context,
-      Math.ceil(time / 60),
-    ]),
-  );
-};
-
-const formatMinutes = (minutes: number) => {
-  return minutes >= 60
-    ? `${Math.floor(minutes / 60)}h ${minutes % 60}min`
-    : `${minutes}min`;
-};
-
-const MnemonicQrCode = ({
-  mnemonic,
-}: {
-  mnemonic: Promise<string>;
-}) => {
-  return (
-    <img
-      src={use(mnemonic)}
-      alt="QR Code"
-      style={{ width: '200px', height: '200px' }}
-    />
-  );
-};
-
-const Profile = () => {
-  const evolu = useEvolu();
-  const owner = use(evolu.appOwner);
-  const qrCode = useMemo(
-    () => QrCode.toDataURL(owner.mnemonic),
-    [owner.mnemonic],
-  );
-  const video = useRef<HTMLVideoElement>(null);
-  const canvas = useRef<HTMLCanvasElement>(null);
-
-  return (
-    <Flex gap="4" align="center">
-      <Popover.Root>
-        <Popover.Trigger>
-          <Reset>
-            <button>
-              <Avatar fallback="A" size="3" />
-            </button>
-          </Reset>
-        </Popover.Trigger>
-        <Popover.Content>
-          <Suspense
-            fallback={<Skeleton width="200px" height="200px" />}
-          >
-            <MnemonicQrCode mnemonic={qrCode} />
-          </Suspense>
-        </Popover.Content>
-      </Popover.Root>
-      <Flex direction="column">
-        <Text size="2">{owner.id}</Text>
-        <Flex>
-          <Dialog.Root
-            onOpenChange={async (isOpen) => {
-              // Release the stream when the popover is closed
-              if (!isOpen && video.current.srcObject) {
-                (video.current.srcObject as MediaStream)
-                  .getTracks()
-                  .forEach((track) => {
-                    track.stop();
-                  });
-              }
-
-              if (isOpen) {
-                try {
-                  const stream =
-                    await navigator.mediaDevices.getUserMedia({
-                      video: {
-                        facingMode: 'environment',
-                      },
-                      audio: false,
-                    });
-
-                  video.current.srcObject = stream;
-                } catch (err) {
-                  console.error('Camera error:', err);
-                }
-              }
-            }}
-          >
-            <Dialog.Trigger>
-              <Link href="#" color="orange" size="1">
-                Load user
-              </Link>
-            </Dialog.Trigger>
-            <Dialog.Content size="4">
-              <Dialog.Title>Choosing user</Dialog.Title>
-              <Dialog.Description>
-                Take a photo of QR code from other device
-              </Dialog.Description>
-
-              <Box mt={'5'} position="relative">
-                <video
-                  ref={video}
-                  autoPlay
-                  muted
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                  }}
-                />
-                <canvas
-                  ref={canvas}
-                  className="absolute inset-0 hidden"
-                />
-              </Box>
-
-              <Box mt={'5'}>
-                <Dialog.Close>
-                  <Button
-                    onClick={() => {
-                      canvas.current.width =
-                        video.current.videoWidth;
-                      canvas.current.height =
-                        video.current.videoHeight;
-                      const ctx =
-                        canvas.current.getContext('2d');
-
-                      ctx.drawImage(
-                        video.current,
-                        0,
-                        0,
-                        canvas.current.width,
-                        canvas.current.height,
-                      );
-                      const image = ctx.getImageData(
-                        0,
-                        0,
-                        canvas.current.width,
-                        canvas.current.height,
-                      );
-
-                      const code = jsQR(
-                        image.data,
-                        image.width,
-                        image.height,
-                        { inversionAttempts: 'dontInvert' },
-                      );
-
-                      if (code) {
-                        evolu.restoreAppOwner(
-                          Evolu.Mnemonic.orThrow(code.data),
-                          {
-                            reload: true,
-                          },
-                        );
-                      } else {
-                        alert('No QR code found');
-                      }
-                    }}
-                  >
-                    Capture photo
-                  </Button>
-                </Dialog.Close>
-              </Box>
-            </Dialog.Content>
-          </Dialog.Root>
-        </Flex>
-      </Flex>
-    </Flex>
-  );
-};
+import type { WorkLogId, WorkLogType } from './schema';
+import { calculateWorkLogEntries } from './utils/calculateWorkLogEntries';
+import { formatMinutes } from './utils/formatMinutes';
+import { formatSeconds } from './utils/formatSeconds';
+import { getWorkLogsForDate } from './utils/getWorkLogsForDate';
+import { getWorkLogsForMonth } from './utils/getWorkLogsForMonth';
+import { isWorkLogBreak } from './utils/isWorkLogBreak';
 
 function App() {
   const [currentDate, setCurrentDate] = useState<Dayjs>(() =>
@@ -287,8 +48,20 @@ function App() {
   );
   const evolu = useEvolu();
 
-  const todayTimeLogs = useQuery(getLogsForDate(currentDate));
-  const thisMonth = useQuery(getLogsForMonth(currentDate));
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setCurrentDate(dayjs());
+    }, 1000);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, []);
+
+  const todayTimeLogs = useQuery(
+    getWorkLogsForDate(currentDate),
+  );
+  const thisMonth = useQuery(getWorkLogsForMonth(currentDate));
   const nameInputRef = useRef<HTMLInputElement>(null);
   const currentDateIsToday = useMemo(
     () => currentDate.isSame(dayjs(), 'day'),
@@ -302,12 +75,44 @@ function App() {
     });
   };
 
-  const thisMonthForEachContext = calculateEntries([
+  const thisMonthForEachContext = calculateWorkLogEntries([
     ...thisMonth,
   ]);
-  const todayForEachContext = calculateEntries([
+  const todayForEachContext = calculateWorkLogEntries([
     ...todayTimeLogs,
   ]);
+
+  const takeBreak = useCallback(() => {
+    evolu.insert('workLog', {
+      context: 'Unknown',
+      name: 'Break',
+      at: dayjs().toISOString(),
+      type: 'break' satisfies WorkLogType,
+    });
+  }, [evolu]);
+
+  useEffect(() => {
+    const ctrlBListener = (e: KeyboardEvent) => {
+      const lastItem = todayTimeLogs.at(-1);
+
+      // Insert break when Ctrl+B is pressed and the last item is not a break
+      if (
+        e.ctrlKey &&
+        e.key === 'b' &&
+        !isWorkLogBreak(lastItem)
+      ) {
+        takeBreak();
+      }
+    };
+
+    window.addEventListener('keydown', ctrlBListener);
+
+    return () => {
+      window.removeEventListener('keydown', ctrlBListener);
+    };
+  }, [todayTimeLogs, takeBreak]);
+
+  const lastItem = todayTimeLogs.at(-1);
 
   return (
     <Container px="4" mt="2" mb="4">
@@ -332,17 +137,27 @@ function App() {
             )}
             {todayTimeLogs.map((item) => {
               return (
-                <Flex gap="2" justify={'between'} key={item.id}>
-                  <Flex direction="column">
-                    <Text
-                      size="1"
-                      color={contextToColors[item.context]}
-                      weight="bold"
-                    >
-                      {item.context.toUpperCase()}
-                    </Text>
-                    <Text size="5">{item.name}</Text>
-                  </Flex>
+                <Flex gapX="5" justify={'between'} key={item.id}>
+                  {isWorkLogBreak(item) ? (
+                    <Flex gap="5" align="center" flexGrow={'1'}>
+                      <Text size="2">{item.name}</Text>
+                      <Separator
+                        color="green"
+                        style={{ flexGrow: '1' }}
+                      />
+                    </Flex>
+                  ) : (
+                    <Flex direction="column" flexGrow={'1'}>
+                      <Text
+                        size="1"
+                        color={contextToColors[item.context]}
+                        weight="bold"
+                      >
+                        {item.context.toUpperCase()}
+                      </Text>
+                      <Text size="5">{item.name}</Text>
+                    </Flex>
+                  )}
                   <Flex gap="2" align="center">
                     <Popover.Root>
                       <Popover.Trigger>
@@ -526,6 +341,58 @@ function App() {
               width: '100%',
             }}
           />
+
+          {lastItem && (
+            <>
+              <Callout.Root color="gray" variant="soft">
+                <Callout.Icon>--</Callout.Icon>
+                <Callout.Text>
+                  {isWorkLogBreak(lastItem) ? (
+                    'You are on a break'
+                  ) : (
+                    <>
+                      Current task is taking{' '}
+                      <Strong>
+                        {formatSeconds(
+                          currentDate.diff(
+                            lastItem.at,
+                            'seconds',
+                          ),
+                        )}
+                      </Strong>{' '}
+                      <br />
+                      <Tooltip
+                        content={
+                          <>
+                            Or press{' '}
+                            <Kbd size="1">Ctrl + b</Kbd>{' '}
+                          </>
+                        }
+                      >
+                        <Link
+                          href="#"
+                          role="button"
+                          mt="2"
+                          style={{ display: 'inline-block' }}
+                          onClick={takeBreak}
+                        >
+                          Take break
+                        </Link>
+                      </Tooltip>
+                    </>
+                  )}
+                </Callout.Text>
+              </Callout.Root>
+
+              <Separator
+                orientation="horizontal"
+                my={'4'}
+                style={{
+                  width: '100%',
+                }}
+              />
+            </>
+          )}
 
           <Card>
             <DataList.Root>

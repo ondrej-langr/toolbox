@@ -25,17 +25,17 @@ export const getLogsForDate = (date: Dayjs) =>
       .selectFrom('workLog')
       .selectAll()
       .where(
-        'createdAt',
+        'at',
         '>=',
         DateIso.orThrow(date.startOf('day').toISOString()),
       )
       .where(
-        'createdAt',
+        'at',
         '<=',
         DateIso.orThrow(date.endOf('day').toISOString()),
       )
       .where('isDeleted', 'is not', sqliteTrue)
-      .orderBy('createdAt', 'asc'),
+      .orderBy('at', 'asc'),
   );
 
 export const getLogsForMonth = (date: Dayjs) =>
@@ -44,15 +44,15 @@ export const getLogsForMonth = (date: Dayjs) =>
       .selectFrom('workLog')
       .selectAll()
       .where(
-        'createdAt',
+        'at',
         '>=',
         DateIso.orThrow(date.startOf('month').toISOString()),
       )
       .where(
-        'createdAt',
+        'at',
         '<=',
         DateIso.orThrow(date.endOf('month').toISOString()),
       )
       .where('isDeleted', 'is not', sqliteTrue)
-      .orderBy('createdAt', 'asc'),
+      .orderBy('at', 'asc'),
   );

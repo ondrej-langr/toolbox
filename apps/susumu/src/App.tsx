@@ -2,8 +2,7 @@ import * as Evolu from '@evolu/common';
 import { useQuery } from '@evolu/react';
 import {
   ClockIcon,
-  EyeClosedIcon,
-  EyeOpenIcon,
+  InfoCircledIcon,
   MoonIcon,
   TrashIcon,
 } from '@radix-ui/react-icons';
@@ -17,16 +16,12 @@ import {
   DataList,
   Flex,
   IconButton,
-  Kbd,
-  Link,
   Popover,
   Select,
   Separator,
   Skeleton,
-  Strong,
   Text,
   TextField,
-  Tooltip,
 } from '@radix-ui/themes';
 import dayjs, { Dayjs } from 'dayjs';
 import {
@@ -39,6 +34,7 @@ import {
 } from 'react';
 
 import { Profile } from './components/Profile';
+import { TimeTrackerWidget } from './components/TimeTrackerWidget';
 import { contexts, contextToColors } from './constants';
 import { useEvolu } from './hooks/useEvolu';
 import type { WorkLogId, WorkLogType } from './schema';
@@ -54,16 +50,6 @@ function App() {
     dayjs(),
   );
   const evolu = useEvolu();
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentDate(dayjs());
-    }, 1000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
 
   const todayTimeLogs = useQuery(
     getWorkLogsForDate(currentDate),
@@ -360,55 +346,12 @@ function App() {
             }}
           />
 
-          {lastItem && (
+          {lastItem && currentDateIsToday && (
             <>
-              <Callout.Root color="gray" variant="soft">
-                <Callout.Icon>
-                  {isWorkLogBreak(lastItem) ? (
-                    <EyeClosedIcon />
-                  ) : (
-                    <EyeOpenIcon className="animate-pulse" />
-                  )}
-                </Callout.Icon>
-                <Callout.Text>
-                  {isWorkLogBreak(lastItem) ? (
-                    'You are on a break'
-                  ) : (
-                    <>
-                      Working on{' '}
-                      <Strong>{lastItem.context}</Strong> for{' '}
-                      <Strong>
-                        {formatSeconds(
-                          currentDate.diff(
-                            lastItem.at,
-                            'seconds',
-                          ),
-                        )}
-                      </Strong>{' '}
-                      <br />
-                      <Tooltip
-                        side="right"
-                        content={
-                          <>
-                            Click or press{' '}
-                            <Kbd size="1">Ctrl + b</Kbd>{' '}
-                          </>
-                        }
-                      >
-                        <Link
-                          href="#"
-                          role="button"
-                          mt="2"
-                          style={{ display: 'inline-block' }}
-                          onClick={takeBreak}
-                        >
-                          Take a break
-                        </Link>
-                      </Tooltip>
-                    </>
-                  )}
-                </Callout.Text>
-              </Callout.Root>
+              <TimeTrackerWidget
+                lastItem={lastItem}
+                takeBreak={takeBreak}
+              />
 
               <Separator
                 orientation="horizontal"

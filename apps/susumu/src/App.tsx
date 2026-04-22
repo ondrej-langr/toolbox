@@ -79,6 +79,10 @@ function App() {
     () => currentDate.isSame(dayjs(), 'day'),
     [currentDate],
   );
+  const currentDateIsThisMonth = useMemo(
+    () => currentDate.isSame(dayjs(), 'month'),
+    [currentDate],
+  );
 
   const handleDeleteClick = (id: WorkLogId) => {
     evolu.update('workLog', {
@@ -402,7 +406,10 @@ function App() {
                       key={contextName}
                     >
                       <DataList.Label minWidth="88px">
-                        Today {contextName.toUpperCase()}
+                        {currentDateIsToday
+                          ? 'Today'
+                          : 'Current date'}{' '}
+                        {contextName.toUpperCase()}
                       </DataList.Label>
                       <DataList.Value className="justify-end items-center">
                         {collectedEntriesAsEntries.length >
@@ -468,9 +475,12 @@ function App() {
                     key={contextName}
                   >
                     <DataList.Label minWidth="88px">
-                      This month {contextName.toUpperCase()}
+                      {currentDateIsThisMonth
+                        ? 'This month'
+                        : 'Current month'}{' '}
+                      {contextName.toUpperCase()}
                     </DataList.Label>
-                    <DataList.Value className="justify-end">
+                    <DataList.Value className="justify-end items-center">
                       <Badge
                         color={contextToColors[contextName]}
                         variant="soft"

@@ -56,12 +56,12 @@ function App() {
   const evolu = useEvolu();
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
+    const intervalId = setInterval(() => {
       setCurrentDate(dayjs());
     }, 1000);
 
     return () => {
-      clearTimeout(timeoutId);
+      clearInterval(intervalId);
     };
   }, []);
 

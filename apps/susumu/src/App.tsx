@@ -22,6 +22,7 @@ import {
   Skeleton,
   Text,
   TextField,
+  Tooltip,
 } from '@radix-ui/themes';
 import dayjs, { Dayjs } from 'dayjs';
 import {
@@ -40,10 +41,28 @@ import { useEvolu } from './hooks/useEvolu';
 import type { WorkLogId, WorkLogType } from './schema';
 import { calculateWorkLogEntries } from './utils/calculateWorkLogEntries';
 import { formatMinutes } from './utils/formatMinutes';
-import { formatSeconds } from './utils/formatSeconds';
+import type { WorkLog } from './utils/getAllWorkLogs';
 import { getWorkLogsForDate } from './utils/getWorkLogsForDate';
 import { getWorkLogsForMonth } from './utils/getWorkLogsForMonth';
 import { isWorkLogBreak } from './utils/isWorkLogBreak';
+
+const calculateEntries = (logs: WorkLog[]) => {
+  const totals: Record<string, number> = {};
+
+  logs.forEach((log, index) => {
+    const previousLog = logs[index - 1];
+    if (!previousLog || isWorkLogBreak(previousLog)) return;
+
+    const diff = Math.floor(
+      dayjs(log.at).diff(previousLog.at, 'second') / 60,
+    );
+
+    totals[previousLog.name] ??= 0;
+    totals[previousLog.name] += diff;
+  });
+
+  return totals;
+};
 
 function App() {
   const [currentDate, setCurrentDate] = useState<Dayjs>(() =>
@@ -366,26 +385,69 @@ function App() {
           <Card>
             <DataList.Root>
               {Object.entries(todayForEachContext).map(
-                ([contextName, count]) => (
-                  <DataList.Item
-                    align="center"
-                    key={contextName}
-                  >
-                    <DataList.Label minWidth="88px">
-                      Today {contextName.toUpperCase()}
-                    </DataList.Label>
-                    <DataList.Value className="justify-end">
-                      <Badge
-                        color={contextToColors[contextName]}
-                        variant="solid"
-                        radius="full"
-                        size={'3'}
-                      >
-                        {formatMinutes(count)}
-                      </Badge>
-                    </DataList.Value>
-                  </DataList.Item>
-                ),
+                ([contextName, count]) => {
+                  const contextItems = todayTimeLogs.filter(
+                    (log) =>
+                      log.context === contextName ||
+                      isWorkLogBreak(log),
+                  );
+                  const collectedEntries =
+                    calculateEntries(contextItems);
+                  const collectedEntriesAsEntries =
+                    Object.entries(collectedEntries);
+
+                  return (
+                    <DataList.Item
+                      align="center"
+                      key={contextName}
+                    >
+                      <DataList.Label minWidth="88px">
+                        Today {contextName.toUpperCase()}
+                      </DataList.Label>
+                      <DataList.Value className="justify-end items-center">
+                        {collectedEntriesAsEntries.length >
+                          0 && (
+                          <Popover.Root>
+                            <Popover.Trigger>
+                              <IconButton
+                                size="1"
+                                variant="ghost"
+                                mr="2"
+                              >
+                                <InfoCircledIcon fontSize="14px" />
+                              </IconButton>
+                            </Popover.Trigger>
+                            <Popover.Content>
+                              <DataList.Root>
+                                {collectedEntriesAsEntries.map(
+                                  ([name, total]) => (
+                                    <DataList.Item key={name}>
+                                      <DataList.Label>
+                                        {name}
+                                      </DataList.Label>
+                                      <DataList.Value>
+                                        {formatMinutes(total) ||
+                                          '0min'}
+                                      </DataList.Value>
+                                    </DataList.Item>
+                                  ),
+                                )}
+                              </DataList.Root>
+                            </Popover.Content>
+                          </Popover.Root>
+                        )}
+                        <Badge
+                          color={contextToColors[contextName]}
+                          variant="solid"
+                          radius="full"
+                          size={'3'}
+                        >
+                          {formatMinutes(count)}
+                        </Badge>
+                      </DataList.Value>
+                    </DataList.Item>
+                  );
+                },
               )}
             </DataList.Root>
           </Card>

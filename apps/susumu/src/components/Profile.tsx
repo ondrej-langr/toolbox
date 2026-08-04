@@ -8,6 +8,7 @@ import {
   Link,
   Popover,
   Reset,
+  Separator,
   Skeleton,
   Text,
 } from '@radix-ui/themes';
@@ -82,7 +83,7 @@ export const Profile = () => {
           >
             <Dialog.Trigger>
               <Link href="#" color="orange" size="1">
-                Load user
+                Change user
               </Link>
             </Dialog.Trigger>
             <Dialog.Content size="4">
@@ -156,6 +157,15 @@ export const Profile = () => {
                 </Dialog.Close>
               </Box>
             </Dialog.Content>
+          </Dialog.Root>
+          <Separator orientation="vertical" mx="2" />
+          <Dialog.Root>
+            <Dialog.Trigger>
+              <Link href="#" color="red" size="1">
+                Log out
+              </Link>
+            </Dialog.Trigger>
+            <Dialog.Content size="4"></Dialog.Content>
           </Dialog.Root>
         </Flex>
       </Flex>

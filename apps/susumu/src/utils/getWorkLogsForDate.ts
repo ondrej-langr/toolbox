@@ -7,17 +7,19 @@ export const getWorkLogsForDate = (date: Dayjs) =>
   evolu.createQuery((db) =>
     db
       .selectFrom('workLog')
-      .selectAll()
+      .leftJoin('project', 'project.id', 'workLog.projectId')
+      .selectAll('workLog')
+      .select('project.name as projectName')
       .where(
-        'at',
+        'workLog.at',
         '>=',
         DateIso.orThrow(date.startOf('day').toISOString()),
       )
       .where(
-        'at',
+        'workLog.at',
         '<=',
         DateIso.orThrow(date.endOf('day').toISOString()),
       )
-      .where('isDeleted', 'is not', sqliteTrue)
-      .orderBy('at', 'asc'),
+      .where('workLog.isDeleted', 'is not', sqliteTrue)
+      .orderBy('workLog.at', 'asc'),
   );

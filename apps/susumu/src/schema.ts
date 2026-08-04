@@ -1,5 +1,8 @@
 import * as Evolu from '@evolu/common';
 
+const ProjectId = Evolu.id('Project');
+export type ProjectId = typeof ProjectId.Type;
+
 const WorkLogId = Evolu.id('WorkLog');
 export type WorkLogId = typeof WorkLogId.Type;
 
@@ -7,9 +10,15 @@ const WorkLogType = Evolu.union('work', 'break');
 export type WorkLogType = typeof WorkLogType.Type;
 
 export const Schema = {
+  project: {
+    id: ProjectId,
+    name: Evolu.NonEmptyString100,
+  },
   workLog: {
     id: WorkLogId,
-    context: Evolu.String100,
+    context: Evolu.nullOr(Evolu.String100),
+    projectId: Evolu.nullOr(ProjectId),
+    appVersion: Evolu.nullOr(Evolu.String100),
     name: Evolu.NonEmptyString1000,
     at: Evolu.DateIso,
     type: Evolu.nullOr(WorkLogType),

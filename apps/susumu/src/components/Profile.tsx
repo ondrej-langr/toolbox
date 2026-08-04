@@ -1,5 +1,6 @@
 import * as Evolu from '@evolu/common';
 import {
+  AlertDialog,
   Avatar,
   Box,
   Button,
@@ -159,14 +160,38 @@ export const Profile = () => {
             </Dialog.Content>
           </Dialog.Root>
           <Separator orientation="vertical" mx="2" />
-          <Dialog.Root>
-            <Dialog.Trigger>
+          <AlertDialog.Root>
+            <AlertDialog.Trigger>
               <Link href="#" color="red" size="1">
                 Log out
               </Link>
-            </Dialog.Trigger>
-            <Dialog.Content size="4"></Dialog.Content>
-          </Dialog.Root>
+            </AlertDialog.Trigger>
+            <AlertDialog.Content maxWidth="420px">
+              <AlertDialog.Title>Log out from this device?</AlertDialog.Title>
+              <AlertDialog.Description size="2">
+                This removes this device’s Evolu user and synced data. Make
+                sure your mnemonic or QR code is saved on another device before
+                continuing.
+              </AlertDialog.Description>
+              <Flex gap="3" mt="4" justify="end">
+                <AlertDialog.Cancel>
+                  <Button variant="soft" color="gray">
+                    Cancel
+                  </Button>
+                </AlertDialog.Cancel>
+                <AlertDialog.Action>
+                  <Button
+                    color="red"
+                    onClick={() => {
+                      void evolu.resetAppOwner({ reload: true });
+                    }}
+                  >
+                    Log out
+                  </Button>
+                </AlertDialog.Action>
+              </Flex>
+            </AlertDialog.Content>
+          </AlertDialog.Root>
         </Flex>
       </Flex>
     </Flex>

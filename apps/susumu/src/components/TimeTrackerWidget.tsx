@@ -27,6 +27,10 @@ export const TimeTrackerWidget = ({
   const [currentTime, setCurrentTime] = useState<Dayjs>(() =>
     dayjs(),
   );
+  const projectName =
+    lastItem.projectName ??
+    lastItem.context ??
+    'Unknown project';
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -52,7 +56,7 @@ export const TimeTrackerWidget = ({
           'You are on a break'
         ) : (
           <>
-            Working on <Strong>{lastItem.context}</Strong> for{' '}
+            Working on <Strong>{projectName}</Strong> for{' '}
             <Strong>
               {formatSeconds(
                 currentTime.diff(lastItem.at, 'seconds'),

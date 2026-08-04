@@ -1,80 +1,68 @@
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 
-import { contexts } from '../constants';
+import type { ProjectId } from '../schema';
 
 import type { WorkLog } from './getAllWorkLogs';
 import { isWorkLogBreak } from './isWorkLogBreak';
 
-export const calculateWorkLogEntries = (logs: WorkLog[]) => {
-  const timeForContext = Object.fromEntries(
-    contexts.map((item) => [item, 0] as const),
-  ) as Record<(typeof contexts)[number], number>;
+interface ProjectDuration {
+  projectId: ProjectId;
+  projectName: string;
+  seconds: number;
+}
 
-  const contextRangeStarts = Object.fromEntries(
-    contexts.map((item) => [item, null] as const),
-  ) as Record<(typeof contexts)[number], null | Dayjs>;
+export interface ProjectWorkLogEntry {
+  projectId: ProjectId;
+  projectName: string;
+  minutes: number;
+}
+
+export const calculateWorkLogEntries = (logs: WorkLog[]) => {
+  const durationByProject = new Map<ProjectId, ProjectDuration>();
 
   logs.forEach((log, index, items) => {
-    const previous = items[index - 1];
-    const logHasContext =
-      contextRangeStarts[log.context] !== null;
+    const previousLog = items[index - 1];
 
-    if (!logHasContext) {
-      contextRangeStarts[log.context] = log.at;
-    }
-
-    // End previous if it has a different context
-    if (
-      previous &&
-      previous.context !== log.context &&
-      !isWorkLogBreak(previous)
-    ) {
-      timeForContext[previous.context] += Math.abs(
-        dayjs(previous.at).diff(log.at, 'second'),
-      );
-      contextRangeStarts[previous.context] = null;
-
+    if (!previousLog || isWorkLogBreak(previousLog)) {
       return;
     }
 
-    // "Volno" ends all the context ranges
-    if (isWorkLogBreak(log)) {
-      for (const context of contexts) {
-        if (contextRangeStarts[context] !== null) {
-          timeForContext[context] += Math.abs(
-            dayjs(contextRangeStarts[context]).diff(
-              log.at,
-              'second',
-            ),
-          );
-
-          contextRangeStarts[context] = null;
-        }
-      }
-
+    if (!previousLog.projectId) {
       return;
     }
 
-    // calculate time for the current context comparing with the previous log
-    if (
-      previous &&
-      previous.context === log.context &&
-      !isWorkLogBreak(log) &&
-      !isWorkLogBreak(previous)
-    ) {
-      timeForContext[log.context] += Math.abs(
-        dayjs(previous.at).diff(log.at, 'second'),
-      );
-      contextRangeStarts[log.context] = log.at;
+    const projectName =
+      previousLog.projectName ??
+      previousLog.context ??
+      'Unknown project';
+    const seconds = Math.abs(
+      dayjs(previousLog.at).diff(log.at, 'second'),
+    );
+    const currentDuration = durationByProject.get(
+      previousLog.projectId,
+    );
 
+    if (currentDuration) {
+      currentDuration.seconds += seconds;
       return;
     }
+
+    durationByProject.set(previousLog.projectId, {
+      projectId: previousLog.projectId,
+      projectName,
+      seconds,
+    });
   });
 
-  return Object.fromEntries(
-    Object.entries(timeForContext).map(([context, time]) => [
-      context,
-      Math.ceil(time / 60),
-    ]),
-  );
+  return Array.from(durationByProject.values())
+    .map(({ seconds, ...projectDuration }) => ({
+      ...projectDuration,
+      minutes: Math.ceil(seconds / 60),
+    }))
+    .filter((projectEntry) => projectEntry.minutes > 0)
+    .sort(
+      (left, right) =>
+        right.minutes - left.minutes ||
+        left.projectName.localeCompare(right.projectName),
+    );
 };

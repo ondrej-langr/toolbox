@@ -7,17 +7,19 @@ export const getWorkLogsForMonth = (date: Dayjs) =>
   evolu.createQuery((db) =>
     db
       .selectFrom('workLog')
-      .selectAll()
+      .leftJoin('project', 'project.id', 'workLog.projectId')
+      .selectAll('workLog')
+      .select('project.name as projectName')
       .where(
-        'at',
+        'workLog.at',
         '>=',
         DateIso.orThrow(date.startOf('month').toISOString()),
       )
       .where(
-        'at',
+        'workLog.at',
         '<=',
         DateIso.orThrow(date.endOf('month').toISOString()),
       )
-      .where('isDeleted', 'is not', sqliteTrue)
-      .orderBy('at', 'asc'),
+      .where('workLog.isDeleted', 'is not', sqliteTrue)
+      .orderBy('workLog.at', 'asc'),
   );

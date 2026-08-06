@@ -46,7 +46,7 @@ import { formatMinutes } from './utils/formatMinutes';
 import { formatSeconds } from './utils/formatSeconds';
 import type { WorkLog } from './utils/getAllWorkLogs';
 import { getAllWorkLogs } from './utils/getAllWorkLogs';
-import { getProjects } from './utils/getProjects';
+import { getProjects, type Project } from './utils/getProjects';
 import { getWorkLogsForDate } from './utils/getWorkLogsForDate';
 import { getWorkLogsForMonth } from './utils/getWorkLogsForMonth';
 import { isWorkLogBreak } from './utils/isWorkLogBreak';
@@ -125,6 +125,63 @@ const syncProjectName = (
   return projectName && projectName !== log.projectName
     ? { ...log, projectName }
     : log;
+};
+const WorkLogProjectPopover = ({
+  log,
+  projectName,
+  projects,
+}: {
+  log: WorkLog;
+  projectName: string;
+  projects: readonly Project[];
+}) => {
+  const evolu = useEvolu();
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Popover.Root open={open} onOpenChange={setOpen}>
+      <Popover.Trigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          color="gray"
+          size="1"
+          className="h-auto w-fit justify-start px-0 py-0 font-bold! text-[10px]! opacity-80!"
+        >
+          {projectName.toUpperCase()}
+        </Button>
+      </Popover.Trigger>
+      <Popover.Content size="1">
+        <Flex direction="column" gap="2">
+          <Text size="1" color="gray">
+            Change project
+          </Text>
+          {projects.map((project) => (
+            <Button
+              key={project.id}
+              type="button"
+              variant={
+                project.id === log.projectId ? 'solid' : 'soft'
+              }
+              disabled={project.id === log.projectId}
+              onClick={() => {
+                const result = evolu.update('workLog', {
+                  id: log.id,
+                  projectId: project.id,
+                });
+
+                if (result.ok) {
+                  setOpen(false);
+                }
+              }}
+            >
+              {project.name.toUpperCase()}
+            </Button>
+          ))}
+        </Flex>
+      </Popover.Content>
+    </Popover.Root>
+  );
 };
 
 function App() {
@@ -312,7 +369,59 @@ function App() {
                               className="relative -top-0.5 mr-2"
                               variant="solid"
                             />
-                            {projectName.toUpperCase()}
+
+                            <Popover.Root>
+                              <Popover.Trigger>
+                                <span
+                                  role="button"
+                                  className="hover:underline cursor-pointer"
+                                >
+                                  {projectName.toUpperCase()}
+                                </span>
+                              </Popover.Trigger>
+                              <Popover.Content size="1">
+                                <Flex
+                                  direction="column"
+                                  gap="2"
+                                  className="max-w-lg w-full"
+                                >
+                                  <Text size="1" color="gray">
+                                    Change project
+                                  </Text>
+                                  {projects.map((project) => (
+                                    <Popover.Close
+                                      key={project.id}
+                                    >
+                                      <Button
+                                        type="button"
+                                        variant={
+                                          project.id ===
+                                          item.projectId
+                                            ? 'solid'
+                                            : 'soft'
+                                        }
+                                        disabled={
+                                          project.id ===
+                                          item.projectId
+                                        }
+                                        onClick={() => {
+                                          evolu.update(
+                                            'workLog',
+                                            {
+                                              id: item.id,
+                                              projectId:
+                                                project.id,
+                                            },
+                                          );
+                                        }}
+                                      >
+                                        {project.name.toUpperCase()}
+                                      </Button>
+                                    </Popover.Close>
+                                  ))}
+                                </Flex>
+                              </Popover.Content>
+                            </Popover.Root>
                           </Text>
                           <Text size="3">{item.name}</Text>
                         </Flex>

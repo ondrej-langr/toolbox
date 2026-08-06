@@ -51,6 +51,8 @@ import { getWorkLogsForDate } from './utils/getWorkLogsForDate';
 import { getWorkLogsForMonth } from './utils/getWorkLogsForMonth';
 import { isWorkLogBreak } from './utils/isWorkLogBreak';
 
+const LOCAL_STORAGE_LAST_PROJECT_ID = 'susumu-last-project-id';
+
 const calculateEntries = (logs: WorkLog[]) => {
   const totals: Record<string, number> = {};
 
@@ -189,7 +191,13 @@ function App() {
     dayjs(),
   );
   const [selectedProjectId, setSelectedProjectId] =
-    useState<ProjectId | null>(null);
+    useState<ProjectId | null>(() => {
+      const savedLastProjectId = window.localStorage.getItem(
+        LOCAL_STORAGE_LAST_PROJECT_ID,
+      );
+
+      return (savedLastProjectId as ProjectId) ?? null;
+    });
   const evolu = useEvolu();
   const allWorkLogs = useQuery(getAllWorkLogs());
   const projects = useQuery(getProjects());
@@ -556,6 +564,10 @@ function App() {
                     });
 
                     if (result.ok && nameInputRef.current) {
+                      window.localStorage.setItem(
+                        LOCAL_STORAGE_LAST_PROJECT_ID,
+                        selectedProjectId,
+                      );
                       nameInputRef.current.value = '';
                     }
                   }}
